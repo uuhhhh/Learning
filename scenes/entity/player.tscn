@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://ditgwmpbcv6ky"]
+
+[ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="1_fwl0b"]
+[ext_resource type="Script" path="res://scripts/entity/Player.cs" id="1_uyfcp"]
+[ext_resource type="Script" path="res://scripts/entity/InputComponent.cs" id="3_i37r0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_41j30"]
+size = Vector2(16, 16)
+
+[node name="Player" type="CharacterBody2D"]
+floor_constant_speed = true
+floor_snap_length = 2.0
+script = ExtResource("1_uyfcp")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -8)
+scale = Vector2(0.125, 0.125)
+texture = ExtResource("1_fwl0b")
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+position = Vector2(0, -8)
+shape = SubResource("RectangleShape2D_41j30")
+
+[node name="InputComponent" type="Node2D" parent="."]
+script = ExtResource("3_i37r0")
