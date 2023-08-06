@@ -24,32 +24,37 @@ public partial class Player : CharacterBody2D {
 		_input.JumpInputOff += JumpCancel;
 	}
 
-	public override void _PhysicsProcess(double delta)
-	{
-		Vector2 velocity = Velocity;
-		HandleInputVelocity(velocity, delta);
-		HandleGravity(velocity, delta);
-		Velocity = velocity;
+	public override void _PhysicsProcess(double delta) {
+		Velocity = HandleInputVelocity(Velocity, delta);
+		Velocity = HandleGravity(Velocity, delta);
 		
 		MoveAndSlide();
 	}
 
-	private void HandleInputVelocity(Vector2 velocity, double delta) {
+	private Vector2 HandleInputVelocity(Vector2 velocity, double delta) {
+		Vector2 newVelocity = velocity;
+		
 		if (_directionInputtingX != 0) {
-			velocity.X = Mathf.MoveToward(
-				velocity.X,
+			newVelocity.X = Mathf.MoveToward(
+				newVelocity.X,
 				SPEED * _directionInputtingX,
 				ACCELERATION * (float)delta);
 		}
 		else {
-			velocity.X = Mathf.MoveToward(velocity.X, 0, FRICTION * (float)delta);
+			newVelocity.X = Mathf.MoveToward(newVelocity.X, 0, FRICTION * (float)delta);
 		}
+
+		return newVelocity;
 	}
 
-	private void HandleGravity(Vector2 velocity, double delta) {
+	private Vector2 HandleGravity(Vector2 velocity, double delta) {
+		Vector2 newVelocity = velocity;
+		
 		if (!IsOnFloor()) {
-			velocity.Y += _gravity * (float)delta;
+			newVelocity.Y += _gravity * (float)delta;
 		}
+
+		return newVelocity;
 	}
 
 	private void Jump() {
