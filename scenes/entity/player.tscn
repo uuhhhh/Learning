@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://ditgwmpbcv6ky"]
+[gd_scene load_steps=7 format=3 uid="uid://ditgwmpbcv6ky"]
 
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="1_fwl0b"]
 [ext_resource type="Script" path="res://scripts/entity/Player.cs" id="1_uyfcp"]
 [ext_resource type="Script" path="res://scripts/entity/InputComponent.cs" id="3_i37r0"]
 [ext_resource type="Script" path="res://scripts/entity/CharacterComponent.cs" id="4_8s0wb"]
+[ext_resource type="Resource" uid="uid://i0j51dmmho3f" path="res://resources/DefaultCharacterPhysicsData.tres" id="5_0q71g"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_41j30"]
 size = Vector2(16, 16)
@@ -22,15 +23,7 @@ script = ExtResource("3_i37r0")
 [node name="CharacterComponent" type="CharacterBody2D" parent="."]
 floor_snap_length = 3.0
 script = ExtResource("4_8s0wb")
-_speed = 150.0
-_jumpVelocity = -350.0
-_groundAcceleration = 8.0
-_airAcceleration = 8.0
-_groundDeceleration = 8.0
-_airDeceleration = 2.0
-_upwardsGravityScale = 1.0
-_downwardsGravityScale = 1.25
-_turnaroundAccelerationDampening = 0.5
+_physData = ExtResource("5_0q71g")
 
 [node name="Hitbox" type="CollisionShape2D" parent="CharacterComponent"]
 position = Vector2(0, -8)

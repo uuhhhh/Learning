@@ -2,15 +2,7 @@ using Godot;
 using System;
 
 public partial class CharacterComponent : CharacterBody2D {
-	[Export] private float _speed;
-	[Export] private float _jumpVelocity;
-	[Export] private float _groundAcceleration;
-	[Export] private float _airAcceleration;
-	[Export] private float _groundDeceleration;
-	[Export] private float _airDeceleration;
-	[Export] private float _upwardsGravityScale;
-	[Export] private float _downwardsGravityScale;
-	[Export] private float _turnaroundAccelerationDampening;
+	[Export] private CharacterPhysicsData _physData;
 	
 	private float _gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
 	
@@ -51,7 +43,7 @@ public partial class CharacterComponent : CharacterBody2D {
 	private Vector2 HandleInputVelocity(Vector2 velocity, double delta) {
 		Vector2 newVelocity = velocity;
 		
-		newVelocity.X = _currentInputSpeedScale * _speed;
+		newVelocity.X = _currentInputSpeedScale * _physData.Speed;
 
 		return newVelocity;
 	}
@@ -60,7 +52,7 @@ public partial class CharacterComponent : CharacterBody2D {
 		Vector2 newVelocity = velocity;
 		
 		if (!IsOnFloor()) {
-			float gravityScale = newVelocity.Y > 0 ? _downwardsGravityScale : _upwardsGravityScale;
+			float gravityScale = newVelocity.Y > 0 ? _physData.DownwardsGravityScale : _physData.UpwardsGravityScale;
 			newVelocity.Y += _gravity * gravityScale * (float)delta;
 		}
 
@@ -99,16 +91,16 @@ public partial class CharacterComponent : CharacterBody2D {
 
 	private void Jump() {
 		Vector2 velocity = Velocity;
-		velocity.Y += _jumpVelocity;
+		velocity.Y += _physData.JumpVelocity;
 		Velocity = velocity;
 	}
 
 	public void JumpCancel() {
 		_jumpBufferTimer.Stop();
 		
-		if (!IsOnFloor() && Velocity.Y < _jumpVelocity / 2) {
+		if (!IsOnFloor() && Velocity.Y < _physData.JumpVelocity * _physData.JumpCancelVelocityProportion) {
 			Vector2 velocity = Velocity;
-			velocity.Y = _jumpVelocity / 2;
+			velocity.Y = _physData.JumpVelocity * _physData.JumpCancelVelocityProportion;
 			Velocity = velocity;
 		}
 	}
@@ -119,16 +111,16 @@ public partial class CharacterComponent : CharacterBody2D {
 		if (_intendedInputSpeedScale == 0 ||
 		    (Mathf.Abs(_intendedInputSpeedScale) < Mathf.Abs(_currentInputSpeedScale)
 		     && Mathf.Sign(_intendedInputSpeedScale) == Mathf.Sign(_currentInputSpeedScale))) {
-			return IsOnFloor() ? _groundDeceleration : _airDeceleration;
+			return IsOnFloor() ? _physData.GroundDeceleration : _physData.AirDeceleration;
 		}
 
-		return IsOnFloor() ? _groundAcceleration : _airAcceleration;
+		return IsOnFloor() ? _physData.GroundAcceleration : _physData.AirAcceleration;
 	}
 
 	private float NewestInputAccelerationModifier() {
 		float inputSpeedScaleDelta = _intendedInputSpeedScale - _currentInputSpeedScale;
 		
-		return Mathf.Pow(Math.Abs(inputSpeedScaleDelta), -_turnaroundAccelerationDampening);
+		return Mathf.Pow(Math.Abs(inputSpeedScaleDelta), -_physData.TurnaroundAccelerationDampening);
 	}
 
 	public void AddToInputSpeedScale(float scale) {
