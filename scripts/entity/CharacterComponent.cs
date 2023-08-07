@@ -2,22 +2,33 @@ using Godot;
 using System;
 
 public partial class CharacterComponent : CharacterBody2D {
-	[Export] private float _speed = 200f;
-	[Export] private float _jumpVelocity = -350f;
-	[Export] private float _timeToFullSpeedSeconds = .25f;
-	[Export] private float _timeToStopSeconds = .125f;
+	[Export] private float _speed;
+	[Export] private float _jumpVelocity;
+	[Export] private float _timeToFullSpeedSeconds;
+	[Export] private float _timeToStopSeconds;
 	
 	private float _gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
+	
+	private Timer _coyoteJumpTimer;
+	private Timer _jumpBufferTimer;
 
 	private float _inputVelocityX;
 	private float _finalInputVelocityX;
 	private Tween _inputVelocityTween;
 
+	public override void _Ready() {
+		_coyoteJumpTimer = GetNode<Timer>("CoyoteJumpTimer");
+		_jumpBufferTimer = GetNode<Timer>("JumpBufferTimer");
+	}
+
 	public override void _PhysicsProcess(double delta) {
 		Velocity = HandleInputVelocity(Velocity, delta);
 		Velocity = HandleGravity(Velocity, delta);
-		
+
+		bool wasOnFloor = IsOnFloor();
 		MoveAndSlide();
+		HandleBufferedJump(wasOnFloor);
+		HandleCoyoteJumpTimer(wasOnFloor);
 	}
 
 	private Vector2 HandleInputVelocity(Vector2 velocity, double delta) {
@@ -38,15 +49,35 @@ public partial class CharacterComponent : CharacterBody2D {
 		return newVelocity;
 	}
 
-	public void Jump() {
-		if (IsOnFloor()) {
-			Vector2 velocity = Velocity;
-			velocity.Y += _jumpVelocity;
-			Velocity = velocity;
+	private void HandleBufferedJump(bool wasOnFloor) {
+		if (!wasOnFloor && IsOnFloor() && _jumpBufferTimer.TimeLeft > 0) {
+			Jump();
 		}
 	}
 
+	private void HandleCoyoteJumpTimer(bool wasOnFloor) {
+		if (wasOnFloor && !IsOnFloor() && Velocity.Y >= 0) {
+			_coyoteJumpTimer.Start();
+		}
+	}
+
+	public void AttemptJump() {
+		if (IsOnFloor() || _coyoteJumpTimer.TimeLeft > 0) {
+			Jump();
+		} else {
+			_jumpBufferTimer.Start();
+		}
+	}
+
+	private void Jump() {
+		Vector2 velocity = Velocity;
+		velocity.Y += _jumpVelocity;
+		Velocity = velocity;
+	}
+
 	public void JumpCancel() {
+		_jumpBufferTimer.Stop();
+		
 		if (!IsOnFloor() && Velocity.Y < _jumpVelocity / 2) {
 			Vector2 velocity = Velocity;
 			velocity.Y = _jumpVelocity / 2;

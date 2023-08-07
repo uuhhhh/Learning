@@ -12,7 +12,7 @@ public partial class Player : Node2D {
 		_input.LeftInputOff += () => { _physics.MoveX(1); };
 		_input.RightInputOn += () => { _physics.MoveX(1); };
 		_input.RightInputOff += () => { _physics.MoveX(-1); };
-		_input.JumpInputOn += _physics.Jump;
+		_input.JumpInputOn += _physics.AttemptJump;
 		_input.JumpInputOff += _physics.JumpCancel;
 	}
 
