@@ -4,8 +4,12 @@ using System;
 public partial class CharacterComponent : CharacterBody2D {
 	[Export] private float _speed;
 	[Export] private float _jumpVelocity;
-	[Export] private float _timeToFullSpeedSeconds;
-	[Export] private float _timeToStopSeconds;
+	[Export] private float _timeToFullSpeedSecondsGround;
+	[Export] private float _timeToFullSpeedSecondsAir;
+	[Export] private float _timeToStopSecondsGround;
+	[Export] private float _timeToStopSecondsAir;
+	[Export] private float _upwardsGravityMultiplier;
+	[Export] private float _downwardsGravityMultiplier;
 	
 	private float _gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
 	
@@ -43,7 +47,8 @@ public partial class CharacterComponent : CharacterBody2D {
 		Vector2 newVelocity = velocity;
 		
 		if (!IsOnFloor()) {
-			newVelocity.Y += _gravity * (float)delta;
+			float gravityScale = newVelocity.Y > 0 ? _downwardsGravityMultiplier : _upwardsGravityMultiplier;
+			newVelocity.Y += _gravity * gravityScale * (float)delta;
 		}
 
 		return newVelocity;
@@ -93,11 +98,16 @@ public partial class CharacterComponent : CharacterBody2D {
 		_finalInputVelocityX = Mathf.Round(_finalInputVelocityX + _speed * magnitude);
 
 		_inputVelocityTween = CreateTween();
-		_inputVelocityTween.Parallel().TweenProperty(
-			this,
-			"_inputVelocityX",
-			_finalInputVelocityX,
-			_finalInputVelocityX == 0 ? _timeToStopSeconds : _timeToFullSpeedSeconds);
+
+		double duration;
+		if (_finalInputVelocityX == 0) {
+			duration = IsOnFloor() ? _timeToStopSecondsGround : _timeToStopSecondsAir;
+		} else {
+			duration = IsOnFloor() ? _timeToFullSpeedSecondsGround : _timeToFullSpeedSecondsAir;
+		}
+		
+		_inputVelocityTween.Parallel().TweenProperty(this, "_inputVelocityX", _finalInputVelocityX, duration);
+        
 	}
 
 	public void SetParentPositionToOwn(Node2D parent) {
