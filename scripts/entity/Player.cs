@@ -8,10 +8,10 @@ public partial class Player : Node2D {
 		_input = GetNode<InputComponent>("InputComponent");
 		_physics = GetNode <CharacterComponent>("CharacterComponent");
 
-		_input.LeftInputOn += () => { _physics.MoveX(-1); };
-		_input.LeftInputOff += () => { _physics.MoveX(1); };
-		_input.RightInputOn += () => { _physics.MoveX(1); };
-		_input.RightInputOff += () => { _physics.MoveX(-1); };
+		_input.LeftInputOn += () => { _physics.AddToInputSpeedScale(-1); };
+		_input.LeftInputOff += () => { _physics.AddToInputSpeedScale(1); };
+		_input.RightInputOn += () => { _physics.AddToInputSpeedScale(1); };
+		_input.RightInputOff += () => { _physics.AddToInputSpeedScale(-1); };
 		_input.JumpInputOn += _physics.AttemptJump;
 		_input.JumpInputOff += _physics.JumpCancel;
 	}
