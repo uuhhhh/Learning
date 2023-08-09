@@ -11,6 +11,8 @@ public partial class KinematicComp : CharacterBody2D {
 	private Timer _coyoteJumpTimer;
 	private Timer _jumpBufferTimer;
 
+	private int _currentAirJumps;
+
 	private float _currentInputSpeedScale;
 	private float _intendedInputSpeedScale;
 	private float _currentInputAccelerationModifier;
@@ -28,13 +30,17 @@ public partial class KinematicComp : CharacterBody2D {
 
 		BecomeOnFloor += AttemptBufferedJump;
 		BecomeOffFloor += HandleCoyoteJumpTimer;
+		BecomeOnFloor += () => { _coyoteJumpTimer.Stop(); };
 
 		BecomeOnFloor += UpdateInputAcceleration;
 		BecomeOffFloor += UpdateInputAcceleration;
+
+		BecomeOnFloor += ResetCurrentAirJumps;
+		ResetCurrentAirJumps();
 	}
 
 	public override void _PhysicsProcess(double delta) {
-		Velocity = HandleInputVelocity(Velocity, delta);
+		Velocity = HandleInputVelocity(Velocity);
 		Velocity = HandleGravity(Velocity, delta);
 
 		bool wasOnFloor = IsOnFloor();
@@ -42,7 +48,7 @@ public partial class KinematicComp : CharacterBody2D {
 		CheckFloorStatusChange(wasOnFloor);
 	}
 
-	private Vector2 HandleInputVelocity(Vector2 velocity, double delta) {
+	private Vector2 HandleInputVelocity(Vector2 velocity) {
 		Vector2 newVelocity = velocity;
 		
 		newVelocity.X = _currentInputSpeedScale * _physData.Speed;
@@ -78,8 +84,11 @@ public partial class KinematicComp : CharacterBody2D {
 	}
 
 	public void AttemptJump() {
-		if (IsOnFloor() || _coyoteJumpTimer.TimeLeft > 0) {
+		bool canCoyoteJump = _coyoteJumpTimer.TimeLeft > 0;
+		if (IsOnFloor() || canCoyoteJump) {
 			Jump();
+		} else if (CanAirJump()) {
+			AirJump();
 		} else {
 			_jumpBufferTimer.Start();
 		}
@@ -93,8 +102,15 @@ public partial class KinematicComp : CharacterBody2D {
 
 	private void Jump() {
 		Vector2 velocity = Velocity;
-		velocity.Y += _physData.JumpVelocity;
+		velocity.Y = _physData.JumpVelocity;
 		Velocity = velocity;
+	}
+
+	private void AirJump() {
+		Vector2 velocity = Velocity;
+		velocity.Y =_physData.AirJumpVelocity;
+		Velocity = velocity;
+		_currentAirJumps--;
 	}
 
 	public void JumpCancel() {
@@ -105,6 +121,15 @@ public partial class KinematicComp : CharacterBody2D {
 			velocity.Y = _physData.JumpVelocity * _physData.JumpCancelVelocityProportion;
 			Velocity = velocity;
 		}
+	}
+
+	private bool CanAirJump() {
+		return _currentAirJumps is KinematicCompData.UnlimitedAirJumps or > 0
+		       && Velocity.Y > _physData.AirJumpVelocity;
+	}
+
+	private void ResetCurrentAirJumps() {
+		_currentAirJumps = _physData.NumAirJumps;
 	}
 	
 	// -- Externally inputted movement methods --
