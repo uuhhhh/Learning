@@ -2,9 +2,9 @@
 
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="1_fwl0b"]
 [ext_resource type="Script" path="res://scripts/entity/Player.cs" id="1_uyfcp"]
-[ext_resource type="Script" path="res://scripts/entity/InputComponent.cs" id="3_i37r0"]
-[ext_resource type="Script" path="res://scripts/entity/CharacterComponent.cs" id="4_8s0wb"]
-[ext_resource type="Resource" uid="uid://i0j51dmmho3f" path="res://resources/DefaultCharacterPhysicsData.tres" id="5_0q71g"]
+[ext_resource type="Script" path="res://scripts/entity/InputComp.cs" id="3_eta8u"]
+[ext_resource type="Script" path="res://scripts/entity/KinematicComp.cs" id="4_dcbs8"]
+[ext_resource type="Resource" uid="uid://c8w1102wnn1yg" path="res://resources/DefaultKinematicCompData.tres" id="5_d8i3b"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_41j30"]
 size = Vector2(16, 16)
@@ -18,12 +18,12 @@ scale = Vector2(0.125, 0.125)
 texture = ExtResource("1_fwl0b")
 
 [node name="InputComponent" type="Node2D" parent="."]
-script = ExtResource("3_i37r0")
+script = ExtResource("3_eta8u")
 
 [node name="CharacterComponent" type="CharacterBody2D" parent="."]
 floor_snap_length = 3.0
-script = ExtResource("4_8s0wb")
-_physData = ExtResource("5_0q71g")
+script = ExtResource("4_dcbs8")
+_physData = ExtResource("5_d8i3b")
 
 [node name="Hitbox" type="CollisionShape2D" parent="CharacterComponent"]
 position = Vector2(0, -8)

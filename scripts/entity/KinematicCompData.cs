@@ -1,7 +1,9 @@
 using Godot;
 
+namespace Learning.scripts.entity;
+
 [GlobalClass]
-public partial class CharacterPhysicsData : Resource {
+public partial class KinematicCompData : Resource {
     [Export] public float Speed { get; set; }
     [Export] public float JumpVelocity { get; set; }
     [Export] public float JumpCancelVelocityProportion { get; set; }

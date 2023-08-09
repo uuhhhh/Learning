@@ -1,6 +1,8 @@
 using Godot;
 
-public partial class InputComponent : Node2D {
+namespace Learning.scripts.entity;
+
+public partial class InputComp : Node2D {
 	[Signal]
 	public delegate void LeftInputOnEventHandler();
 

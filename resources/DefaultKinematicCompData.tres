@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="KinematicCompData" load_steps=2 format=3 uid="uid://c8w1102wnn1yg"]
+
+[ext_resource type="Script" path="res://scripts/entity/KinematicCompData.cs" id="1_h5721"]
+
+[resource]
+script = ExtResource("1_h5721")
+Speed = 150.0
+JumpVelocity = -350.0
+JumpCancelVelocityProportion = 0.5
+GroundAcceleration = 8.0
+AirAcceleration = 5.0
+GroundDeceleration = 8.0
+AirDeceleration = 2.0
+UpwardsGravityScale = 1.0
+DownwardsGravityScale = 1.25
+TurnaroundAccelerationDampening = 0.5

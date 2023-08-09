@@ -1,8 +1,10 @@
 using Godot;
 using System;
 
-public partial class CharacterComponent : CharacterBody2D {
-	[Export] private CharacterPhysicsData _physData;
+namespace Learning.scripts.entity;
+
+public partial class KinematicComp : CharacterBody2D {
+	[Export] private KinematicCompData _physData;
 	
 	private float _gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
 	

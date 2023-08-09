@@ -1,12 +1,14 @@
 using Godot;
 
+namespace Learning.scripts.entity;
+
 public partial class Player : Node2D {
-	private InputComponent _input;
-	private CharacterComponent _physics;
+	private InputComp _input;
+	private KinematicComp _physics;
 	
 	public override void _Ready() {
-		_input = GetNode<InputComponent>("InputComponent");
-		_physics = GetNode <CharacterComponent>("CharacterComponent");
+		_input = GetNode<InputComp>("InputComponent");
+		_physics = GetNode <KinematicComp>("CharacterComponent");
 
 		_input.LeftInputOn += () => { _physics.AddToInputSpeedScale(-1); };
 		_input.LeftInputOff += () => { _physics.AddToInputSpeedScale(1); };
