@@ -11,8 +11,10 @@ public partial class KinematicComp : CharacterBody2D {
 	private Timer _coyoteJumpTimer;
 	private Timer _jumpBufferTimer;
 
+	private Vector2 _currentAirVelocity;
 	private int _currentAirJumps;
 
+	private Vector2 InputVelocity => new (_currentInputSpeedScale * _physData.Speed, 0);
 	private float _currentInputSpeedScale;
 	private float _intendedInputSpeedScale;
 	private float _currentInputAccelerationModifier;
@@ -20,9 +22,16 @@ public partial class KinematicComp : CharacterBody2D {
 	
 	[Signal]
 	public delegate void BecomeOnFloorEventHandler();
-
 	[Signal]
 	public delegate void BecomeOffFloorEventHandler();
+	[Signal]
+	public delegate void BecomeOnCeilingEventHandler();
+	[Signal]
+	public delegate void BecomeOffCeilingEventHandler();
+	[Signal]
+	public delegate void BecomeOnWallEventHandler();
+	[Signal]
+	public delegate void BecomeOffWallEventHandler();
 
 	public override void _Ready() {
 		_coyoteJumpTimer = GetNode<Timer>("CoyoteJumpTimer");
@@ -32,28 +41,26 @@ public partial class KinematicComp : CharacterBody2D {
 		BecomeOffFloor += HandleCoyoteJumpTimer;
 		BecomeOnFloor += () => { _coyoteJumpTimer.Stop(); };
 
+		BecomeOnCeiling += () => { _currentAirVelocity.Y = 0; };
+		BecomeOnFloor += () => { _currentAirVelocity.Y = 0; };
+
 		BecomeOnFloor += UpdateInputAcceleration;
 		BecomeOffFloor += UpdateInputAcceleration;
 
 		BecomeOnFloor += ResetCurrentAirJumps;
+		BecomeOnWall += ResetCurrentAirJumps;
 		ResetCurrentAirJumps();
 	}
 
 	public override void _PhysicsProcess(double delta) {
-		Velocity = HandleInputVelocity(Velocity);
-		Velocity = HandleGravity(Velocity, delta);
+		Velocity = InputVelocity + _currentAirVelocity;
+		_currentAirVelocity = HandleGravity(_currentAirVelocity, delta);
 
-		bool wasOnFloor = IsOnFloor();
+		bool wasOnFloor = IsOnFloor(), wasOnCeiling = IsOnCeiling(), wasOnWall = IsOnWall();
 		MoveAndSlide();
 		CheckFloorStatusChange(wasOnFloor);
-	}
-
-	private Vector2 HandleInputVelocity(Vector2 velocity) {
-		Vector2 newVelocity = velocity;
-		
-		newVelocity.X = _currentInputSpeedScale * _physData.Speed;
-
-		return newVelocity;
+		CheckCeilingStatusChange(wasOnCeiling);
+		CheckWallStatusChange(wasOnWall);
 	}
 
 	private Vector2 HandleGravity(Vector2 velocity, double delta) {
@@ -74,11 +81,27 @@ public partial class KinematicComp : CharacterBody2D {
 			EmitSignal(SignalName.BecomeOnFloor);
 		}
 	}
+
+	private void CheckCeilingStatusChange(bool wasOnCeiling) {
+		if (wasOnCeiling && !IsOnCeiling()) {
+			EmitSignal(SignalName.BecomeOffCeiling);
+		} else if (!wasOnCeiling && IsOnCeiling()) {
+			EmitSignal(SignalName.BecomeOnCeiling);
+		}
+	}
+
+	private void CheckWallStatusChange(bool wasOnWall) {
+		if (wasOnWall && !IsOnWall()) {
+			EmitSignal(SignalName.BecomeOffWall);
+		} else if (!wasOnWall && IsOnWall()) {
+			EmitSignal(SignalName.BecomeOnWall);
+		}
+	}
 	
 	// -- Jumping methods --
 
 	private void HandleCoyoteJumpTimer() {
-		if (Velocity.Y >= 0) {
+		if (_currentAirVelocity.Y >= 0) {
 			_coyoteJumpTimer.Start();
 		}
 	}
@@ -87,7 +110,9 @@ public partial class KinematicComp : CharacterBody2D {
 		bool canCoyoteJump = _coyoteJumpTimer.TimeLeft > 0;
 		if (IsOnFloor() || canCoyoteJump) {
 			Jump();
-		} else if (CanAirJump()) {
+		} else if (IsOnWall() && _physData.CanWallJump) {
+			WallJump(GetWallNormal().X);	
+		} if (CanAirJump()) {
 			AirJump();
 		} else {
 			_jumpBufferTimer.Start();
@@ -101,31 +126,30 @@ public partial class KinematicComp : CharacterBody2D {
 	}
 
 	private void Jump() {
-		Vector2 velocity = Velocity;
-		velocity.Y = _physData.JumpVelocity;
-		Velocity = velocity;
+		_currentAirVelocity.Y = _physData.JumpVelocity;
+	}
+
+	private void WallJump(float velocityScaleX) {
+		_currentAirVelocity.Y = _physData.WallJumpVelocity.Y;
+		//_currentJumpVelocity.X = _physData.WallJumpVelocity.X * velocityScaleX;
 	}
 
 	private void AirJump() {
-		Vector2 velocity = Velocity;
-		velocity.Y =_physData.AirJumpVelocity;
-		Velocity = velocity;
+		_currentAirVelocity.Y =_physData.AirJumpVelocity;
 		_currentAirJumps--;
 	}
 
 	public void JumpCancel() {
 		_jumpBufferTimer.Stop();
 		
-		if (!IsOnFloor() && Velocity.Y < _physData.JumpVelocity * _physData.JumpCancelVelocityProportion) {
-			Vector2 velocity = Velocity;
-			velocity.Y = _physData.JumpVelocity * _physData.JumpCancelVelocityProportion;
-			Velocity = velocity;
+		if (!IsOnFloor() && _currentAirVelocity.Y < _physData.JumpVelocity * _physData.JumpCancelVelocityProportion) {
+			_currentAirVelocity.Y = _physData.JumpVelocity * _physData.JumpCancelVelocityProportion;
 		}
 	}
 
 	private bool CanAirJump() {
 		return _currentAirJumps is KinematicCompData.UnlimitedAirJumps or > 0
-		       && Velocity.Y > _physData.AirJumpVelocity;
+		       && _currentAirVelocity.Y > _physData.AirJumpVelocity;
 	}
 
 	private void ResetCurrentAirJumps() {

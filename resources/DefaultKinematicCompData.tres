@@ -6,9 +6,11 @@
 script = ExtResource("1_h5721")
 Speed = 150.0
 JumpVelocity = -350.0
+JumpCancelVelocityProportion = 0.5
 AirJumpVelocity = -300.0
 NumAirJumps = 1
-JumpCancelVelocityProportion = 0.5
+WallJumpVelocity = Vector2(150, -350)
+CanWallJump = true
 GroundAcceleration = 8.0
 AirAcceleration = 5.0
 GroundDeceleration = 8.0
