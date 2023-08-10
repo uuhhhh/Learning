@@ -83,14 +83,14 @@ public partial class KinematicComp : CharacterBody2D {
 			float gravityScale = descending ? _physData.DownwardsGravityScale : _physData.UpwardsGravityScale;
 
 			if (_draggingOnWall) {
-				gravityScale *= descending ? _physData.WallDragDescendGravityScale
-					: _physData.WallDragAscendGravityScale;
+				gravityScale *= descending ? _physData.Wall.DragDescendGravityScale
+					: _physData.Wall.DragAscendGravityScale;
 			}
 
 			newVelocity.Y += _gravity * gravityScale * (float)delta;
 
 			if (_draggingOnWall) {
-				newVelocity.Y = Mathf.Min(newVelocity.Y, _physData.WallDragSpeedMax);
+				newVelocity.Y = Mathf.Min(newVelocity.Y, _physData.Wall.MaxDragSpeed);
 			}
 		}
 
@@ -124,17 +124,15 @@ public partial class KinematicComp : CharacterBody2D {
 	private void CheckDragOnWallStatusChange() {
 		bool noInputDrag = _draggingOnWall && _intendedInputSpeedScale == 0; 
 		
-		bool validDrag = _physData.CanWallDrag
+		bool validDrag = _physData.Wall.CanDrag
 			&& IsOnWallOnly()
             && (Mathf.Sign(_intendedInputSpeedScale) == -Mathf.Sign(GetWallNormal().X) || noInputDrag)
             && GetWallNormal().Y == 0
-			&& _currentAirVelocity.Y >= _physData.WallDragVelocityThresholdMin;
+			&& _currentAirVelocity.Y >= _physData.Wall.DragVelocityThresholdMin;
 		
 		if (_draggingOnWall && !validDrag) {
-			GD.Print("stop drag");
 			EmitSignal(SignalName.StopDragOnWall);
 		} else if (!_draggingOnWall && validDrag) {
-			GD.Print("start drag");
 			EmitSignal(SignalName.StartDragOnWall);
 		}
 	}
@@ -153,7 +151,7 @@ public partial class KinematicComp : CharacterBody2D {
 		bool canCoyoteJump = _coyoteJumpTimer.TimeLeft > 0;
 		if (IsOnFloor() || canCoyoteJump) {
 			Jump();
-		} else if (_draggingOnWall && _physData.CanWallJump) {
+		} else if (_draggingOnWall && _physData.Wall.CanJump) {
 			WallJump(GetWallNormal().X);	
 		} if (CanAirJump()) {
 			AirJump();
@@ -173,7 +171,7 @@ public partial class KinematicComp : CharacterBody2D {
 	}
 
 	private void WallJump(float velocityScaleX) {
-		_currentAirVelocity.Y = _physData.WallJumpVelocity.Y;
+		_currentAirVelocity.Y = _physData.Wall.JumpVelocity.Y;
 		_currentInputSpeedScale = velocityScaleX;
 		ResetNewSpeedScaleTween();
 		TweenSpeedScaleToIntended();
