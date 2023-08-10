@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://banlykgotvt1"]
+
+[ext_resource type="Script" path="res://scripts/entity/KinematicComp.cs" id="1_d83ve"]
+[ext_resource type="Resource" uid="uid://c8w1102wnn1yg" path="res://resources/DefaultKinematicCompData.tres" id="2_708c2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_41j30"]
+size = Vector2(16, 16)
+
+[node name="CharacterComponent" type="CharacterBody2D"]
+floor_snap_length = 3.0
+script = ExtResource("1_d83ve")
+_physData = ExtResource("2_708c2")
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+position = Vector2(0, -8)
+shape = SubResource("RectangleShape2D_41j30")
+
+[node name="CoyoteJumpTimer" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+
+[node name="JumpBufferTimer" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
