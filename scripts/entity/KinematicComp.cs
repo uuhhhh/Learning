@@ -60,6 +60,8 @@ public partial class KinematicComp : CharacterBody2D {
 		StartDragOnWall += () => { _draggingOnWall = true; };
 		StopDragOnWall += () => { _draggingOnWall = false; };
 	}
+	
+	#region Per-Frame Physics Handling
 
 	public override void _PhysicsProcess(double delta) {
 		Velocity = InputVelocity + _currentAirVelocity;
@@ -77,10 +79,12 @@ public partial class KinematicComp : CharacterBody2D {
 		Vector2 newVelocity = velocity;
 		
 		if (!IsOnFloor()) {
-			float gravityScale = newVelocity.Y > 0 ? _physData.DownwardsGravityScale : _physData.UpwardsGravityScale;
+			bool descending = newVelocity.Y > 0;
+			float gravityScale = descending ? _physData.DownwardsGravityScale : _physData.UpwardsGravityScale;
 
 			if (_draggingOnWall) {
-				gravityScale *= _physData.WallDragAccelRatio;
+				gravityScale *= descending ? _physData.WallDragDescendGravityScale
+					: _physData.WallDragAscendGravityScale;
 			}
 
 			newVelocity.Y += _gravity * gravityScale * (float)delta;
@@ -118,11 +122,11 @@ public partial class KinematicComp : CharacterBody2D {
 	}
 
 	private void CheckDragOnWallStatusChange() {
-		bool letGoDrag = _draggingOnWall && _intendedInputSpeedScale == 0; 
+		bool noInputDrag = _draggingOnWall && _intendedInputSpeedScale == 0; 
 		
 		bool validDrag = _physData.CanWallDrag
 			&& IsOnWallOnly()
-            && (Mathf.Sign(_intendedInputSpeedScale) == -Mathf.Sign(GetWallNormal().X) || letGoDrag)
+            && (Mathf.Sign(_intendedInputSpeedScale) == -Mathf.Sign(GetWallNormal().X) || noInputDrag)
             && GetWallNormal().Y == 0
 			&& _currentAirVelocity.Y >= _physData.WallDragVelocityThresholdMin;
 		
@@ -135,7 +139,9 @@ public partial class KinematicComp : CharacterBody2D {
 		}
 	}
 	
-	// -- Jumping methods --
+	#endregion
+
+	#region Jumping Methods
 
 	private void HandleCoyoteJumpTimer() {
 		if (_currentAirVelocity.Y >= 0) {
@@ -147,7 +153,7 @@ public partial class KinematicComp : CharacterBody2D {
 		bool canCoyoteJump = _coyoteJumpTimer.TimeLeft > 0;
 		if (IsOnFloor() || canCoyoteJump) {
 			Jump();
-		} else if (IsOnWall() && _physData.CanWallJump) {
+		} else if (_draggingOnWall && _physData.CanWallJump) {
 			WallJump(GetWallNormal().X);	
 		} if (CanAirJump()) {
 			AirJump();
@@ -168,7 +174,9 @@ public partial class KinematicComp : CharacterBody2D {
 
 	private void WallJump(float velocityScaleX) {
 		_currentAirVelocity.Y = _physData.WallJumpVelocity.Y;
-		//_currentJumpVelocity.X = _physData.WallJumpVelocity.X * velocityScaleX;
+		_currentInputSpeedScale = velocityScaleX;
+		ResetNewSpeedScaleTween();
+		TweenSpeedScaleToIntended();
 	}
 
 	private void AirJump() {
@@ -193,33 +201,27 @@ public partial class KinematicComp : CharacterBody2D {
 		_currentAirJumps = _physData.NumAirJumps;
 	}
 	
-	// -- Externally inputted movement methods --
-
-	private float NewestInputAccelerationValue() {
-		if (_intendedInputSpeedScale == 0 ||
-		    (Mathf.Abs(_intendedInputSpeedScale) < Mathf.Abs(_currentInputSpeedScale)
-		     && Mathf.Sign(_intendedInputSpeedScale) == Mathf.Sign(_currentInputSpeedScale))) {
-			return IsOnFloor() ? _physData.GroundDeceleration : _physData.AirDeceleration;
-		}
-
-		return IsOnFloor() ? _physData.GroundAcceleration : _physData.AirAcceleration;
-	}
-
-	private float NewestInputAccelerationModifier() {
-		float inputSpeedScaleDelta = _intendedInputSpeedScale - _currentInputSpeedScale;
-		
-		return Mathf.Pow(Math.Abs(inputSpeedScaleDelta), -_physData.TurnaroundAccelerationDampening);
-	}
+	#endregion
+	
+	#region Externally Inputted Movement Methods
 
 	public void AddToInputSpeedScale(float scale) {
-		if (_inputSpeedScaleTween != null && _inputSpeedScaleTween.IsValid()) {
-			_inputSpeedScaleTween.Kill();
-		}
-		_inputSpeedScaleTween = CreateTween();
+		ResetNewSpeedScaleTween();
 		
 		_intendedInputSpeedScale = MathF.Round(_intendedInputSpeedScale + scale, 4);
 		_currentInputAccelerationModifier = NewestInputAccelerationModifier();
 		
+		TweenSpeedScaleToIntended();
+	}
+
+	private void ResetNewSpeedScaleTween() {
+		if (_inputSpeedScaleTween != null && _inputSpeedScaleTween.IsValid()) {
+			_inputSpeedScaleTween.Kill();
+		}
+		_inputSpeedScaleTween = CreateTween();
+	}
+
+	private void TweenSpeedScaleToIntended() {
 		_inputSpeedScaleTween.Parallel().TweenProperty(
 			this,
 			nameof(_currentInputSpeedScale),
@@ -233,8 +235,24 @@ public partial class KinematicComp : CharacterBody2D {
 			_inputSpeedScaleTween.SetSpeedScale(NewestInputAccelerationValue() * _currentInputAccelerationModifier);
 		}
 	}
+
+	private float NewestInputAccelerationModifier() {
+		float inputSpeedScaleDelta = _intendedInputSpeedScale - _currentInputSpeedScale;
+		
+		return Mathf.Pow(Math.Abs(inputSpeedScaleDelta), -_physData.TurnaroundAccelerationDampening);
+	}
+
+	private float NewestInputAccelerationValue() {
+		if (_intendedInputSpeedScale == 0 ||
+		    (Mathf.Abs(_intendedInputSpeedScale) < Mathf.Abs(_currentInputSpeedScale)
+		     && Mathf.Sign(_intendedInputSpeedScale) == Mathf.Sign(_currentInputSpeedScale))) {
+			return IsOnFloor() ? _physData.GroundDeceleration : _physData.AirDeceleration;
+		}
+
+		return IsOnFloor() ? _physData.GroundAcceleration : _physData.AirAcceleration;
+	}
 	
-	// -- Other --
+	#endregion
 
 	public void SetParentPositionToOwn(Node2D parent) {
 		parent.Position = GlobalPosition;
