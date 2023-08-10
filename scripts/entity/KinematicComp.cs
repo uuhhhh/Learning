@@ -14,6 +14,8 @@ public partial class KinematicComp : CharacterBody2D {
 	private Vector2 _currentAirVelocity;
 	private int _currentAirJumps;
 
+	private bool _draggingOnWall;
+
 	private Vector2 InputVelocity => new (_currentInputSpeedScale * _physData.Speed, 0);
 	private float _currentInputSpeedScale;
 	private float _intendedInputSpeedScale;
@@ -32,6 +34,10 @@ public partial class KinematicComp : CharacterBody2D {
 	public delegate void BecomeOnWallEventHandler();
 	[Signal]
 	public delegate void BecomeOffWallEventHandler();
+	[Signal]
+	public delegate void StartDragOnWallEventHandler();
+	[Signal]
+	public delegate void StopDragOnWallEventHandler();
 
 	public override void _Ready() {
 		_coyoteJumpTimer = GetNode<Timer>("CoyoteJumpTimer");
@@ -50,6 +56,9 @@ public partial class KinematicComp : CharacterBody2D {
 		BecomeOnFloor += ResetCurrentAirJumps;
 		BecomeOnWall += ResetCurrentAirJumps;
 		ResetCurrentAirJumps();
+
+		StartDragOnWall += () => { _draggingOnWall = true; };
+		StopDragOnWall += () => { _draggingOnWall = false; };
 	}
 
 	public override void _PhysicsProcess(double delta) {
@@ -61,6 +70,7 @@ public partial class KinematicComp : CharacterBody2D {
 		CheckFloorStatusChange(wasOnFloor);
 		CheckCeilingStatusChange(wasOnCeiling);
 		CheckWallStatusChange(wasOnWall);
+		CheckDragOnWallStatusChange();
 	}
 
 	private Vector2 HandleGravity(Vector2 velocity, double delta) {
@@ -68,7 +78,16 @@ public partial class KinematicComp : CharacterBody2D {
 		
 		if (!IsOnFloor()) {
 			float gravityScale = newVelocity.Y > 0 ? _physData.DownwardsGravityScale : _physData.UpwardsGravityScale;
+
+			if (_draggingOnWall) {
+				gravityScale *= _physData.WallDragAccelRatio;
+			}
+
 			newVelocity.Y += _gravity * gravityScale * (float)delta;
+
+			if (_draggingOnWall) {
+				newVelocity.Y = Mathf.Min(newVelocity.Y, _physData.WallDragSpeedMax);
+			}
 		}
 
 		return newVelocity;
@@ -95,6 +114,24 @@ public partial class KinematicComp : CharacterBody2D {
 			EmitSignal(SignalName.BecomeOffWall);
 		} else if (!wasOnWall && IsOnWall()) {
 			EmitSignal(SignalName.BecomeOnWall);
+		}
+	}
+
+	private void CheckDragOnWallStatusChange() {
+		bool letGoDrag = _draggingOnWall && _intendedInputSpeedScale == 0; 
+		
+		bool validDrag = _physData.CanWallDrag
+			&& IsOnWallOnly()
+            && (Mathf.Sign(_intendedInputSpeedScale) == -Mathf.Sign(GetWallNormal().X) || letGoDrag)
+            && GetWallNormal().Y == 0
+			&& _currentAirVelocity.Y >= _physData.WallDragVelocityThresholdMin;
+		
+		if (_draggingOnWall && !validDrag) {
+			GD.Print("stop drag");
+			EmitSignal(SignalName.StopDragOnWall);
+		} else if (!_draggingOnWall && validDrag) {
+			GD.Print("start drag");
+			EmitSignal(SignalName.StartDragOnWall);
 		}
 	}
 	
