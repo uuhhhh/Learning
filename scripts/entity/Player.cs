@@ -7,8 +7,8 @@ public partial class Player : Node2D {
 	private KinematicComp _physics;
 	
 	public override void _Ready() {
-		_input = GetNode<InputComp>("InputComponent");
-		_physics = GetNode <KinematicComp>("CharacterComponent");
+		_input = GetNode<InputComp>(nameof(InputComp));
+		_physics = GetNode<KinematicComp>(nameof(KinematicComp));
 
 		_input.LeftInputOn += () => { _physics.AddToInputSpeedScale(-1); };
 		_input.LeftInputOff += () => { _physics.AddToInputSpeedScale(1); };

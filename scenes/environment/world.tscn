@@ -29,7 +29,7 @@ position = Vector2(200, 56)
 polygon = PackedVector2Array(16, 0, -16, 0, -16, -8, 16, -8)
 
 [node name="Player" parent="." instance=ExtResource("2_omctk")]
-position = Vector2(56, 112)
+position = Vector2(56, 96)
 
 [editable path="Floor"]
 [editable path="Platform"]
