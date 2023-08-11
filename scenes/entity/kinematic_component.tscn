@@ -26,3 +26,6 @@ one_shot = true
 [node name="CoyoteWallJumpTimer" type="Timer" parent="."]
 wait_time = 0.1
 one_shot = true
+
+[node name="WallJumpBufferTimer" type="Timer" parent="."]
+wait_time = 0.1

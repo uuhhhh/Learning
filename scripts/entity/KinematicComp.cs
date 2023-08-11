@@ -11,6 +11,7 @@ public partial class KinematicComp : CharacterBody2D {
 	private Timer _coyoteJumpTimer;
 	private Timer _jumpBufferTimer;
 	private Timer _coyoteWallJumpTimer;
+	private Timer _wallJumpBufferTimer;
 
 	private Vector2 AirVelocity => new (0, _currentAirVelocityY);
 	private float _currentAirVelocityY;
@@ -50,8 +51,10 @@ public partial class KinematicComp : CharacterBody2D {
 		_coyoteJumpTimer = GetNode<Timer>("CoyoteJumpTimer");
 		_jumpBufferTimer = GetNode<Timer>("JumpBufferTimer");
 		_coyoteWallJumpTimer = GetNode<Timer>("CoyoteWallJumpTimer");
+		_wallJumpBufferTimer = GetNode<Timer>("WallJumpBufferTimer");
 
 		BecomeOnFloor += AttemptBufferedJump;
+		StartDragOnWall += AttemptBufferedWallJump;
 		
 		BecomeOffFloor += HandleCoyoteJumpTimer;
 		BecomeOnFloor += () => { _coyoteJumpTimer.Stop(); };
@@ -66,7 +69,7 @@ public partial class KinematicComp : CharacterBody2D {
 		BecomeOffFloor += UpdateInputAcceleration;
 
 		BecomeOnFloor += ResetCurrentAirJumps;
-		BecomeOnWall += ResetCurrentAirJumps;
+		StartDragOnWall += ResetCurrentAirJumps;
 		ResetCurrentAirJumps();
 
 		StartDragOnWall += () => { _draggingOnWall = true; };
@@ -202,12 +205,19 @@ public partial class KinematicComp : CharacterBody2D {
 			AirJump();
 		} else {
 			_jumpBufferTimer.Start();
+			_wallJumpBufferTimer.Start();
 		}
 	}
 
 	private void AttemptBufferedJump() {
 		if (_jumpBufferTimer.TimeLeft > 0) {
 			GroundJump();
+		}
+	}
+
+	private void AttemptBufferedWallJump() {
+		if (_wallJumpBufferTimer.TimeLeft > 0) {
+			WallJump(GetWallNormal().X);
 		}
 	}
 
@@ -261,6 +271,7 @@ public partial class KinematicComp : CharacterBody2D {
 
 	public void JumpCancel() {
 		_jumpBufferTimer.Stop();
+		_wallJumpBufferTimer.Stop();
 		
 		if ((!IsOnFloor() && _currentAirVelocityY < GetJumpCancelVelocityThreshold())
 		    || (_jumpTween != null && _jumpTween.IsValid())) {
