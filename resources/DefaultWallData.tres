@@ -11,3 +11,4 @@ DragDescendGravityScale = 0.5
 DragVelocityThresholdMin = -100.0
 CanJump = true
 JumpVelocity = Vector2(150, -350)
+JumpAcceleration = 20.0

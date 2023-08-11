@@ -11,7 +11,9 @@ public partial class KinematicComp : CharacterBody2D {
 	private Timer _coyoteJumpTimer;
 	private Timer _jumpBufferTimer;
 
-	private Vector2 _currentAirVelocity;
+	private Tween _jumpTween;
+	private bool _jumpTweenReady;
+	private float _currentAirVelocityY;
 	private int _currentAirJumps;
 
 	private bool _draggingOnWall;
@@ -47,8 +49,8 @@ public partial class KinematicComp : CharacterBody2D {
 		BecomeOffFloor += HandleCoyoteJumpTimer;
 		BecomeOnFloor += () => { _coyoteJumpTimer.Stop(); };
 
-		BecomeOnCeiling += () => { _currentAirVelocity.Y = 0; };
-		BecomeOnFloor += () => { _currentAirVelocity.Y = 0; };
+		BecomeOnCeiling += () => { _currentAirVelocityY = 0; _jumpTween?.Kill(); };
+		BecomeOnFloor += () => { _currentAirVelocityY = 0; };
 
 		BecomeOnFloor += UpdateInputAcceleration;
 		BecomeOffFloor += UpdateInputAcceleration;
@@ -64,8 +66,10 @@ public partial class KinematicComp : CharacterBody2D {
 	#region Per-Frame Physics Handling
 
 	public override void _PhysicsProcess(double delta) {
-		Velocity = InputVelocity + _currentAirVelocity;
-		_currentAirVelocity = HandleGravity(_currentAirVelocity, delta);
+		StartReadyTweens();
+		
+		Velocity = InputVelocity + new Vector2(0, _currentAirVelocityY);
+		HandleGravity(delta);
 
 		bool wasOnFloor = IsOnFloor(), wasOnCeiling = IsOnCeiling(), wasOnWall = IsOnWall();
 		MoveAndSlide();
@@ -75,26 +79,32 @@ public partial class KinematicComp : CharacterBody2D {
 		CheckDragOnWallStatusChange();
 	}
 
-	private Vector2 HandleGravity(Vector2 velocity, double delta) {
-		Vector2 newVelocity = velocity;
+	private void StartReadyTweens() {
+		if (_jumpTweenReady) {
+			_jumpTween.Play();
+			_jumpTweenReady = false;
+		}
+	}
+
+	private void HandleGravity(double delta) {
+		if (IsOnFloor()) return;
 		
-		if (!IsOnFloor()) {
-			bool descending = newVelocity.Y > 0;
-			float gravityScale = descending ? _physData.DownwardsGravityScale : _physData.UpwardsGravityScale;
+		_currentAirVelocityY += _gravity * GetGravityScale() * (float)delta;
 
-			if (_draggingOnWall) {
-				gravityScale *= descending ? _physData.Wall.DragDescendGravityScale
-					: _physData.Wall.DragAscendGravityScale;
-			}
+		_currentAirVelocityY = Mathf.Min(_currentAirVelocityY, 
+			_draggingOnWall ? _physData.Wall.MaxDragSpeed : _physData.MaxFallVelocity);
+	}
 
-			newVelocity.Y += _gravity * gravityScale * (float)delta;
+	private float GetGravityScale() {
+		bool descending = _currentAirVelocityY > 0;
+		float gravityScale = descending ? _physData.DownwardsGravityScale : _physData.UpwardsGravityScale;
 
-			if (_draggingOnWall) {
-				newVelocity.Y = Mathf.Min(newVelocity.Y, _physData.Wall.MaxDragSpeed);
-			}
+		if (_draggingOnWall) {
+			gravityScale *= descending ? _physData.Wall.DragDescendGravityScale
+				: _physData.Wall.DragAscendGravityScale;
 		}
 
-		return newVelocity;
+		return gravityScale;
 	}
 
 	private void CheckFloorStatusChange(bool wasOnFloor) {
@@ -122,13 +132,13 @@ public partial class KinematicComp : CharacterBody2D {
 	}
 
 	private void CheckDragOnWallStatusChange() {
-		bool noInputDrag = _draggingOnWall && _intendedInputSpeedScale == 0; 
+		bool draggingNoInput = _draggingOnWall && _intendedInputSpeedScale == 0; 
 		
 		bool validDrag = _physData.Wall.CanDrag
 			&& IsOnWallOnly()
-            && (Mathf.Sign(_intendedInputSpeedScale) == -Mathf.Sign(GetWallNormal().X) || noInputDrag)
+            && (Mathf.Sign(_intendedInputSpeedScale) == -Mathf.Sign(GetWallNormal().X) || draggingNoInput)
             && GetWallNormal().Y == 0
-			&& _currentAirVelocity.Y >= _physData.Wall.DragVelocityThresholdMin;
+			&& _currentAirVelocityY >= _physData.Wall.DragVelocityThresholdMin;
 		
 		if (_draggingOnWall && !validDrag) {
 			EmitSignal(SignalName.StopDragOnWall);
@@ -142,18 +152,20 @@ public partial class KinematicComp : CharacterBody2D {
 	#region Jumping Methods
 
 	private void HandleCoyoteJumpTimer() {
-		if (_currentAirVelocity.Y >= 0) {
+		if (_currentAirVelocityY >= 0) {
 			_coyoteJumpTimer.Start();
 		}
 	}
 
 	public void AttemptJump() {
 		bool canCoyoteJump = _coyoteJumpTimer.TimeLeft > 0;
-		if (IsOnFloor() || canCoyoteJump) {
-			Jump();
+		if (IsOnFloor()) {
+			GroundJump();
+		} else if (canCoyoteJump) {
+			CoyoteJump();
 		} else if (_draggingOnWall && _physData.Wall.CanJump) {
 			WallJump(GetWallNormal().X);	
-		} if (CanAirJump()) {
+		} else if (CanAirJump()) {
 			AirJump();
 		} else {
 			_jumpBufferTimer.Start();
@@ -162,37 +174,68 @@ public partial class KinematicComp : CharacterBody2D {
 
 	private void AttemptBufferedJump() {
 		if (_jumpBufferTimer.TimeLeft > 0) {
-			Jump();
+			GroundJump();
 		}
 	}
 
-	private void Jump() {
-		_currentAirVelocity.Y = _physData.JumpVelocity;
+	private void GroundJump() {
+		SetAirVelocity(_physData.JumpVelocity, _physData.JumpAcceleration);
+	}
+
+	private void CoyoteJump() {
+		SetAirVelocity(_physData.JumpVelocity, _physData.CoyoteJumpAcceleration);
 	}
 
 	private void WallJump(float velocityScaleX) {
-		_currentAirVelocity.Y = _physData.Wall.JumpVelocity.Y;
+		SetAirVelocity(_physData.Wall.JumpVelocity.Y, _physData.Wall.JumpAcceleration);
+		
 		_currentInputSpeedScale = velocityScaleX;
-		ResetNewSpeedScaleTween();
+		
+		_inputSpeedScaleTween?.Kill();
+		_inputSpeedScaleTween = CreateTween();
 		TweenSpeedScaleToIntended();
 	}
 
+	private bool CanAirJump() {
+		return _currentAirJumps is KinematicCompData.UnlimitedAirJumps or > 0
+		       && _currentAirVelocityY > _physData.AirJumpVelocity;
+	}
+
 	private void AirJump() {
-		_currentAirVelocity.Y =_physData.AirJumpVelocity;
+		SetAirVelocity(_physData.AirJumpVelocity, _physData.AirJumpAcceleration);
 		_currentAirJumps--;
+	}
+
+	private void SetAirVelocity(float velocity, float acceleration) {
+		_jumpTween?.Kill();
+		_jumpTween = CreateTween();
+		_jumpTween.Pause();
+
+		_jumpTween.TweenProperty(this,
+			nameof(_currentAirVelocityY),
+			velocity,
+			1)
+			.FromCurrent()
+			.SetTrans(Tween.TransitionType.Expo);
+		_jumpTween.SetSpeedScale(acceleration);
+		_jumpTweenReady = true;
 	}
 
 	public void JumpCancel() {
 		_jumpBufferTimer.Stop();
 		
-		if (!IsOnFloor() && _currentAirVelocity.Y < _physData.JumpVelocity * _physData.JumpCancelVelocityProportion) {
-			_currentAirVelocity.Y = _physData.JumpVelocity * _physData.JumpCancelVelocityProportion;
+		if ((!IsOnFloor() && _currentAirVelocityY < GetJumpCancelVelocityThreshold())
+		    || (_jumpTween != null && _jumpTween.IsValid())) {
+			SetAirVelocity(_physData.JumpCancelVelocity, _physData.JumpCancelAcceleration);
 		}
 	}
 
-	private bool CanAirJump() {
-		return _currentAirJumps is KinematicCompData.UnlimitedAirJumps or > 0
-		       && _currentAirVelocity.Y > _physData.AirJumpVelocity;
+	private float GetJumpCancelVelocityThreshold() {
+		float baseThreshold = _physData.JumpCancelVelocity;
+		float timeToCancellationVelocity = 1 / _physData.JumpCancelAcceleration;
+		float extraVelocity = _gravity * GetGravityScale() * timeToCancellationVelocity;
+
+		return baseThreshold - extraVelocity;
 	}
 
 	private void ResetCurrentAirJumps() {
@@ -204,7 +247,8 @@ public partial class KinematicComp : CharacterBody2D {
 	#region Externally Inputted Movement Methods
 
 	public void AddToInputSpeedScale(float scale) {
-		ResetNewSpeedScaleTween();
+		_inputSpeedScaleTween?.Kill();
+		_inputSpeedScaleTween = CreateTween();
 		
 		_intendedInputSpeedScale = MathF.Round(_intendedInputSpeedScale + scale, 4);
 		_currentInputAccelerationModifier = NewestInputAccelerationModifier();
@@ -212,19 +256,12 @@ public partial class KinematicComp : CharacterBody2D {
 		TweenSpeedScaleToIntended();
 	}
 
-	private void ResetNewSpeedScaleTween() {
-		if (_inputSpeedScaleTween != null && _inputSpeedScaleTween.IsValid()) {
-			_inputSpeedScaleTween.Kill();
-		}
-		_inputSpeedScaleTween = CreateTween();
-	}
-
 	private void TweenSpeedScaleToIntended() {
-		_inputSpeedScaleTween.Parallel().TweenProperty(
+		_inputSpeedScaleTween.TweenProperty(
 			this,
 			nameof(_currentInputSpeedScale),
 			_intendedInputSpeedScale,
-			1);
+			1).FromCurrent();
 		UpdateInputAcceleration();
 	}
 

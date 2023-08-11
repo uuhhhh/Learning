@@ -8,9 +8,13 @@ public partial class KinematicCompData : Resource {
     
     [Export] public float Speed { get; private set; }
     [Export] public float JumpVelocity { get; private set; }
-    [Export] public float JumpCancelVelocityProportion { get; private set; }
+    [Export] public float JumpAcceleration { get; private set; }
+    [Export] public float CoyoteJumpAcceleration { get; private set; }
+    [Export] public float JumpCancelVelocity { get; private set; }
+    [Export] public float JumpCancelAcceleration { get; private set; }
     [Export] public int NumAirJumps { get; private set; }
     [Export] public float AirJumpVelocity { get; private set; }
+    [Export] public float AirJumpAcceleration { get; private set; }
     [Export] public WallData Wall { get; private set; }
     [Export] public float GroundAcceleration { get; private set; }
     [Export] public float AirAcceleration { get; private set; }
@@ -19,4 +23,5 @@ public partial class KinematicCompData : Resource {
     [Export] public float TurnaroundAccelerationDampening { get; private set; }
     [Export] public float UpwardsGravityScale { get; private set; }
     [Export] public float DownwardsGravityScale { get; private set; }
+    [Export] public float MaxFallVelocity { get; private set; }
 }
