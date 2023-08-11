@@ -12,6 +12,6 @@ public partial class WallData : Resource
     [Export] public float DragVelocityThresholdMin { get; private set; }
     [Export] public bool CanJump { get; private set; }
     [Export] public Vector2 JumpVelocity { get; private set; }
-    [Export] public float JumpAcceleration { get; private set; }
-    [Export] public float CoyoteJumpAcceleration { get; private set; }
+    [Export] public Vector2 JumpAcceleration { get; private set; }
+    [Export] public Vector2 CoyoteJumpAcceleration { get; private set; }
 }

@@ -26,6 +26,8 @@ public partial class KinematicComp : CharacterBody2D {
 	private float _intendedInputSpeedScale;
 	private float _currentInputAccelerationModifier;
 	private Tween _inputSpeedScaleTween;
+	private Tween _inputSpeedScaleTweenOverride;
+	private bool _tweenBeingOverridden;
 	
 	[Signal]
 	public delegate void BecomeOnFloorEventHandler();
@@ -221,14 +223,10 @@ public partial class KinematicComp : CharacterBody2D {
 		WallJump(velocityScaleX, _physData.Wall.JumpAcceleration);
 	}
 
-	private void WallJump(float velocityScaleX, float acceleration) {
-		SetAirVelocity(_physData.Wall.JumpVelocity.Y, acceleration);
+	private void WallJump(float velocityScaleX, Vector2 acceleration) {
+		SetAirVelocity(_physData.Wall.JumpVelocity.Y, acceleration.Y);
 		
-		_currentInputSpeedScale = velocityScaleX;
-		
-		_inputSpeedScaleTween?.Kill();
-		_inputSpeedScaleTween = CreateTween();
-		TweenSpeedScaleToIntended();
+		TweenSpeedScaleTempOverride(velocityScaleX, acceleration.X);
 	}
 
 	private void CoyoteWallJump(float velocityScaleX) {
@@ -257,6 +255,7 @@ public partial class KinematicComp : CharacterBody2D {
 			.FromCurrent()
 			.SetTrans(Tween.TransitionType.Expo);
 		_jumpTween.SetSpeedScale(acceleration);
+		_jumpTween.SetProcessMode(Tween.TweenProcessMode.Physics);
 		_jumpTweenReady = true;
 	}
 
@@ -286,12 +285,14 @@ public partial class KinematicComp : CharacterBody2D {
 	#region Externally Inputted Movement Methods
 
 	public void AddToInputSpeedScale(float scale) {
+		_intendedInputSpeedScale = MathF.Round(_intendedInputSpeedScale + scale, 4);
+		
+		if (_tweenBeingOverridden) return;
+		
 		_inputSpeedScaleTween?.Kill();
 		_inputSpeedScaleTween = CreateTween();
 		
-		_intendedInputSpeedScale = MathF.Round(_intendedInputSpeedScale + scale, 4);
 		_currentInputAccelerationModifier = NewestInputAccelerationModifier();
-		
 		TweenSpeedScaleToIntended();
 	}
 
@@ -301,7 +302,27 @@ public partial class KinematicComp : CharacterBody2D {
 			nameof(_currentInputSpeedScale),
 			_intendedInputSpeedScale,
 			1).FromCurrent();
+		_inputSpeedScaleTween.SetProcessMode(Tween.TweenProcessMode.Physics);
 		UpdateInputAcceleration();
+	}
+
+	private void TweenSpeedScaleTempOverride(float speedScale, float acceleration) {
+		_tweenBeingOverridden = true;
+		_inputSpeedScaleTween?.Kill();
+		_inputSpeedScaleTweenOverride = CreateTween();
+
+		_inputSpeedScaleTweenOverride.TweenProperty(
+			this,
+			nameof(_currentInputSpeedScale),
+			speedScale,
+			1).FromCurrent();
+		_inputSpeedScaleTweenOverride.SetProcessMode(Tween.TweenProcessMode.Physics);
+		_inputSpeedScaleTweenOverride.SetSpeedScale(acceleration);
+		_inputSpeedScaleTweenOverride.TweenCallback(Callable.From(() => {
+			_inputSpeedScaleTween = CreateTween();
+			TweenSpeedScaleToIntended();
+			_tweenBeingOverridden = false;
+		}));
 	}
 
 	private void UpdateInputAcceleration() {
