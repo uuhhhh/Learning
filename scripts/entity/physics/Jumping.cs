@@ -201,11 +201,4 @@ public partial class Jumping : Node, IKinematicCompLinkable {
 
         NumJumpsAll[(int)which] = JumpDataAll[(int)which].NumJumps;
     }
-
-    public enum Location {
-        Ground,
-        Air,
-        WallNonGround,
-        None = -1
-    }
 }

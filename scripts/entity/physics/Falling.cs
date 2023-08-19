@@ -6,7 +6,7 @@ namespace Learning.scripts.entity.physics;
 
 public partial class Falling : VelocitySource, IKinematicCompLinkable {
     [Export] public bool DoNotLink { get; set; }
-    [Export] public FallingData FallData { get; private set; }
+    [Export] public FallingData FallData { get; set; }
     
     public bool IsFalling {
         get => _isFalling;

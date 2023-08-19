@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="FallingData" load_steps=2 format=3 uid="uid://b2xv7assurx3f"]
+
+[ext_resource type="Script" path="res://scripts/entity/physics/FallingData.cs" id="1_tjcq7"]
+
+[resource]
+script = ExtResource("1_tjcq7")
+UpwardsGravityScale = 2.0
+DownwardsGravityScale = 0.5
+MaxVelocity = 100.0
+CeilingHitStopTimeScale = 0.25

@@ -21,7 +21,7 @@ public partial class PlayerKinematicComp : KinematicComp2 {
         BecomeOnWall += _ => { Jumping.ResetNumJumps(); };
 
         Jumping.Jumped += from => {
-            if (from == Jumping.Location.WallNonGround) {
+            if (from == Location.WallNonGround) {
                 WallJumpInputTakeover.Start();
             }
         };
