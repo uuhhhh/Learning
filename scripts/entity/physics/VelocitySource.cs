@@ -3,6 +3,7 @@
 namespace Learning.scripts.entity.physics; 
 
 public abstract partial class VelocitySource : Node {
+    [Export] public bool ExcludeThisVelocity { get; private set; }
     [Export] public bool UseSpeedScale { get; private set; } = true;
     
     public Vector2 BaseVelocity { get; set; }

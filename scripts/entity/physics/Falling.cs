@@ -5,6 +5,7 @@ using Vector2 = Godot.Vector2;
 namespace Learning.scripts.entity.physics; 
 
 public partial class Falling : VelocitySource, IKinematicCompLinkable {
+    [Export] public bool DoNotLink { get; set; }
     [Export] public FallingData FallData { get; private set; }
     
     public bool IsFalling {

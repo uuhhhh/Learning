@@ -5,6 +5,7 @@ using Godot;
 namespace Learning.scripts.entity.physics; 
 
 public partial class Jumping : Node, IKinematicCompLinkable {
+    [Export] public bool DoNotLink { get; set; }
     [Export] private Falling AirMovement { get; set; }
     [Export] private LeftRight HorizontalMovement { get; set; }
 
@@ -54,7 +55,8 @@ public partial class Jumping : Node, IKinematicCompLinkable {
     private Timer CoyoteWallJump { get; set; }
     private Timer WallJumpBuffer { get; set; }
 
-    private Tween _jumpTween;
+    private Tween _jumpTweenY;
+    private Tween _jumpTweenX;
 
     private JumpingData[] _jumpDataAll = new JumpingData[Enum.GetValues<Location>().Cast<int>().Max() + 1];
     private int[] _numJumpsAll = new int[Enum.GetValues<Location>().Cast<int>().Max() + 1];
@@ -144,7 +146,6 @@ public partial class Jumping : Node, IKinematicCompLinkable {
             NumJumps--;
         }
         
-        
         JumpedFrom = CurrentLocation;
         EmitSignal(SignalName.Jumped, (int)JumpedFrom);
         if (CoyoteJump.TimeLeft > 0 || CoyoteWallJump.TimeLeft > 0) {
@@ -158,9 +159,16 @@ public partial class Jumping : Node, IKinematicCompLinkable {
     }
 
     private void PerformJump() {
-        (_jumpTween, PropertyTweener t)
-            = AirMovement.SmoothlySetBaseVelocityY(JumpData.Velocity.Y, JumpData.AccelTimeY);
-        t.SetTrans(Tween.TransitionType.Expo);
+        if (JumpData.Velocity.Y != 0) {
+            (_jumpTweenY, PropertyTweener t)
+                = AirMovement.SmoothlySetBaseVelocityY(JumpData.Velocity.Y, JumpData.AccelTimeY);
+            t.SetTrans(Tween.TransitionType.Expo);
+        }
+        if (JumpData.Velocity.X != 0) {
+            (_jumpTweenX, PropertyTweener t)
+                = HorizontalMovement.SmoothlySetBaseVelocityX(JumpData.Velocity.X * JumpFacing, JumpData.AccelTimeX);
+            t.SetTrans(Tween.TransitionType.Expo);
+        }
     }
 
     public void JumpCancel() {
@@ -169,7 +177,7 @@ public partial class Jumping : Node, IKinematicCompLinkable {
 
         JumpingData lastJumpData = JumpDataAll[(int)JumpedFrom];
         if ((CurrentLocation == Location.Air && AirMovement.Velocity.Y < GetJumpCancelVelocityThreshold())
-            || (_jumpTween != null && _jumpTween.IsRunning())) {
+            || (_jumpTweenY != null && _jumpTweenY.IsValid())) {
             AirMovement.SmoothlySetBaseVelocityY(lastJumpData.CancelVelocity, lastJumpData.CancelAccelTime);
         }
 

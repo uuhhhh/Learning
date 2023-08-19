@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dx8gnhdieo400"]
+[gd_scene load_steps=8 format=3 uid="uid://dx8gnhdieo400"]
 
 [ext_resource type="Script" path="res://scripts/entity/physics/PlayerKinematicComp.cs" id="1_4ra6n"]
 [ext_resource type="Script" path="res://scripts/entity/physics/Falling.cs" id="2_i41xf"]
@@ -7,9 +7,6 @@
 [ext_resource type="Resource" uid="uid://dfjahv3u2y3ae" path="res://resources/default/LeftRightGround.tres" id="5_i0vj3"]
 [ext_resource type="Resource" uid="uid://bivvatqtffmra" path="res://resources/default/LeftRightAir.tres" id="6_y6oyd"]
 [ext_resource type="PackedScene" uid="uid://by3rs8uxccme2" path="res://scenes/entity/physics/jumping.tscn" id="7_8otcr"]
-[ext_resource type="Resource" uid="uid://egsf61brbyy3" path="res://resources/default/JumpingGround.tres" id="8_cf3og"]
-[ext_resource type="Resource" uid="uid://ch1fwuqtpq2dt" path="res://resources/default/JumpingAir.tres" id="9_qmgy4"]
-[ext_resource type="Resource" uid="uid://moej0b36af1w" path="res://resources/default/JumpingWall.tres" id="10_nivx6"]
 
 [node name="PlayerKinematicComp" type="CharacterBody2D"]
 floor_snap_length = 3.0
@@ -29,6 +26,8 @@ Air = ExtResource("6_y6oyd")
 [node name="Jumping" parent="." node_paths=PackedStringArray("AirMovement", "HorizontalMovement") instance=ExtResource("7_8otcr")]
 AirMovement = NodePath("../Falling")
 HorizontalMovement = NodePath("../LeftRight")
-Ground = ExtResource("8_cf3og")
-Air = ExtResource("9_qmgy4")
-Wall = ExtResource("10_nivx6")
+
+[node name="WallJumpInputTakeover" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.1
+one_shot = true

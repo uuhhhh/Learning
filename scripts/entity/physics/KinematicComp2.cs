@@ -26,11 +26,11 @@ public partial class KinematicComp2 : CharacterBody2D {
 
     private void AutoLinkChildren() {
         foreach (Node c in GetChildren()) {
-            if (c is VelocitySource src) {
+            if (c is VelocitySource { ExcludeThisVelocity: false} src) {
                 _velocitySources.Add(src);
             }
 
-            if (c is IKinematicCompLinkable l) {
+            if (c is IKinematicCompLinkable { DoNotLink: false } l) {
                 l.Link(this);
             }
         }

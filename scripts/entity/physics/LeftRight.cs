@@ -4,6 +4,7 @@ using Godot;
 namespace Learning.scripts.entity.physics; 
 
 public partial class LeftRight : VelocitySource, IKinematicCompLinkable {
+    [Export] public bool DoNotLink { get; set; }
     [Export] private LeftRightData Ground { get; set; }
     [Export] private LeftRightData Air { get; set; }
 
