@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="1_fwl0b"]
 [ext_resource type="Script" path="res://scripts/entity/Player.cs" id="1_uyfcp"]
 [ext_resource type="Script" path="res://scripts/entity/InputComp.cs" id="3_eta8u"]
-[ext_resource type="PackedScene" uid="uid://banlykgotvt1" path="res://scenes/entity/kinematic_component.tscn" id="4_6qdsm"]
+[ext_resource type="PackedScene" uid="uid://fko2g04ljfiq" path="res://scenes/entity/kinematic_component.tscn" id="4_6qdsm"]
 
 [node name="Player" type="Node2D"]
 script = ExtResource("1_uyfcp")

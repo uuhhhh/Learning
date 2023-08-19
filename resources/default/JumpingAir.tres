@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="JumpingData" load_steps=2 format=3 uid="uid://ch1fwuqtpq2dt"]
+
+[ext_resource type="Script" path="res://scripts/entity/physics/JumpingData.cs" id="1_qm2ig"]
+
+[resource]
+script = ExtResource("1_qm2ig")
+NumJumps = 1
+Velocity = Vector2(0, -300)
+AccelTimeX = 0.0
+AccelTimeY = 0.1
+CancelVelocity = -150.0
+CancelAccelTime = 0.05

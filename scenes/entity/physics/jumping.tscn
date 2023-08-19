@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://by3rs8uxccme2"]
+
+[ext_resource type="Script" path="res://scripts/entity/physics/Jumping.cs" id="1_kv07u"]
+[ext_resource type="Resource" uid="uid://egsf61brbyy3" path="res://resources/default/JumpingGround.tres" id="2_2kpp0"]
+[ext_resource type="Resource" uid="uid://ch1fwuqtpq2dt" path="res://resources/default/JumpingAir.tres" id="3_okapa"]
+[ext_resource type="Resource" uid="uid://moej0b36af1w" path="res://resources/default/JumpingWall.tres" id="4_wh5nw"]
+
+[node name="Jumping" type="Node"]
+script = ExtResource("1_kv07u")
+Ground = ExtResource("2_2kpp0")
+Air = ExtResource("3_okapa")
+Wall = ExtResource("4_wh5nw")
+
+[node name="CoyoteJump" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.1
+one_shot = true
+
+[node name="JumpBuffer" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.1
+one_shot = true
+
+[node name="CoyoteWallJump" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.1
+one_shot = true
+
+[node name="WallJumpBuffer" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.1
+one_shot = true

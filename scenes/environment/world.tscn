@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://b4ca0xdtdimru"]
+[gd_scene load_steps=4 format=3 uid="uid://b4ca0xdtdimru"]
 
 [ext_resource type="PackedScene" uid="uid://b4nnyvbh4dvl6" path="res://scenes/environment/environment_object.tscn" id="1_w340e"]
+[ext_resource type="PackedScene" uid="uid://cpr2hwrjvvld7" path="res://scenes/entity/player2.tscn" id="2_5g5od"]
 [ext_resource type="PackedScene" uid="uid://ditgwmpbcv6ky" path="res://scenes/entity/player.tscn" id="2_omctk"]
 
 [node name="World" type="Node2D"]
@@ -17,7 +18,7 @@ position = Vector2(40, 32)
 polygon = PackedVector2Array(-16, -8, 16, -8, 16, 0, -16, 0)
 
 [node name="Platform2" parent="." instance=ExtResource("1_w340e")]
-position = Vector2(120, 48)
+position = Vector2(128, 48)
 
 [node name="CollisionPolygon2D" parent="Platform2" index="0"]
 polygon = PackedVector2Array(-16, -8, 24, -8, 24, 0, -16, 0)
@@ -28,8 +29,11 @@ position = Vector2(200, 56)
 [node name="CollisionPolygon2D" parent="Platform3" index="0"]
 polygon = PackedVector2Array(16, 0, -16, 0, -16, -8, 16, -8)
 
+[node name="Player2" parent="." instance=ExtResource("2_5g5od")]
+position = Vector2(80, 128)
+
 [node name="Player" parent="." instance=ExtResource("2_omctk")]
-position = Vector2(56, 96)
+position = Vector2(336, 184)
 
 [editable path="Floor"]
 [editable path="Platform"]
