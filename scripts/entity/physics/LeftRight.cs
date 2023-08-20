@@ -56,6 +56,9 @@ public partial class LeftRight : VelocitySource, IKinematicCompLinkable {
     public delegate void GoingLeftEventHandler();
     [Signal]
     public delegate void StopMovingEventHandler();
+
+    [Signal]
+    public delegate void IntendedSpeedUpdateEventHandler(float newSpeed);
     
     public override void _PhysicsProcess(double delta) {
         if (!Enabled) return;
@@ -78,6 +81,7 @@ public partial class LeftRight : VelocitySource, IKinematicCompLinkable {
 
     private void UpdateSpeed() {
         CurrentSpeedScale = IntendedSpeedScale;
+        EmitSignal(SignalName.IntendedSpeedUpdate, IntendedSpeedScale);
     }
 
     private float GetAccelTime() {

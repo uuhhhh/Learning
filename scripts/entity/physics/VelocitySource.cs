@@ -5,6 +5,8 @@ namespace Learning.scripts.entity.physics;
 public abstract partial class VelocitySource : Node {
     [Export] public bool ExcludeThisVelocity { get; private set; }
     [Export] public bool UseSpeedScale { get; private set; } = true;
+    [Export] public float SmoothlyDisableTime { get; private set; } = .25f;
+    [Export] public float SmoothlyEnableTime { get; private set; } = .25f;
 
     public bool Enabled { get; set; } = true;
 
@@ -39,6 +41,7 @@ public abstract partial class VelocitySource : Node {
     private Tween _multiplierTween;
     private bool _multiplierTweenReady;
     private float _tweeningMultiplierTo;
+    private float _multiplierBeforeDisable;
 
     public override void _PhysicsProcess(double delta) {
         if (!Enabled) return;
@@ -142,7 +145,22 @@ public abstract partial class VelocitySource : Node {
         return SmoothlySet(ref _multiplierTween, nameof(Multiplier), from, to, duration);
     }
 
-    public void KillAllTransitions() {
+    public void SmoothlyDisable() {
+        if (!Enabled) return;
+        
+        _multiplierBeforeDisable = Multiplier;
+        (Tween t, _) = SmoothlySetMultiplier(0, SmoothlyDisableTime);
+        t.Finished += () => Enabled = false;
+    }
+
+    public void SmoothlyEnable() {
+        if (Enabled) return;
+        
+        SmoothlySetMultiplier(0, _multiplierBeforeDisable, SmoothlyEnableTime);
+        Enabled = true;
+    }
+
+    public void AbortAllTransitions() {
         _baseVelocityXTween?.Kill();
         _baseVelocityXTweenReady = false;
         _baseVelocityYTween?.Kill();
