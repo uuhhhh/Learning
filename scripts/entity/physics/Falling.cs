@@ -46,12 +46,16 @@ public partial class Falling : VelocitySource, IKinematicCompLinkable {
         BaseVelocity = velocity;
     }
 
-    public void Link(KinematicComp2 physics) {
-        physics.BecomeOnFloor += _ => { IsFalling = false; };
-        physics.BecomeOffFloor += _ => { IsFalling = true; };
-        physics.BecomeOnCeiling += _ => {
-            float originalTimeToStop = Mathf.Abs(BaseVelocity.Y) / (Gravity * GravityScale);
-            SmoothlySetBaseVelocityY(0, originalTimeToStop * FallData.CeilingHitStopTimeScale);
-        };
+    public void DefaultOnBecomeOnFloor(KinematicComp2 physics) {
+        IsFalling = false;
+    }
+
+    public void DefaultOnBecomeOffFloor(KinematicComp2 physics) {
+        IsFalling = true;
+    }
+
+    public void DefaultOnBecomeOnCeiling(KinematicComp2 physics) {
+        float originalTimeToStop = Mathf.Abs(BaseVelocity.Y) / (Gravity * GravityScale);
+        SmoothlySetBaseVelocityY(0, originalTimeToStop * FallData.CeilingHitStopTimeScale);
     }
 }

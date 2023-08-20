@@ -5,29 +5,40 @@ namespace Learning.scripts.entity.physics;
 public abstract partial class VelocitySource : Node {
     [Export] public bool ExcludeThisVelocity { get; private set; }
     [Export] public bool UseSpeedScale { get; private set; } = true;
-    
-    public Vector2 BaseVelocity { get; set; }
-    
-    public Vector2 Velocity => Enabled ? BaseVelocity * Multiplier : Vector2.Zero;
-    
-    public float Multiplier {
-        get => _multiplier;
-        set {
-            _multiplierTween?.Kill();
-            _multiplier = value;
-        }
-    }
 
     public bool Enabled { get; set; } = true;
+
+    public float Multiplier { get; set; } = 1;
+    
+    public Vector2 BaseVelocity { get; set; }
+
+    public Vector2 BaseVelocityAfterTransition =>
+        TransitioningBaseVelocityX || TransitioningVelocityY ?
+            new Vector2(
+                TransitioningBaseVelocityX ? _tweeningBaseVelocityXTo : BaseVelocity.X,
+                TransitioningVelocityY ? _tweeningBaseVelocityYTo : BaseVelocity.Y)
+            : BaseVelocity;
+    
+    public Vector2 Velocity => Enabled ? BaseVelocity * Multiplier : Vector2.Zero;
+
+    public Vector2 VelocityAfterTransition => Enabled ? BaseVelocityAfterTransition * Multiplier : Vector2.Zero;
+    
+    public bool TransitioningBaseVelocityX => _baseVelocityXTween != null && _baseVelocityXTween.IsValid();
+    
+    public bool TransitioningVelocityY => _baseVelocityYTween != null && _baseVelocityYTween.IsValid();
+
+    public bool TransitioningMultiplier => _multiplierTween != null && _multiplierTween.IsValid();
     
     private Tween _baseVelocityXTween;
     private bool _baseVelocityXTweenReady;
+    private float _tweeningBaseVelocityXTo;
     private Tween _baseVelocityYTween;
     private bool _baseVelocityYTweenReady;
+    private float _tweeningBaseVelocityYTo;
     
-    private float _multiplier = 1;
     private Tween _multiplierTween;
     private bool _multiplierTweenReady;
+    private float _tweeningMultiplierTo;
 
     public override void _PhysicsProcess(double delta) {
         if (!Enabled) return;
@@ -83,6 +94,7 @@ public abstract partial class VelocitySource : Node {
 
     public (Tween, PropertyTweener) SmoothlySetBaseVelocityX(float to, float duration) {
         _baseVelocityXTweenReady = true;
+        _tweeningBaseVelocityXTo = to;
         return SmoothlySet(ref _baseVelocityXTween,
             $"{nameof(BaseVelocity)}:x", // have to hardcode "x" since "BaseVelocity:X" doesn't work
             to,
@@ -91,6 +103,7 @@ public abstract partial class VelocitySource : Node {
 
     public (Tween, PropertyTweener) SmoothlySetBaseVelocityX(float from, float to, float duration) {
         _baseVelocityXTweenReady = true;
+        _tweeningBaseVelocityXTo = to;
         return SmoothlySet(ref _baseVelocityXTween,
             $"{nameof(BaseVelocity)}:x",
             from,
@@ -100,6 +113,7 @@ public abstract partial class VelocitySource : Node {
 
     public (Tween, PropertyTweener) SmoothlySetBaseVelocityY(float to, float duration) {
         _baseVelocityYTweenReady = true;
+        _tweeningBaseVelocityYTo = to;
         return SmoothlySet(ref _baseVelocityYTween,
             $"{nameof(BaseVelocity)}:y",
             to,
@@ -108,6 +122,7 @@ public abstract partial class VelocitySource : Node {
 
     public (Tween, PropertyTweener) SmoothlySetBaseVelocityY(float from, float to, float duration) {
         _baseVelocityYTweenReady = true;
+        _tweeningBaseVelocityYTo = to;
         return SmoothlySet(ref _baseVelocityYTween,
             $"{nameof(BaseVelocity)}:y",
             from,
@@ -117,15 +132,17 @@ public abstract partial class VelocitySource : Node {
 
     public (Tween, PropertyTweener) SmoothlySetMultiplier(float to, float duration) {
         _multiplierTweenReady = true;
-        return SmoothlySet(ref _multiplierTween, nameof(_multiplier), to, duration);
+        _tweeningMultiplierTo = to;
+        return SmoothlySet(ref _multiplierTween, nameof(Multiplier), to, duration);
     }
 
     public (Tween, PropertyTweener) SmoothlySetMultiplier(float from, float to, float duration) {
         _multiplierTweenReady = true;
-        return SmoothlySet(ref _multiplierTween, nameof(_multiplier), from, to, duration);
+        _tweeningMultiplierTo = to;
+        return SmoothlySet(ref _multiplierTween, nameof(Multiplier), from, to, duration);
     }
 
-    public void KillAllTweens() {
+    public void KillAllTransitions() {
         _baseVelocityXTween?.Kill();
         _baseVelocityXTweenReady = false;
         _baseVelocityYTween?.Kill();

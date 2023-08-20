@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System;
+using Godot;
 
 namespace Learning.scripts.entity.physics; 
 
@@ -24,7 +25,7 @@ public partial class WallDragging : Node, IKinematicCompLinkable {
         }
     }
     
-    public Location CurrentLocation { get; set; } = Location.None;
+    public bool ValidWallTouching { get; set; }
 
     private bool _isDragging;
     private FallingData _originalData;
@@ -40,28 +41,31 @@ public partial class WallDragging : Node, IKinematicCompLinkable {
     }
 
     public override void _PhysicsProcess(double delta) {
-        if (CurrentLocation == Location.WallNonGround && AirMovement.Velocity.Y > VelocityThreshold) {
+        if (ValidWallTouching && AirMovement.VelocityAfterTransition.Y > VelocityThreshold) {
             IsDragging = true;
         }
     }
 
-    public void Link(KinematicComp2 physics) {
-        physics.BecomeOnFloor += _ => {
-            CurrentLocation = Location.Ground;
-            IsDragging = false;
-        };
-        physics.BecomeOffFloor += state =>
-            CurrentLocation = state.IsOnWall() ? Location.WallNonGround : Location.Air;
-        physics.BecomeOnWall += state => {
-            if (!state.IsOnFloor()) {
-                CurrentLocation = Location.WallNonGround;
-            }
-        };
-        physics.BecomeOffWall += state => {
-            if (!state.IsOnFloor()) {
-                CurrentLocation = Location.Air;
-            }
-            IsDragging = false;
-        };
+    public void DefaultOnBecomeOnFloor(KinematicComp2 physics) {
+        DefaultOnBecomeOffWall(physics);
+    }
+
+    public void DefaultOnBecomeOffFloor(KinematicComp2 physics) {
+        DefaultOnBecomeOnWall(physics);
+    }
+
+    public void DefaultOnBecomeOnWall(KinematicComp2 physics) {
+        if (IsOnValidWall(physics)) {
+            ValidWallTouching = true;
+        }
+    }
+
+    public void DefaultOnBecomeOffWall(KinematicComp2 physics) {
+        ValidWallTouching = false;
+        IsDragging = false;
+    }
+
+    public bool IsOnValidWall(KinematicComp2 physics) {
+        return !physics.IsOnFloor() && physics.IsOnWall() && physics.GetWallNormal().Y == 0;
     }
 }

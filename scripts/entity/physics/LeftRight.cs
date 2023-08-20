@@ -76,11 +76,6 @@ public partial class LeftRight : VelocitySource, IKinematicCompLinkable {
         _oldBaseVelocity = BaseVelocity;
     }
 
-    public void Link(KinematicComp2 physics) {
-        physics.BecomeOnFloor += _ => { IsOnGround = true; };
-        physics.BecomeOffFloor += _ => { IsOnGround = false; };
-    }
-
     private void UpdateSpeed() {
         CurrentSpeedScale = IntendedSpeedScale;
     }
@@ -100,5 +95,13 @@ public partial class LeftRight : VelocitySource, IKinematicCompLinkable {
                             || (Mathf.Abs(IntendedSpeedScale) < Mathf.Abs(CurrentSpeedScale)
                                 && Mathf.Sign(IntendedSpeedScale) == Mathf.Sign(CurrentSpeedScale));
         return decelerating ? Params.DecelBaseTime : Params.AccelBaseTime;
+    }
+
+    public void DefaultOnBecomeOnFloor(KinematicComp2 physics) {
+        IsOnGround = true;
+    }
+
+    public void DefaultOnBecomeOffFloor(KinematicComp2 physics) {
+        IsOnGround = false;
     }
 }

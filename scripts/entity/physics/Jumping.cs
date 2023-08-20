@@ -83,49 +83,6 @@ public partial class Jumping : Node, IKinematicCompLinkable {
         ResetNumJumps();
     }
 
-    public void Link(KinematicComp2 physics) {
-        physics.BecomeOnFloor += _ => {
-            CoyoteJump.Stop();
-            CoyoteWallJump.Stop();
-            
-            CurrentLocation = Location.Ground;
-            if (JumpBuffer.TimeLeft > 0) {
-                Jump();
-            }
-        };
-        physics.BecomeOffFloor += state => {
-            if (state.IsOnWall()) {
-                CurrentLocation = Location.WallNonGround;
-                JumpFacing = state.GetWallNormal().X;
-            } else if (AirMovement.Velocity.Y >= 0 && CurrentLocation != Location.None) {
-                CoyoteJump.Start();
-            } else {
-                CurrentLocation = Location.Air;
-            }
-        };
-        physics.BecomeOnWall += state => {
-            CoyoteJump.Stop();
-            CoyoteWallJump.Stop();
-            
-            if (!state.IsOnFloor()) {
-                CurrentLocation = Location.WallNonGround;
-                JumpFacing = state.GetWallNormal().X;
-                if (WallJumpBuffer.TimeLeft > 0) {
-                    Jump();
-                }
-            }
-        };
-        physics.BecomeOffWall += state => {
-            if (!state.IsOnFloor()) {
-                if (AirMovement.Velocity.Y >= 0 && CurrentLocation != Location.None) {
-                    CoyoteWallJump.Start();
-                } else {
-                    CurrentLocation = Location.Air;
-                }
-            }
-        };
-    }
-
     public void AttemptJump() {
         if (CanJump()) {
             Jump();
@@ -177,11 +134,19 @@ public partial class Jumping : Node, IKinematicCompLinkable {
 
         JumpingData lastJumpData = JumpDataAll[(int)JumpedFrom];
         if ((CurrentLocation == Location.Air && AirMovement.Velocity.Y < GetJumpCancelVelocityThreshold())
-            || (_jumpTweenY != null && _jumpTweenY.IsValid())) {
+            || InJumpTransitionY()) {
             AirMovement.SmoothlySetBaseVelocityY(lastJumpData.CancelVelocity, lastJumpData.CancelAccelTime);
         }
 
         EmitSignal(SignalName.CancelledJump, (int)JumpedFrom);
+    }
+
+    public bool InJumpTransitionY() {
+        return _jumpTweenY != null && _jumpTweenY.IsValid();
+    }
+
+    public bool InJumpTransitionX() {
+        return _jumpTweenX != null && _jumpTweenX.IsValid();
     }
 
     private float GetJumpCancelVelocityThreshold() {
@@ -200,5 +165,49 @@ public partial class Jumping : Node, IKinematicCompLinkable {
         if (which == Location.None) return;
 
         NumJumpsAll[(int)which] = JumpDataAll[(int)which].NumJumps;
+    }
+
+    public void DefaultOnBecomeOnFloor(KinematicComp2 physics) {
+        CoyoteJump.Stop();
+        CoyoteWallJump.Stop();
+            
+        CurrentLocation = Location.Ground;
+        if (JumpBuffer.TimeLeft > 0) {
+            Jump();
+        }
+    }
+
+    public void DefaultOnBecomeOffFloor(KinematicComp2 physics) {
+        if (physics.IsOnWall()) {
+            CurrentLocation = Location.WallNonGround;
+            JumpFacing = physics.GetWallNormal().X;
+        } else if (AirMovement.Velocity.Y >= 0 && CurrentLocation != Location.None) {
+            CoyoteJump.Start();
+        } else {
+            CurrentLocation = Location.Air;
+        }
+    }
+
+    public void DefaultOnBecomeOnWall(KinematicComp2 physics) {
+        CoyoteJump.Stop();
+        CoyoteWallJump.Stop();
+            
+        if (!physics.IsOnFloor()) {
+            CurrentLocation = Location.WallNonGround;
+            JumpFacing = physics.GetWallNormal().X;
+            if (WallJumpBuffer.TimeLeft > 0) {
+                Jump();
+            }
+        }
+    }
+
+    public void DefaultOnBecomeOffWall(KinematicComp2 physics) {
+        if (!physics.IsOnFloor()) {
+            if (AirMovement.Velocity.Y >= 0 && CurrentLocation != Location.None) {
+                CoyoteWallJump.Start();
+            } else {
+                CurrentLocation = Location.Air;
+            }
+        }
     }
 }

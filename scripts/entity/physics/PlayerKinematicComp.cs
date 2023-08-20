@@ -6,6 +6,7 @@ public partial class PlayerKinematicComp : KinematicComp2 {
     public Falling Falling { get; private set; }
     public LeftRight LeftRight { get; private set; }
     public Jumping Jumping { get; private set; }
+    public WallDragging WallDragging { get; private set; }
     public Timer WallJumpInputTakeover { get; private set; }
 
     private int _playerLeftRightInput;
@@ -15,10 +16,11 @@ public partial class PlayerKinematicComp : KinematicComp2 {
         Falling = GetNode<Falling>(nameof(Falling));
         LeftRight = GetNode<LeftRight>(nameof(LeftRight));
         Jumping = GetNode<Jumping>(nameof(Jumping));
+        WallDragging = GetNode<WallDragging>(nameof(WallDragging));
         WallJumpInputTakeover = GetNode<Timer>(nameof(WallJumpInputTakeover));
 
-        BecomeOnFloor += _ => { Jumping.ResetNumJumps(); };
-        BecomeOnWall += _ => { Jumping.ResetNumJumps(); };
+        BecomeOnFloor += _ => Jumping.ResetNumJumps();
+        BecomeOnWall += _ => Jumping.ResetNumJumps();
 
         Jumping.Jumped += from => {
             if (from == Location.WallNonGround) {
@@ -27,10 +29,29 @@ public partial class PlayerKinematicComp : KinematicComp2 {
         };
 
         WallJumpInputTakeover.Timeout += () => LeftRight.IntendedSpeedScale = _playerLeftRightInput;
+        
+        LinkWallDragging();
+    }
+
+    private void LinkWallDragging() {
+        BecomeOnWall -= WallDragging.DefaultOnBecomeOnWall;
+        BecomeOnWall += ValidWallTouchingCheck;
+        BecomeOffFloor -= WallDragging.DefaultOnBecomeOffFloor;
+        BecomeOffFloor += ValidWallTouchingCheck;
+    }
+
+    private void ValidWallTouchingCheck(KinematicComp2 physics) {
+        bool playerPressingAgainstWall = Mathf.Sign(GetWallNormal().X) == -Mathf.Sign(_playerLeftRightInput);
+        bool noInputDragging = WallDragging.IsDragging && _playerLeftRightInput == 0;
+
+        WallDragging.ValidWallTouching =
+            WallDragging.IsOnValidWall(physics)
+            && (playerPressingAgainstWall || noInputDragging);
     }
 
     public void MoveLeft() {
         _playerLeftRightInput--;
+        ValidWallTouchingCheck(this);
         if (!(WallJumpInputTakeover.TimeLeft > 0)) {
             LeftRight.IntendedSpeedScale--;
         }
@@ -38,6 +59,7 @@ public partial class PlayerKinematicComp : KinematicComp2 {
 
     public void MoveRight() {
         _playerLeftRightInput++;
+        ValidWallTouchingCheck(this);
         if (!(WallJumpInputTakeover.TimeLeft > 0)) {
             LeftRight.IntendedSpeedScale++;
         }
