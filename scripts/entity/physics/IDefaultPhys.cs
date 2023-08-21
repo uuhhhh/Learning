@@ -5,7 +5,7 @@ namespace Learning.scripts.entity.physics;
 public interface IDefaultPhys {
     [Export] bool DoNotLink { get; protected set; }
 
-    void Link(KinematicComp physics) {
+    public void Link(KinematicComp physics) {
         physics.BecomeOnFloor += OnBecomeOnFloor;
         physics.BecomeOffFloor += OnBecomeOffFloor;
         physics.BecomeOnCeiling += OnBecomeOnCeiling;

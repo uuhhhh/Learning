@@ -30,10 +30,19 @@ public partial class WallDragging : Node {
             }
         }
     }
-    
-    public bool ValidWallTouching { get; set; }
+
+    public bool ValidWallTouching {
+        get => _isValidWallTouching;
+        set {
+            if (value == _isValidWallTouching) return;
+
+            _isValidWallTouching = value;
+            EmitSignal(ValidWallTouching ? SignalName.StartedValidWallTouching : SignalName.StoppedValidWallTouching);
+        }
+    }
     
     private bool _isDragging;
+    private bool _isValidWallTouching;
     private FallingData _originalData;
     private WallDraggingData _wall;
 
@@ -42,6 +51,12 @@ public partial class WallDragging : Node {
 
     [Signal]
     public delegate void StoppedDraggingEventHandler();
+    
+    [Signal]
+    public delegate void StartedValidWallTouchingEventHandler();
+    
+    [Signal]
+    public delegate void StoppedValidWallTouchingEventHandler();
 
     public override void _Ready() {
         _originalData = Falling.FallData;
@@ -53,9 +68,5 @@ public partial class WallDragging : Node {
 
     public void DraggingCheck() {
         IsDragging = ValidWallTouching && Falling.VelocityAfterTransition.Y >= Wall.VelocityDragThreshold;
-    }
-
-    public bool IsOnValidWall(CharacterBody2D physics) {
-        return !physics.IsOnFloor() && physics.IsOnWall() && physics.GetWallNormal().Y == 0;
     }
 }

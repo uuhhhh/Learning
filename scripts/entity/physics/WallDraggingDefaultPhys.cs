@@ -15,7 +15,7 @@ public partial class WallDraggingDefaultPhys : Node, IDefaultPhys {
     }
 
     public void OnBecomeOnWall(KinematicComp physics) {
-        if (ToLink.IsOnValidWall(physics)) {
+        if (IsOnValidWall(physics)) {
             ToLink.ValidWallTouching = true;
         }
     }
@@ -23,5 +23,9 @@ public partial class WallDraggingDefaultPhys : Node, IDefaultPhys {
     public void OnBecomeOffWall(KinematicComp physics) {
         ToLink.ValidWallTouching = false;
         ToLink.IsDragging = false;
+    }
+
+    public static bool IsOnValidWall(CharacterBody2D physics) {
+        return !physics.IsOnFloor() && physics.IsOnWall() && physics.GetWallNormal().Y == 0;
     }
 }

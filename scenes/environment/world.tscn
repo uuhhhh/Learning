@@ -37,7 +37,7 @@ collision_mask = 3
 polygon = PackedVector2Array(16, 8, -16, 8, -16, -80, 16, -80)
 
 [node name="Player" parent="." instance=ExtResource("2_5g5od")]
-position = Vector2(80, 120)
+position = Vector2(24, 128)
 
 [editable path="Floor"]
 [editable path="Platform"]
