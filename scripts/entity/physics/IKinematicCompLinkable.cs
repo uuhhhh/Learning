@@ -12,6 +12,8 @@ public interface IKinematicCompLinkable {
         physics.BecomeOffCeiling += DefaultOnBecomeOffCeiling;
         physics.BecomeOnWall += DefaultOnBecomeOnWall;
         physics.BecomeOffWall += DefaultOnBecomeOffWall;
+        physics.DirectionChangeX += DefaultOnDirectionChangeX;
+        physics.DirectionChangeY += DefaultOnDirectionChangeY;
     }
 
     void DefaultOnBecomeOnFloor(KinematicComp2 physics) {}
@@ -25,4 +27,8 @@ public interface IKinematicCompLinkable {
     void DefaultOnBecomeOnWall(KinematicComp2 physics) {}
     
     void DefaultOnBecomeOffWall(KinematicComp2 physics) {}
+    
+    void DefaultOnDirectionChangeX(KinematicComp2 physics, float newDirection) {}
+    
+    void DefaultOnDirectionChangeY(KinematicComp2 physics, float newDirection) {}
 }
