@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Learning.scripts.entity;
+namespace Learning.Scripts.Entity;
 
 public partial class InputComp : Node {
 	[Signal]

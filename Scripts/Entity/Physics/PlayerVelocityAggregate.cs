@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.scripts.entity.physics;
+namespace Learning.Scripts.Entity.Physics;
 
 public partial class PlayerVelocityAggregate : VelocityAggregate {
     public Falling Falling { get; private set; }

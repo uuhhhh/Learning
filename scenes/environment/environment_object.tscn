@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b4nnyvbh4dvl6"]
 
-[ext_resource type="Script" path="res://scripts/environment/EnvironmentPolygon.cs" id="1_m12n2"]
+[ext_resource type="Script" path="res://Scripts/Environment/EnvironmentPolygon.cs" id="1_m12n2"]
 
 [node name="EnvironmentObject" type="StaticBody2D"]
 

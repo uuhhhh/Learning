@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.scripts.entity.physics; 
+namespace Learning.Scripts.Entity.Physics; 
 
 public interface IDefaultPhys {
     [Export] bool DoNotLink { get; protected set; }

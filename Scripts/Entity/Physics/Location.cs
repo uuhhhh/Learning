@@ -1,4 +1,4 @@
-﻿namespace Learning.scripts.entity.physics;
+﻿namespace Learning.Scripts.Entity.Physics;
 
 public enum Location {
     Ground,

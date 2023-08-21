@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.scripts.entity.physics; 
+namespace Learning.Scripts.Entity.Physics; 
 
 [GlobalClass]
 public partial class FallingData : Resource {

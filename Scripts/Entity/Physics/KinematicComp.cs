@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.scripts.entity.physics; 
+namespace Learning.Scripts.Entity.Physics; 
 
 public partial class KinematicComp : CharacterBody2D {
     [Export] public bool AutoLinkImmediateChildren { get; set; } = true;

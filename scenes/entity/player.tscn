@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://cpr2hwrjvvld7"]
 
-[ext_resource type="Script" path="res://scripts/entity/Player.cs" id="1_uyfcp"]
+[ext_resource type="Script" path="res://Scripts/Entity/Player.cs" id="1_uyfcp"]
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="2_q7yrb"]
-[ext_resource type="Script" path="res://scripts/entity/InputComp.cs" id="3_xfxpf"]
+[ext_resource type="Script" path="res://Scripts/Entity/InputComp.cs" id="3_xfxpf"]
 [ext_resource type="PackedScene" uid="uid://dx8gnhdieo400" path="res://scenes/entity/physics/player_velocity_aggregate.tscn" id="4_xn5i2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dih1a"]

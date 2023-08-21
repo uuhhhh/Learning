@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="LeftRightData" load_steps=2 format=3 uid="uid://bivvatqtffmra"]
 
-[ext_resource type="Script" path="res://scripts/entity/physics/LeftRightData.cs" id="1_xhbyl"]
+[ext_resource type="Script" path="res://Scripts/Entity/Physics/LeftRightData.cs" id="1_xhbyl"]
 
 [resource]
 script = ExtResource("1_xhbyl")

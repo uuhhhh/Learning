@@ -1,7 +1,7 @@
 ﻿using Godot;
-using Learning.scripts.entity.physics;
+using Learning.Scripts.Entity.Physics;
 
-namespace Learning.scripts.entity; 
+namespace Learning.Scripts.Entity; 
 
 public partial class Player : Node2D {
     private InputComp _input;

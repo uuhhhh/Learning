@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Godot;
 
-namespace Learning.scripts.entity.physics; 
+namespace Learning.Scripts.Entity.Physics; 
 
 public partial class VelocityAggregate : KinematicComp {
     [Export] public bool AggregateChildren { get; private set; } = true;
