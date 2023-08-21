@@ -1,11 +1,9 @@
-﻿using System.Numerics;
-using Godot;
+﻿using Godot;
 using Vector2 = Godot.Vector2;
 
 namespace Learning.scripts.entity.physics; 
 
-public partial class Falling : VelocitySource, IKinematicCompLinkable {
-    [Export] public bool DoNotLink { get; set; }
+public partial class Falling : VelocitySource {
     [Export] public FallingData FallData { get; set; }
     
     public bool IsFalling {
@@ -44,18 +42,5 @@ public partial class Falling : VelocitySource, IKinematicCompLinkable {
         velocity.Y += Gravity * GravityScale * (float) delta;
         velocity.Y = Mathf.Min(velocity.Y, FallData.MaxVelocity);
         BaseVelocity = velocity;
-    }
-
-    public void DefaultOnBecomeOnFloor(KinematicComp physics) {
-        IsFalling = false;
-    }
-
-    public void DefaultOnBecomeOffFloor(KinematicComp physics) {
-        IsFalling = true;
-    }
-
-    public void DefaultOnBecomeOnCeiling(KinematicComp physics) {
-        float originalTimeToStop = Mathf.Abs(BaseVelocity.Y) / (Gravity * GravityScale);
-        SmoothlySetBaseVelocityY(0, originalTimeToStop * FallData.CeilingHitStopTimeScale);
     }
 }

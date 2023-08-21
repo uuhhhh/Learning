@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Learning.scripts.entity.physics; 
 
 public partial class KinematicComp : CharacterBody2D {
-    [Export] private float _directionChangeEpsilon = .01f;
+    [Export] private float DirectionChangeEpsilon { get; set; } = .01f;
     
     private readonly IList<VelocitySource> _velocitySources = new List<VelocitySource>();
 
@@ -33,17 +33,17 @@ public partial class KinematicComp : CharacterBody2D {
     public override void _Ready() {
         _mostExtremePosition = GlobalPosition;
         
-        AutoLinkChildren();
+        AutoLinkImmediateChildren();
         SignalInitialState();
     }
 
-    private void AutoLinkChildren() {
+    private void AutoLinkImmediateChildren() {
         foreach (Node c in GetChildren()) {
             if (c is VelocitySource { ExcludeThisVelocity: false} src) {
                 _velocitySources.Add(src);
             }
 
-            if (c is IKinematicCompLinkable { DoNotLink: false } l) {
+            if (c is IDefaultPhys { DoNotLink: false } l) {
                 l.Link(this);
             }
         }
@@ -114,7 +114,7 @@ public partial class KinematicComp : CharacterBody2D {
             Mathf.Max(GlobalPosition.X, _mostExtremePosition.X)
             : Mathf.Min(GlobalPosition.X, _mostExtremePosition.X);
         
-        if (Mathf.Abs(GlobalPosition.X - _mostExtremePosition.X) > _directionChangeEpsilon) {
+        if (Mathf.Abs(GlobalPosition.X - _mostExtremePosition.X) > DirectionChangeEpsilon) {
             EmitSignal(SignalName.DirectionChangeX, this, GlobalPosition.X - _mostExtremePosition.X);
             _increasingX = !_increasingX;
             _mostExtremePosition.X = GlobalPosition.X;
@@ -124,7 +124,7 @@ public partial class KinematicComp : CharacterBody2D {
             Mathf.Max(GlobalPosition.Y, _mostExtremePosition.Y)
             : Mathf.Min(GlobalPosition.Y, _mostExtremePosition.Y);
         
-        if (Mathf.Abs(GlobalPosition.Y - _mostExtremePosition.Y) > _directionChangeEpsilon) {
+        if (Mathf.Abs(GlobalPosition.Y - _mostExtremePosition.Y) > DirectionChangeEpsilon) {
             EmitSignal(SignalName.DirectionChangeY, this, GlobalPosition.Y - _mostExtremePosition.Y);
             _increasingY = !_increasingY;
             _mostExtremePosition.Y = GlobalPosition.Y;

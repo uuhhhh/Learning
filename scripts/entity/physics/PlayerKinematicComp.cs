@@ -8,6 +8,8 @@ public partial class PlayerKinematicComp : KinematicComp {
     public Jumping Jumping { get; private set; }
     public WallDragging WallDragging { get; private set; }
     public Timer WallJumpInputTakeover { get; private set; }
+    
+    private WallDraggingDefaultPhys WallDraggingDefaultPhys { get; set; }
 
     private int _playerLeftRightInput;
 
@@ -19,9 +21,19 @@ public partial class PlayerKinematicComp : KinematicComp {
         WallDragging = GetNode<WallDragging>(nameof(WallDragging));
         WallJumpInputTakeover = GetNode<Timer>(nameof(WallJumpInputTakeover));
 
+        WallDraggingDefaultPhys = GetNode<WallDraggingDefaultPhys>(nameof(WallDraggingDefaultPhys));
+
+        InitNumJumpsBehavior();
+        InitWallJumpTakeoverBehavior();
+        ModifyWallTouchingBehavior();
+    }
+
+    private void InitNumJumpsBehavior() {
         BecomeOnFloor += _ => Jumping.ResetNumJumps();
         BecomeOnWall += _ => Jumping.ResetNumJumps();
+    }
 
+    private void InitWallJumpTakeoverBehavior() {
         Jumping.Jumped += from => {
             if (from == Location.WallNonGround) {
                 WallJumpInputTakeover.Start();
@@ -29,14 +41,12 @@ public partial class PlayerKinematicComp : KinematicComp {
         };
 
         WallJumpInputTakeover.Timeout += () => LeftRight.IntendedSpeedScale = _playerLeftRightInput;
-        
-        LinkWallDragging();
     }
 
-    private void LinkWallDragging() {
-        BecomeOnWall -= WallDragging.DefaultOnBecomeOnWall;
+    private void ModifyWallTouchingBehavior() {
+        BecomeOnWall -= WallDraggingDefaultPhys.OnBecomeOnWall;
         BecomeOnWall += ValidWallTouchingCheck;
-        BecomeOffFloor -= WallDragging.DefaultOnBecomeOffFloor;
+        BecomeOffFloor -= WallDraggingDefaultPhys.OnBecomeOffFloor;
         BecomeOffFloor += ValidWallTouchingCheck;
     }
 

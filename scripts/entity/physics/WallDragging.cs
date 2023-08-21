@@ -1,13 +1,10 @@
-﻿using System;
-using Godot;
+﻿using Godot;
 
 namespace Learning.scripts.entity.physics; 
 
-public partial class WallDragging : Node, IKinematicCompLinkable {
-    [Export] public bool DoNotLink { get; set; }
-    [Export] private Falling AirMovement { get; set; }
-    [Export] private FallingData DraggingData { get; set; }
-    [Export] private float VelocityThreshold { get; set; }
+public partial class WallDragging : Node {
+    [Export] private Falling Falling { get; set; }
+    [Export] private WallDraggingData Wall { get; set; }
     
     public bool IsDragging {
         get => _isDragging;
@@ -16,10 +13,10 @@ public partial class WallDragging : Node, IKinematicCompLinkable {
 
             _isDragging = value;
             if (_isDragging) {
-                AirMovement.FallData = DraggingData;
+                Falling.FallData = Wall.DraggingData;
                 EmitSignal(SignalName.StartedDragging);
             } else {
-                AirMovement.FallData = _originalData;
+                Falling.FallData = _originalData;
                 EmitSignal(SignalName.StoppedDragging);
             }
         }
@@ -37,32 +34,13 @@ public partial class WallDragging : Node, IKinematicCompLinkable {
     public delegate void StoppedDraggingEventHandler();
 
     public override void _Ready() {
-        _originalData = AirMovement.FallData;
+        _originalData = Falling.FallData;
     }
 
     public override void _PhysicsProcess(double delta) {
-        if (ValidWallTouching && AirMovement.VelocityAfterTransition.Y > VelocityThreshold) {
+        if (ValidWallTouching && Falling.VelocityAfterTransition.Y > Wall.VelocityDragThreshold) {
             IsDragging = true;
         }
-    }
-
-    public void DefaultOnBecomeOnFloor(KinematicComp physics) {
-        DefaultOnBecomeOffWall(physics);
-    }
-
-    public void DefaultOnBecomeOffFloor(KinematicComp physics) {
-        DefaultOnBecomeOnWall(physics);
-    }
-
-    public void DefaultOnBecomeOnWall(KinematicComp physics) {
-        if (IsOnValidWall(physics)) {
-            ValidWallTouching = true;
-        }
-    }
-
-    public void DefaultOnBecomeOffWall(KinematicComp physics) {
-        ValidWallTouching = false;
-        IsDragging = false;
     }
 
     public bool IsOnValidWall(KinematicComp physics) {

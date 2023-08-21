@@ -3,8 +3,7 @@ using Godot;
 
 namespace Learning.scripts.entity.physics; 
 
-public partial class LeftRight : VelocitySource, IKinematicCompLinkable {
-    [Export] public bool DoNotLink { get; set; }
+public partial class LeftRight : VelocitySource {
     [Export] private LeftRightData Ground { get; set; }
     [Export] private LeftRightData Air { get; set; }
 
@@ -99,13 +98,5 @@ public partial class LeftRight : VelocitySource, IKinematicCompLinkable {
                             || (Mathf.Abs(IntendedSpeedScale) < Mathf.Abs(CurrentSpeedScale)
                                 && Mathf.Sign(IntendedSpeedScale) == Mathf.Sign(CurrentSpeedScale));
         return decelerating ? Params.DecelBaseTime : Params.AccelBaseTime;
-    }
-
-    public void DefaultOnBecomeOnFloor(KinematicComp physics) {
-        IsOnGround = true;
-    }
-
-    public void DefaultOnBecomeOffFloor(KinematicComp physics) {
-        IsOnGround = false;
     }
 }
