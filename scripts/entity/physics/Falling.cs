@@ -1,5 +1,4 @@
 ﻿using Godot;
-using Vector2 = Godot.Vector2;
 
 namespace Learning.scripts.entity.physics; 
 

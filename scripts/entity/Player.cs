@@ -17,6 +17,8 @@ public partial class Player : Node2D {
         _input.RightInputOff += _physics.MoveLeft;
         _input.JumpInputOn += _physics.AttemptJump;
         _input.JumpInputOff += _physics.JumpCancel;
+
+        ProcessPhysicsPriority = _physics.ProcessPhysicsPriority + 1;
     }
 
     public override void _PhysicsProcess(double delta) {
