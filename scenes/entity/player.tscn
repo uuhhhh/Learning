@@ -1,12 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://cpr2hwrjvvld7"]
+[gd_scene load_steps=7 format=3 uid="uid://cpr2hwrjvvld7"]
 
 [ext_resource type="Script" path="res://scripts/entity/Player.cs" id="1_uyfcp"]
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="2_q7yrb"]
 [ext_resource type="Script" path="res://scripts/entity/InputComp.cs" id="3_xfxpf"]
-[ext_resource type="PackedScene" uid="uid://dx8gnhdieo400" path="res://scenes/entity/physics/player_kinematic_comp.tscn" id="4_xn5i2"]
+[ext_resource type="PackedScene" uid="uid://dx8gnhdieo400" path="res://scenes/entity/physics/player_velocity_aggregate.tscn" id="4_xn5i2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dih1a"]
 size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a6vxc"]
+size = Vector2(16, 8)
 
 [node name="Player" type="Node2D"]
 script = ExtResource("1_uyfcp")
@@ -19,10 +22,19 @@ texture = ExtResource("2_q7yrb")
 [node name="InputComp" type="Node" parent="."]
 script = ExtResource("3_xfxpf")
 
-[node name="PlayerKinematicComp" parent="." instance=ExtResource("4_xn5i2")]
+[node name="PlayerVelocityAggregate" parent="." instance=ExtResource("4_xn5i2")]
 
-[node name="Hitbox" parent="PlayerKinematicComp" index="0"]
+[node name="Hitbox" parent="PlayerVelocityAggregate" index="0"]
 position = Vector2(0, -8)
 shape = SubResource("RectangleShape2D_dih1a")
 
-[editable path="PlayerKinematicComp"]
+[node name="CharacterBody2D" parent="PlayerVelocityAggregate" index="10"]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" parent="PlayerVelocityAggregate/CharacterBody2D" index="0"]
+position = Vector2(0, -4)
+shape = SubResource("RectangleShape2D_a6vxc")
+debug_color = Color(0.890196, 0.282353, 0.427451, 0.419608)
+
+[editable path="PlayerVelocityAggregate"]

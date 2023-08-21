@@ -1,6 +1,6 @@
-[gd_scene load_steps=14 format=3 uid="uid://dx8gnhdieo400"]
+[gd_scene load_steps=15 format=3 uid="uid://dx8gnhdieo400"]
 
-[ext_resource type="Script" path="res://scripts/entity/physics/PlayerKinematicComp.cs" id="1_4ra6n"]
+[ext_resource type="Script" path="res://scripts/entity/physics/PlayerVelocityAggregate.cs" id="1_7tts4"]
 [ext_resource type="Script" path="res://scripts/entity/physics/Falling.cs" id="2_i41xf"]
 [ext_resource type="Resource" uid="uid://cfajuxtpoi0rm" path="res://resources/default/Falling.tres" id="3_gbjcm"]
 [ext_resource type="Script" path="res://scripts/entity/physics/LeftRight.cs" id="3_sstab"]
@@ -13,10 +13,11 @@
 [ext_resource type="Resource" uid="uid://cp061nqciwnhp" path="res://resources/default/WallDragging.tres" id="9_gt0qr"]
 [ext_resource type="Script" path="res://scripts/entity/physics/JumpingDefaultPhys.cs" id="10_86m60"]
 [ext_resource type="Script" path="res://scripts/entity/physics/WallDraggingDefaultPhys.cs" id="12_pwg8g"]
+[ext_resource type="Script" path="res://scripts/entity/physics/VelocityAggregate.cs" id="14_4mbre"]
 
-[node name="PlayerKinematicComp" type="CharacterBody2D"]
+[node name="PlayerVelocityAggregate" type="CharacterBody2D"]
 floor_snap_length = 3.0
-script = ExtResource("1_4ra6n")
+script = ExtResource("1_7tts4")
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
 
@@ -58,3 +59,8 @@ ToLink = NodePath("../WallDragging")
 process_callback = 0
 wait_time = 0.1
 one_shot = true
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+script = ExtResource("14_4mbre")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]

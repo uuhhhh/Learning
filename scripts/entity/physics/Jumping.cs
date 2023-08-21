@@ -245,10 +245,16 @@ public partial class Jumping : Node {
 		AttemptBufferedGroundJump();
 	}
 
-	public void TransitionToAir() {
-		if (CoyoteGroundJumpEnabled && Falling.Velocity.Y >= 0 && CurrentLocation == Location.Ground) {
+	public void TransitionToAir(bool immediately = false) {
+		if (!immediately
+		    && CoyoteGroundJumpEnabled
+		    && Falling.Velocity.Y >= 0
+		    && CurrentLocation == Location.Ground) {
 			CoyoteJump.Start();
-		} else if (CoyoteWallJumpEnabled && Falling.Velocity.Y >= 0 && CurrentLocation == Location.WallNonGround) {
+		} else if (!immediately
+		           && CoyoteWallJumpEnabled
+		           && Falling.Velocity.Y >= 0
+		           && CurrentLocation == Location.WallNonGround) {
 			CoyoteWallJump.Start();
 		} else {
 			CurrentLocation = Location.Air;

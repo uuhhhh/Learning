@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using Godot;
+﻿using Godot;
 
 namespace Learning.scripts.entity.physics; 
 
 public partial class KinematicComp : CharacterBody2D {
+    [Export] public bool AutoLinkImmediateChildren { get; set; } = true;
     [Export] private float DirectionChangeEpsilon { get; set; } = .01f;
-    
-    private readonly IList<VelocitySource> _velocitySources = new List<VelocitySource>();
 
     // Whenever a new signal is added here, be sure the change is reflected in IKinematicCompLinkable also
     [Signal]
@@ -31,17 +29,15 @@ public partial class KinematicComp : CharacterBody2D {
     
     public override void _Ready() {
         _mostExtremePosition = GlobalPosition;
-        
-        AutoLinkImmediateChildren();
+
+        if (AutoLinkImmediateChildren) {
+            LinkImmediateChildren();
+        }
         SignalInitialState();
     }
 
-    private void AutoLinkImmediateChildren() {
+    private void LinkImmediateChildren() {
         foreach (Node c in GetChildren()) {
-            if (c is VelocitySource { ExcludeThisVelocity: false} src) {
-                _velocitySources.Add(src);
-            }
-
             if (c is IDefaultPhys { DoNotLink: false } l) {
                 l.Link(this);
             }
@@ -55,11 +51,6 @@ public partial class KinematicComp : CharacterBody2D {
     }
 
     public override void _PhysicsProcess(double delta) {
-        Velocity = Vector2.Zero;
-        foreach (VelocitySource src in _velocitySources) {
-            Velocity += src.Velocity;
-        }
-        
         MoveAndSlideWithStatusChanges();
     }
 

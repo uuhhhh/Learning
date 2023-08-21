@@ -5,11 +5,11 @@ namespace Learning.scripts.entity;
 
 public partial class Player : Node2D {
     private InputComp _input;
-    private PlayerKinematicComp _physics;
+    private PlayerVelocityAggregate _physics;
 
     public override void _Ready() {
         _input = GetNode<InputComp>(nameof(InputComp));
-        _physics = GetNode<PlayerKinematicComp>(nameof(PlayerKinematicComp));
+        _physics = GetNode<PlayerVelocityAggregate>(nameof(PlayerVelocityAggregate));
 
         _input.LeftInputOn += _physics.MoveLeft;
         _input.LeftInputOff += _physics.MoveRight;

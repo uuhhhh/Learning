@@ -55,7 +55,7 @@ public partial class WallDragging : Node {
         IsDragging = ValidWallTouching && Falling.VelocityAfterTransition.Y >= Wall.VelocityDragThreshold;
     }
 
-    public bool IsOnValidWall(KinematicComp physics) {
+    public bool IsOnValidWall(CharacterBody2D physics) {
         return !physics.IsOnFloor() && physics.IsOnWall() && physics.GetWallNormal().Y == 0;
     }
 }

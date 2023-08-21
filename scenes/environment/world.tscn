@@ -6,24 +6,32 @@
 [node name="World" type="Node2D"]
 
 [node name="Floor" parent="." instance=ExtResource("1_w340e")]
+collision_layer = 3
+collision_mask = 3
 
 [node name="CollisionPolygon2D" parent="Floor" index="0"]
 polygon = PackedVector2Array(0, 0, 8, 0, 8, 128, 24, 128, 40, 144, 56, 144, 80, 128, 104, 128, 104, 160, 120, 160, 120, 168, 144, 168, 144, 128, 160, 128, 176, 120, 184, 104, 192, 104, 200, 128, 224, 128, 256, 104, 272, 128, 288, 136, 312, 136, 312, 0, 320, 0, 320, 184, 0, 184)
 
 [node name="Platform" parent="." instance=ExtResource("1_w340e")]
 position = Vector2(40, 32)
+collision_layer = 3
+collision_mask = 3
 
 [node name="CollisionPolygon2D" parent="Platform" index="0"]
 polygon = PackedVector2Array(-16, -8, 16, -8, 16, 0, -16, 0)
 
 [node name="Platform2" parent="." instance=ExtResource("1_w340e")]
 position = Vector2(128, 48)
+collision_layer = 3
+collision_mask = 3
 
 [node name="CollisionPolygon2D" parent="Platform2" index="0"]
 polygon = PackedVector2Array(-16, -8, 24, -8, 24, 0, -16, 0)
 
 [node name="Platform3" parent="." instance=ExtResource("1_w340e")]
 position = Vector2(200, 56)
+collision_layer = 3
+collision_mask = 3
 
 [node name="CollisionPolygon2D" parent="Platform3" index="0"]
 polygon = PackedVector2Array(16, 8, -16, 8, -16, -80, 16, -80)

@@ -2,7 +2,7 @@
 
 namespace Learning.scripts.entity.physics;
 
-public partial class PlayerKinematicComp : KinematicComp {
+public partial class PlayerVelocityAggregate : VelocityAggregate {
     public Falling Falling { get; private set; }
     public LeftRight LeftRight { get; private set; }
     public Jumping Jumping { get; private set; }
