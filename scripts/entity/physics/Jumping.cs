@@ -3,7 +3,7 @@ using Godot;
 
 namespace Learning.scripts.entity.physics; 
 
-public partial class Jumping : Node, IKinematicCompLinkable {
+public partial class Jumping : Node2D, IKinematicCompLinkable {
     [Export] public bool DoNotLink { get; set; }
     [Export] private Falling AirMovement { get; set; }
     [Export] private LeftRight HorizontalMovement { get; set; }
@@ -44,6 +44,7 @@ public partial class Jumping : Node, IKinematicCompLinkable {
     private Tween _jumpTweenX;
     
     private float _lastWallNormal;
+    private float _wallPositionX;
 
     [Signal]
     public delegate void JumpedEventHandler(Location from);
@@ -67,6 +68,10 @@ public partial class Jumping : Node, IKinematicCompLinkable {
         HorizontalMovement.IntendedSpeedUpdate += WallPressCheck;
         
         ResetNumJumps();
+    }
+    
+    public override void _PhysicsProcess(double delta) {
+        CheckCoyoteWallJumpValidity();
     }
 
     private void WallPressCheck(float leftRightIntendedSpeed) {
@@ -255,10 +260,22 @@ public partial class Jumping : Node, IKinematicCompLinkable {
         }
     }
 
+    private void CheckCoyoteWallJumpValidity() {
+        float epsilon = 0.001f;
+        bool isPastWall = Mathf.Sign(GlobalPosition.X - _wallPositionX) == -Mathf.Sign(_lastWallNormal);
+        bool isFarEnoughFromWallPos = Mathf.Abs(GlobalPosition.X - _wallPositionX) > epsilon;
+        
+        if (CoyoteWallJump.TimeLeft > 0 && isPastWall && isFarEnoughFromWallPos) {
+            CoyoteWallJump.Stop();
+            CurrentLocation = Location.Air;
+        }
+    }
+
     private void TransitionToWall(KinematicComp2 physics) {
         CurrentLocation = Location.WallNonGround;
         _lastWallNormal = physics.GetWallNormal().X;
         JumpFacing = _lastWallNormal;
         WallPressCheck(HorizontalMovement.IntendedSpeed);
+        _wallPositionX = physics.GlobalPosition.X;
     }
 }
