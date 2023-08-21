@@ -4,8 +4,25 @@ using Godot;
 namespace Learning.scripts.entity.physics; 
 
 public partial class LeftRight : VelocitySource {
-    [Export] private LeftRightData Ground { get; set; }
-    [Export] private LeftRightData Air { get; set; }
+    [Export] public LeftRightData Ground {
+        get => _ground;
+        set {
+            _ground = value;
+            if (IsNodeReady() && _isOnGround) {
+                UpdateSpeed();
+            }
+        }
+    }
+
+    [Export] public LeftRightData Air {
+        get => _air;
+        set {
+            _air = value;
+            if (IsNodeReady() && !_isOnGround) {
+                UpdateSpeed();
+            }
+        }
+    }
 
     private const int SPEED_SCALE_ROUNDING_DIGITS = 4;
     
@@ -41,6 +58,9 @@ public partial class LeftRight : VelocitySource {
     }
 
     private LeftRightData Params => IsOnGround ? Ground : Air;
+
+    private LeftRightData _ground;
+    private LeftRightData _air;
 
     private bool _isOnGround;
     private float _intendedSpeedScale;

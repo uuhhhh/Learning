@@ -7,9 +7,9 @@ public partial class Jumping : Node2D {
 	[Export] private Falling Falling { get; set; }
 	[Export] private LeftRight LeftRight { get; set; }
 
-	[Export] private JumpingData Ground { get; set; }
-	[Export] private JumpingData Air { get; set; }
-	[Export] private JumpingData Wall { get; set; }
+	[Export] public JumpingData Ground { get; set; }
+	[Export] public JumpingData Air { get; set; }
+	[Export] public JumpingData Wall { get; set; }
 
 	[Export] private bool CoyoteGroundJumpEnabled { get; set; } = true;
 	[Export] private bool GroundJumpBufferEnabled { get; set; } = true;

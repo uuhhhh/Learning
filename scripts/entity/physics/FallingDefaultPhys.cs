@@ -15,7 +15,6 @@ public partial class FallingDefaultPhys : Node, IDefaultPhys {
     }
 
     public void OnBecomeOnCeiling(KinematicComp physics) {
-        float originalTimeToStop = Mathf.Abs(ToLink.BaseVelocity.Y) / (ToLink.Gravity * ToLink.GravityScale);
-        ToLink.SmoothlySetBaseVelocityY(0, originalTimeToStop * ToLink.FallData.CeilingHitStopTimeScale);
+        ToLink.CeilingHitStop();
     }
 }
