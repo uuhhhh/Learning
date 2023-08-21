@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Entity.Physics;
+namespace Learning.Scripts.Entity.Physics.VelocitySources;
 
 public partial class LeftRightDefaultPhys : Node, IDefaultPhys {
     [Export] public bool DoNotLink { get; set; }

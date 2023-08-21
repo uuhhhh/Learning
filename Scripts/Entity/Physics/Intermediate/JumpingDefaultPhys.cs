@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Entity.Physics; 
+namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 public partial class JumpingDefaultPhys : Node, IDefaultPhys {
     [Export] public bool DoNotLink { get; set; }

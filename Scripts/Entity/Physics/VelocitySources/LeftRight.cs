@@ -1,7 +1,7 @@
 ﻿using System;
 using Godot;
 
-namespace Learning.Scripts.Entity.Physics; 
+namespace Learning.Scripts.Entity.Physics.VelocitySources; 
 
 public partial class LeftRight : VelocitySource {
     [Export] public LeftRightData Ground {

@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="LeftRightData" load_steps=2 format=3 uid="uid://dfjahv3u2y3ae"]
 
-[ext_resource type="Script" path="res://Scripts/Entity/Physics/LeftRightData.cs" id="1_kxapg"]
+[ext_resource type="Script" path="res://Scripts/Entity/Physics/VelocitySources/LeftRightData.cs" id="1_kxapg"]
 
 [resource]
 script = ExtResource("1_kxapg")

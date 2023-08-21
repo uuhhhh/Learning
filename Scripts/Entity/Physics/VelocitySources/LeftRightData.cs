@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Entity.Physics; 
+namespace Learning.Scripts.Entity.Physics.VelocitySources; 
 
 [GlobalClass]
 public partial class LeftRightData : Resource {

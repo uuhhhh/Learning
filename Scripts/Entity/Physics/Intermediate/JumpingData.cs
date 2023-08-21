@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Entity.Physics; 
+namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 [GlobalClass]
 public partial class JumpingData : Resource {

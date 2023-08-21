@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Entity.Physics; 
+namespace Learning.Scripts.Entity.Physics.VelocitySources; 
 
 public abstract partial class VelocitySource : Node {
     [Export] public bool ExcludeThisVelocity { get; private set; }

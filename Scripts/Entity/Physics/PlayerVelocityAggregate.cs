@@ -1,4 +1,6 @@
 ﻿using Godot;
+using Learning.Scripts.Entity.Physics.Intermediate;
+using Learning.Scripts.Entity.Physics.VelocitySources;
 
 namespace Learning.Scripts.Entity.Physics;
 

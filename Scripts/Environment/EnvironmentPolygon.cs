@@ -1,5 +1,7 @@
 using Godot;
 
+namespace Learning.Scripts.Environment;
+
 public partial class EnvironmentPolygon : CollisionPolygon2D
 {
     private Polygon2D _visibleShape;

@@ -1,7 +1,8 @@
 using System;
 using Godot;
+using Learning.Scripts.Entity.Physics.VelocitySources;
 
-namespace Learning.Scripts.Entity.Physics; 
+namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 public partial class Jumping : Node {
 	[Export] private Falling Falling { get; set; }

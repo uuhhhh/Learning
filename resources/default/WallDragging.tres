@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="WallDraggingData" load_steps=3 format=3 uid="uid://cp061nqciwnhp"]
 
 [ext_resource type="Resource" uid="uid://b2xv7assurx3f" path="res://resources/default/WallDraggingFalling.tres" id="1_kil0d"]
-[ext_resource type="Script" path="res://Scripts/Entity/Physics/WallDraggingData.cs" id="2_6p54a"]
+[ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallDraggingData.cs" id="2_6p54a"]
 
 [resource]
 script = ExtResource("2_6p54a")

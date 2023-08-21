@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="JumpingData" load_steps=2 format=3 uid="uid://ch1fwuqtpq2dt"]
 
-[ext_resource type="Script" path="res://Scripts/Entity/Physics/JumpingData.cs" id="1_qm2ig"]
+[ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/JumpingData.cs" id="1_qm2ig"]
 
 [resource]
 script = ExtResource("1_qm2ig")
