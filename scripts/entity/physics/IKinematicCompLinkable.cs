@@ -5,7 +5,7 @@ namespace Learning.scripts.entity.physics;
 public interface IKinematicCompLinkable {
     [Export] bool DoNotLink { get; protected set; }
 
-    void Link(KinematicComp2 physics) {
+    void Link(KinematicComp physics) {
         physics.BecomeOnFloor += DefaultOnBecomeOnFloor;
         physics.BecomeOffFloor += DefaultOnBecomeOffFloor;
         physics.BecomeOnCeiling += DefaultOnBecomeOnCeiling;
@@ -16,19 +16,19 @@ public interface IKinematicCompLinkable {
         physics.DirectionChangeY += DefaultOnDirectionChangeY;
     }
 
-    void DefaultOnBecomeOnFloor(KinematicComp2 physics) {}
+    void DefaultOnBecomeOnFloor(KinematicComp physics) {}
     
-    void DefaultOnBecomeOffFloor(KinematicComp2 physics) {}
+    void DefaultOnBecomeOffFloor(KinematicComp physics) {}
     
-    void DefaultOnBecomeOnCeiling(KinematicComp2 physics) {}
+    void DefaultOnBecomeOnCeiling(KinematicComp physics) {}
     
-    void DefaultOnBecomeOffCeiling(KinematicComp2 physics) {}
+    void DefaultOnBecomeOffCeiling(KinematicComp physics) {}
     
-    void DefaultOnBecomeOnWall(KinematicComp2 physics) {}
+    void DefaultOnBecomeOnWall(KinematicComp physics) {}
     
-    void DefaultOnBecomeOffWall(KinematicComp2 physics) {}
+    void DefaultOnBecomeOffWall(KinematicComp physics) {}
     
-    void DefaultOnDirectionChangeX(KinematicComp2 physics, float newDirection) {}
+    void DefaultOnDirectionChangeX(KinematicComp physics, float newDirection) {}
     
-    void DefaultOnDirectionChangeY(KinematicComp2 physics, float newDirection) {}
+    void DefaultOnDirectionChangeY(KinematicComp physics, float newDirection) {}
 }

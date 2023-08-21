@@ -46,26 +46,26 @@ public partial class WallDragging : Node, IKinematicCompLinkable {
         }
     }
 
-    public void DefaultOnBecomeOnFloor(KinematicComp2 physics) {
+    public void DefaultOnBecomeOnFloor(KinematicComp physics) {
         DefaultOnBecomeOffWall(physics);
     }
 
-    public void DefaultOnBecomeOffFloor(KinematicComp2 physics) {
+    public void DefaultOnBecomeOffFloor(KinematicComp physics) {
         DefaultOnBecomeOnWall(physics);
     }
 
-    public void DefaultOnBecomeOnWall(KinematicComp2 physics) {
+    public void DefaultOnBecomeOnWall(KinematicComp physics) {
         if (IsOnValidWall(physics)) {
             ValidWallTouching = true;
         }
     }
 
-    public void DefaultOnBecomeOffWall(KinematicComp2 physics) {
+    public void DefaultOnBecomeOffWall(KinematicComp physics) {
         ValidWallTouching = false;
         IsDragging = false;
     }
 
-    public bool IsOnValidWall(KinematicComp2 physics) {
+    public bool IsOnValidWall(KinematicComp physics) {
         return !physics.IsOnFloor() && physics.IsOnWall() && physics.GetWallNormal().Y == 0;
     }
 }

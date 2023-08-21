@@ -4,28 +4,28 @@ using System.Collections.Generic;
 
 namespace Learning.scripts.entity.physics; 
 
-public partial class KinematicComp2 : CharacterBody2D {
+public partial class KinematicComp : CharacterBody2D {
     [Export] private float _directionChangeEpsilon = .01f;
     
     private readonly IList<VelocitySource> _velocitySources = new List<VelocitySource>();
 
     // Whenever a new signal is added here, be sure the change is reflected in IKinematicCompLinkable also
     [Signal]
-    public delegate void BecomeOnFloorEventHandler(KinematicComp2 state);
+    public delegate void BecomeOnFloorEventHandler(KinematicComp state);
     [Signal]
-    public delegate void BecomeOffFloorEventHandler(KinematicComp2 state);
+    public delegate void BecomeOffFloorEventHandler(KinematicComp state);
     [Signal]
-    public delegate void BecomeOnCeilingEventHandler(KinematicComp2 state);
+    public delegate void BecomeOnCeilingEventHandler(KinematicComp state);
     [Signal]
-    public delegate void BecomeOffCeilingEventHandler(KinematicComp2 state);
+    public delegate void BecomeOffCeilingEventHandler(KinematicComp state);
     [Signal]
-    public delegate void BecomeOnWallEventHandler(KinematicComp2 state);
+    public delegate void BecomeOnWallEventHandler(KinematicComp state);
     [Signal]
-    public delegate void BecomeOffWallEventHandler(KinematicComp2 state);
+    public delegate void BecomeOffWallEventHandler(KinematicComp state);
     [Signal]
-    public delegate void DirectionChangeXEventHandler(KinematicComp2 state, float newDirection);
+    public delegate void DirectionChangeXEventHandler(KinematicComp state, float newDirection);
     [Signal]
-    public delegate void DirectionChangeYEventHandler(KinematicComp2 state, float newDirection);
+    public delegate void DirectionChangeYEventHandler(KinematicComp state, float newDirection);
 
     private Vector2 _mostExtremePosition;
     private bool _increasingX, _increasingY;

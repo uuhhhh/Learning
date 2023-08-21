@@ -101,11 +101,11 @@ public partial class LeftRight : VelocitySource, IKinematicCompLinkable {
         return decelerating ? Params.DecelBaseTime : Params.AccelBaseTime;
     }
 
-    public void DefaultOnBecomeOnFloor(KinematicComp2 physics) {
+    public void DefaultOnBecomeOnFloor(KinematicComp physics) {
         IsOnGround = true;
     }
 
-    public void DefaultOnBecomeOffFloor(KinematicComp2 physics) {
+    public void DefaultOnBecomeOffFloor(KinematicComp physics) {
         IsOnGround = false;
     }
 }

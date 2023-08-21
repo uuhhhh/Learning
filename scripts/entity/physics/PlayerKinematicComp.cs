@@ -2,7 +2,7 @@
 
 namespace Learning.scripts.entity.physics;
 
-public partial class PlayerKinematicComp : KinematicComp2 {
+public partial class PlayerKinematicComp : KinematicComp {
     public Falling Falling { get; private set; }
     public LeftRight LeftRight { get; private set; }
     public Jumping Jumping { get; private set; }
@@ -40,7 +40,7 @@ public partial class PlayerKinematicComp : KinematicComp2 {
         BecomeOffFloor += ValidWallTouchingCheck;
     }
 
-    private void ValidWallTouchingCheck(KinematicComp2 physics) {
+    private void ValidWallTouchingCheck(KinematicComp physics) {
         bool playerPressingAgainstWall = Mathf.Sign(GetWallNormal().X) == -Mathf.Sign(_playerLeftRightInput);
         bool noInputDragging = WallDragging.IsDragging && _playerLeftRightInput == 0;
 
