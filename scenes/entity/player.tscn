@@ -16,7 +16,7 @@ position = Vector2(0, -8)
 scale = Vector2(0.125, 0.125)
 texture = ExtResource("2_q7yrb")
 
-[node name="InputComp" type="Node2D" parent="."]
+[node name="InputComp" type="Node" parent="."]
 script = ExtResource("3_xfxpf")
 
 [node name="PlayerKinematicComp" parent="." instance=ExtResource("4_xn5i2")]

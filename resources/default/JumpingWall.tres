@@ -6,7 +6,7 @@
 script = ExtResource("1_iymd0")
 NumJumps = -1
 Velocity = Vector2(150, -350)
-AccelTimeX = 0.125
-AccelTimeY = 0.05
+AccelTimeX = 0.05
+AccelTimeY = 0.0
 CancelVelocity = -175.0
 CancelAccelTime = 0.05

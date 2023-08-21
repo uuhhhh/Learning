@@ -2,7 +2,7 @@ using Godot;
 
 namespace Learning.scripts.entity;
 
-public partial class InputComp : Node2D {
+public partial class InputComp : Node {
 	[Signal]
 	public delegate void LeftInputOnEventHandler();
 

@@ -3,7 +3,7 @@ using Godot;
 
 namespace Learning.scripts.entity.physics; 
 
-public partial class Jumping : Node2D {
+public partial class Jumping : Node {
 	[Export] private Falling Falling { get; set; }
 	[Export] private LeftRight LeftRight { get; set; }
 
@@ -43,7 +43,6 @@ public partial class Jumping : Node2D {
 	private Tween _jumpTweenX;
 	
 	private float _lastWallDirection;
-	private float _wallPositionX;
 
 	[Signal]
 	public delegate void JumpedEventHandler(Location from);
@@ -74,11 +73,9 @@ public partial class Jumping : Node2D {
 	}
 
 	private void CheckCoyoteWallJumpValidity() {
-		float epsilon = 0.001f;
-		bool isPastWall = Mathf.Sign(GlobalPosition.X - _wallPositionX) == -Mathf.Sign(_lastWallDirection);
-		bool isFarEnoughFromWallPos = Mathf.Abs(GlobalPosition.X - _wallPositionX) > epsilon;
+		bool goingPastWall = Mathf.Sign(LeftRight.CurrentSpeed) == -Mathf.Sign(_lastWallDirection);
 		
-		if (CoyoteWallJump.TimeLeft > 0 && isPastWall && isFarEnoughFromWallPos) {
+		if (CoyoteWallJump.TimeLeft > 0 && goingPastWall) {
 			CoyoteWallJump.Stop();
 			CurrentLocation = Location.Air;
 		}
@@ -265,7 +262,6 @@ public partial class Jumping : Node2D {
 		CurrentLocation = Location.WallNonGround;
 		JumpFacing = _lastWallDirection = wallDirection;
 		WallPressCheck(LeftRight.IntendedSpeed);
-		_wallPositionX = GlobalPosition.X;
 		AttemptBufferedWallJump();
 	}
 }
