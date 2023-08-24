@@ -58,8 +58,13 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
     }
 
     private void InitWallTouchLeftRightStopBehavior() {
-        WallDragging.StartedValidWallTouching += () => LeftRight.IntendedSpeedScale = 0;
+        // can't set to exactly 0 due to physics weirdness
+        // (this body changing state to becoming off wall when Falling tweening to max velocity)
+        float almostZero = 0.01f;
+        WallDragging.StartedValidWallTouching += () => LeftRight.IntendedSpeedScale *= almostZero;
+        
         BecomeOffWall += _ => UpdateLeftRightSpeed();
+        BecomeOnFloor += _ => UpdateLeftRightSpeed();
     }
 
     private void InitWallDragCheckerWallTouchingBehavior() {

@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System;
+using Godot;
 
 namespace Learning.Scripts.Entity.Physics.VelocitySources; 
 
@@ -38,6 +39,8 @@ public partial class Falling : VelocitySource {
 
     private float _originalCeilingHitStopTime;
     private Tween _ceilingHitStopTween;
+
+    private Tween _decelerateToMaxVelocityTween;
     
     [Signal]
     public delegate void StartFallingEventHandler();
@@ -50,10 +53,18 @@ public partial class Falling : VelocitySource {
         base._PhysicsProcess(delta);
         if (!IsFalling) return;
 
-        Vector2 velocity = BaseVelocity;
-        velocity.Y += Gravity * GravityScale * (float) delta;
-        velocity.Y = Mathf.Min(velocity.Y, FallData.MaxVelocity);
-        BaseVelocity = velocity;
+        if (BaseVelocity.Y > FallData.MaxVelocity) {
+            if (_decelerateToMaxVelocityTween != null && _decelerateToMaxVelocityTween.IsValid()) return;
+
+            float duration = (BaseVelocity.Y - FallData.MaxVelocity) * FallData.DecelToMaxVelocityTimePerVelocity;
+            (_decelerateToMaxVelocityTween, PropertyTweener _)
+                = SmoothlySetBaseVelocityY(FallData.MaxVelocity, duration);
+        } else {
+            Vector2 velocity = BaseVelocity;
+            velocity.Y += Gravity * GravityScale * (float) delta;
+            velocity.Y = Mathf.Min(velocity.Y, FallData.MaxVelocity);
+            BaseVelocity = velocity;
+        }
     }
 
     public void CeilingHitStop() {

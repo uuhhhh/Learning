@@ -61,7 +61,7 @@ public partial class JumpingDefaultPhys : Node, IDefaultPhys {
     public void WallPressCheck() {
         int wallDirectionSign = Mathf.Sign(WallDirection);
         if (wallDirectionSign != 0 && (wallDirectionSign == -Mathf.Sign(DirectionGoing)
-                                       || ToLink.CurrentLocation == Location.Ground)) {
+                                       || ToLink.CurrentLocation == Location.WallNonGround)) {
             ToLink.TransitionToWall(WallDirection);
         }
     }
