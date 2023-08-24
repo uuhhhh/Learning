@@ -165,7 +165,7 @@ public partial class Jumping : Node {
 		}
 		if (CurrentJumpData.Velocity.X != 0) {
 			(_jumpTweenX, PropertyTweener t)
-				= LeftRight.SmoothlySetBaseVelocityX(CurrentJumpData.Velocity.X * JumpFacing, CurrentJumpData.AccelTimeX);
+				= LeftRight.SetIntendedSpeed(CurrentJumpData.Velocity.X * JumpFacing, CurrentJumpData.AccelTimeX);
 			t.SetTrans(Tween.TransitionType.Expo);
 		}
 	}

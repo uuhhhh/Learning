@@ -89,23 +89,25 @@ public partial class LeftRight : VelocitySource {
         _oldBaseVelocity = BaseVelocity;
     }
 
-    public void SetIntendedSpeed(float speed, float time) {
-        SetIntendedSpeedScale(speed / CurrentParams.BaseSpeed, time);
+    public (Tween, PropertyTweener) SetIntendedSpeed(float speed, float time) {
+        return SetIntendedSpeedScale(speed / CurrentParams.BaseSpeed, time);
     }
 
-    public void SetIntendedSpeedScale(float speedScale, float time) {
+    public (Tween, PropertyTweener) SetIntendedSpeedScale(float speedScale, float time) {
         _intendedSpeedScale = MathF.Round(speedScale, SPEED_SCALE_ROUNDING_DIGITS);
-        (_accelerationTween, _) =
+        (_accelerationTween, PropertyTweener t) =
             SmoothlySetBaseVelocityX(_intendedSpeedScale * CurrentParams.BaseSpeed, time);
         
         EmitSignal(SignalName.IntendedSpeedUpdate, IntendedSpeedScale);
+        
+        return (_accelerationTween, t);
     }
 
     private void UpdateSpeedToIntended() {
         IntendedSpeedScale = _intendedSpeedScale;
     }
 
-    private float GetAccelTime(float toSpeedScale) {
+    public float GetAccelTime(float toSpeedScale) {
         float speedScaleDelta = Mathf.Abs(CurrentSpeedScale - toSpeedScale);
         float speedScaleAccelMultiplier = speedScaleDelta;
         if (speedScaleDelta > 1) {
