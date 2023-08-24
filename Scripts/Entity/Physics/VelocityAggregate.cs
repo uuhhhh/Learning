@@ -5,7 +5,7 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 namespace Learning.Scripts.Entity.Physics; 
 
 public partial class VelocityAggregate : KinematicComp {
-    [Export] public bool AggregateChildren { get; private set; } = true;
+    [Export] private bool AggregateChildren { get; set; } = true;
     
     private readonly IList<VelocitySource> _velocitySources = new List<VelocitySource>();
     

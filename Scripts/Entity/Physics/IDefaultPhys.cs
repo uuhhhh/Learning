@@ -3,7 +3,8 @@
 namespace Learning.Scripts.Entity.Physics; 
 
 public interface IDefaultPhys {
-    [Export] bool DoNotLink { get; protected set; }
+    [Export] internal bool DoNotLink { get; set; }
+    [Export] internal bool DoNotCallExtraInit { get; set; }
 
     public void Link(KinematicComp physics) {
         physics.BecomeOnFloor += OnBecomeOnFloor;
@@ -15,6 +16,8 @@ public interface IDefaultPhys {
         physics.DirectionChangeX += OnDirectionChangeX;
         physics.DirectionChangeY += OnDirectionChangeY;
     }
+
+    void ExtraInit(KinematicComp physics) {}
 
     void OnBecomeOnFloor(KinematicComp physics) {}
     

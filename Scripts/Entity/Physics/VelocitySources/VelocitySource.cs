@@ -5,8 +5,8 @@ namespace Learning.Scripts.Entity.Physics.VelocitySources;
 public abstract partial class VelocitySource : Node {
     [Export] public bool ExcludeThisVelocity { get; private set; }
     [Export] public bool UseSpeedScale { get; private set; } = true;
-    [Export] public float SmoothlyDisableTime { get; private set; } = .25f;
-    [Export] public float SmoothlyEnableTime { get; private set; } = .25f;
+    [Export] public float DefaultSmoothlyDisableTime { get; private set; } = .25f;
+    [Export] public float DefaultSmoothlyEnableTime { get; private set; } = .25f;
 
     public bool Enabled { get; set; } = true;
 
@@ -96,6 +96,7 @@ public abstract partial class VelocitySource : Node {
     }
 
     public (Tween, PropertyTweener) SmoothlySetBaseVelocityX(float to, float duration) {
+        GD.Print($"smoothly set base x {to} {duration}");
         _baseVelocityXTweenReady = true;
         _tweeningBaseVelocityXTo = to;
         return SmoothlySet(ref _baseVelocityXTween,
@@ -145,19 +146,27 @@ public abstract partial class VelocitySource : Node {
         return SmoothlySet(ref _multiplierTween, nameof(Multiplier), from, to, duration);
     }
 
-    public void SmoothlyDisable() {
+    public void SmoothlyDisable(float timeToDisable) {
         if (!Enabled) return;
         
         _multiplierBeforeDisable = Multiplier;
-        (Tween t, _) = SmoothlySetMultiplier(0, SmoothlyDisableTime);
+        (Tween t, _) = SmoothlySetMultiplier(0, timeToDisable);
         t.Finished += () => Enabled = false;
     }
 
-    public void SmoothlyEnable() {
+    public void SmoothlyDisable() {
+        SmoothlyDisable(DefaultSmoothlyDisableTime);
+    }
+
+    public void SmoothlyEnable(float timeToEnable) {
         if (Enabled) return;
         
-        SmoothlySetMultiplier(0, _multiplierBeforeDisable, SmoothlyEnableTime);
+        SmoothlySetMultiplier(0, _multiplierBeforeDisable, timeToEnable);
         Enabled = true;
+    }
+
+    public void SmoothlyEnable() {
+        SmoothlyEnable(DefaultSmoothlyEnableTime);
     }
 
     public void AbortAllTransitions() {

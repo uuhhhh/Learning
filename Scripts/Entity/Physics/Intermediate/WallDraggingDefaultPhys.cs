@@ -4,6 +4,7 @@ namespace Learning.Scripts.Entity.Physics.Intermediate;
 
 public partial class WallDraggingDefaultPhys : Node, IDefaultPhys {
     [Export] public bool DoNotLink { get; set; }
+    [Export] public bool DoNotCallExtraInit { get; set; }
     [Export] private WallDragging ToLink { get; set; }
 
     public void OnBecomeOnFloor(KinematicComp physics) {

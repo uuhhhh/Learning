@@ -5,36 +5,54 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 public partial class Jumping : Node {
-	[Export] private Falling Falling { get; set; }
-	[Export] private LeftRight LeftRight { get; set; }
-
-	[Export] public JumpingData Ground { get; set; }
-	[Export] public JumpingData Air { get; set; }
-	[Export] public JumpingData Wall { get; set; }
+	[Export] internal Falling Falling { get; private set; }
+	[Export] internal LeftRight LeftRight { get; private set; }
 
 	[Export] private bool CoyoteGroundJumpEnabled { get; set; } = true;
 	[Export] private bool GroundJumpBufferEnabled { get; set; } = true;
 	[Export] private bool CoyoteWallJumpEnabled { get; set; } = true;
 	[Export] private bool WallJumpBufferEnabled { get; set; } = true;
+
+	[Export] public JumpingData Ground {
+		get => AllJumpData[(int)Location.Ground];
+		set => AllJumpData[(int)Location.Ground] = value;
+	}
+	[Export] public JumpingData Air {
+		get => AllJumpData[(int)Location.Air];
+		set => AllJumpData[(int)Location.Air] = value;
+	}
+	[Export] public JumpingData Wall {
+		get => AllJumpData[(int)Location.WallNonGround];
+		set => AllJumpData[(int)Location.WallNonGround] = value;
+	}
 	
+	private JumpingData[] AllJumpData { get; set; } = new JumpingData[Locations.NumLocationsNotNone()];
 	private JumpingData CurrentJumpData {
-		get => GetJumpData(CurrentJumpFromLocation);
-		set => SetJumpData(value, CurrentJumpFromLocation);
+		get => AllJumpData[(int)CurrentLocation];
+		set => AllJumpData[(int)CurrentLocation] = value;
 	}
 
+	public int NumGroundJumps {
+		get => NumJumpsAll[(int)Location.Ground];
+		set => NumJumpsAll[(int)Location.Ground] = value;
+	}
+	public int NumAirJumps {
+		get => NumJumpsAll[(int)Location.Air];
+		set => NumJumpsAll[(int)Location.Air] = value;
+	}
+	public int NumWallJumps {
+		get => NumJumpsAll[(int)Location.WallNonGround];
+		set => NumJumpsAll[(int)Location.WallNonGround] = value;
+	}
+	public int[] NumJumpsAll { get; set; } = new int[Locations.NumLocationsNotNone()];
+	public int CurrentNumJumps {
+		get => NumJumpsAll[(int)CurrentLocation];
+		private set => NumJumpsAll[(int)CurrentLocation] = value;
+	}
+	
 	public float JumpFacing { get; set; }
 	public Location CurrentLocation { get; private set; } = Location.None;
-	public Location CurrentJumpFromLocation => GetJumpFromLocation(CurrentLocation);
 	public Location JumpedFrom { get; private set; } = Location.None;
-	public bool WallPressing { get; private set; }
-
-	public int NumGroundJumps { get; set; }
-	public int NumAirJumps { get; set; }
-	public int NumWallJumps { get; set; }
-	public int CurrentNumJumps {
-		get => GetNumJumps(CurrentJumpFromLocation);
-		set => SetNumJumps(value, CurrentJumpFromLocation);
-	}
 
 	private Timer CoyoteJump { get; set; }
 	private Timer JumpBuffer { get; set; }
@@ -60,11 +78,8 @@ public partial class Jumping : Node {
 
 		CoyoteJump.Timeout += () => CurrentLocation = Location.Air;
 		CoyoteWallJump.Timeout += () => {
-			WallPressing = false;
 			CurrentLocation = Location.Air;
 		};
-
-		LeftRight.IntendedSpeedUpdate += WallPressCheck;
 		
 		ResetNumJumps();
 	}
@@ -82,68 +97,6 @@ public partial class Jumping : Node {
 		}
 	}
 
-	private void WallPressCheck(float leftRightIntendedSpeed) {
-		WallPressing = CurrentLocation == Location.WallNonGround 
-					   && (Mathf.Sign(_lastWallDirection) == -Mathf.Sign(leftRightIntendedSpeed)
-						   || WallPressing);
-	}
-
-	public Location GetJumpFromLocation(Location forWhich) {
-		return forWhich switch {
-			Location.Ground => Location.Ground,
-			Location.Air => Location.Air,
-			Location.WallNonGround when !WallPressing => Location.Air,
-			Location.WallNonGround when WallPressing => Location.WallNonGround,
-			_ => Location.None
-		};
-	}
-
-	private JumpingData GetJumpData(Location forWhich) {
-		return forWhich switch {
-			Location.Ground => Ground,
-			Location.Air => Air,
-			Location.WallNonGround => Wall,
-			_ => null
-		};
-	}
-
-	private void SetJumpData(JumpingData newData, Location forWhich) {
-		switch (forWhich) {
-			case Location.Ground:
-				Ground = newData;
-				break;
-			case Location.Air:
-				Air = newData;
-				break;
-			case Location.WallNonGround:
-				Wall = newData;
-				break;
-		}
-	}
-
-	public int GetNumJumps(Location forWhich) {
-		return forWhich switch {
-			Location.Ground => NumGroundJumps,
-			Location.Air => NumAirJumps,
-			Location.WallNonGround => NumWallJumps,
-			_ => 0
-		};
-	}
-
-	public void SetNumJumps(int numJumps, Location forWhich) {
-		switch (forWhich) {
-			case Location.Ground:
-				NumGroundJumps = numJumps;
-				break;
-			case Location.Air:
-				NumAirJumps = numJumps;
-				break;
-			case Location.WallNonGround:
-				NumWallJumps = numJumps;
-				break;
-		}
-	}
-
 	public void ResetNumJumps() {
 		foreach (Location l in Enum.GetValues<Location>()) {
 			ResetNumJumps(l);
@@ -152,8 +105,8 @@ public partial class Jumping : Node {
 	
 	public void ResetNumJumps(Location which) {
 		if (which == Location.None) return;
-		
-		SetNumJumps(GetJumpData(which).NumJumps, which);
+
+		NumJumpsAll[(int)which] = AllJumpData[(int)which].NumJumps;
 	}
 
 	public void AttemptJump() {
@@ -192,7 +145,7 @@ public partial class Jumping : Node {
 			CurrentNumJumps--;
 		}
 		
-		JumpedFrom = CurrentJumpFromLocation;
+		JumpedFrom = CurrentLocation;
 		EmitSignal(SignalName.Jumped, (int)JumpedFrom);
 		if (CoyoteJump.TimeLeft > 0 || CoyoteWallJump.TimeLeft > 0) {
 			CurrentLocation = Location.Air;
@@ -221,7 +174,7 @@ public partial class Jumping : Node {
 		JumpBuffer.Stop();
 		WallJumpBuffer.Stop();
 
-		JumpingData lastJumpData = GetJumpData(GetJumpFromLocation(JumpedFrom));
+		JumpingData lastJumpData = AllJumpData[(int) JumpedFrom];
 		if ((CurrentLocation == Location.Air && Falling.Velocity.Y < GetJumpCancelVelocityThreshold())
 			|| InJumpTransitionY()) {
 			Falling.SmoothlySetBaseVelocityY(lastJumpData.CancelVelocity, lastJumpData.CancelAccelTime);
@@ -231,7 +184,7 @@ public partial class Jumping : Node {
 	}
 
 	private float GetJumpCancelVelocityThreshold() {
-		JumpingData lastJumpData = GetJumpData(GetJumpFromLocation(JumpedFrom));
+		JumpingData lastJumpData = AllJumpData[(int) JumpedFrom];
 		float extraVelocity = Falling.Gravity * Falling.GravityScale * lastJumpData.CancelAccelTime;
 		return lastJumpData.CancelVelocity - extraVelocity;
 	}
@@ -248,7 +201,6 @@ public partial class Jumping : Node {
 		CoyoteJump.Stop();
 		CoyoteWallJump.Stop();
 		
-		WallPressing = false;
 		CurrentLocation = Location.Ground;
 		AttemptBufferedGroundJump();
 	}
@@ -265,7 +217,6 @@ public partial class Jumping : Node {
 		           && CurrentLocation == Location.WallNonGround) {
 			CoyoteWallJump.Start();
 		} else {
-			WallPressing = false;
 			CurrentLocation = Location.Air;
 		}
 	}
@@ -276,7 +227,6 @@ public partial class Jumping : Node {
 		
 		CurrentLocation = Location.WallNonGround;
 		JumpFacing = _lastWallDirection = wallDirection;
-		WallPressCheck(LeftRight.IntendedSpeed);
 		AttemptBufferedWallJump();
 	}
 }

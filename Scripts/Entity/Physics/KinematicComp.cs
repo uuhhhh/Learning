@@ -3,7 +3,8 @@
 namespace Learning.Scripts.Entity.Physics; 
 
 public partial class KinematicComp : CharacterBody2D {
-    [Export] public bool AutoLinkImmediateChildren { get; set; } = true;
+    [Export] private bool AutoLinkImmediateChildren { get; set; } = true;
+    [Export] private bool AutoExtraInitImmediateChildren { get; set; } = true;
     [Export] private float DirectionChangeEpsilon { get; set; } = .01f;
 
     // Whenever a new signal is added here, be sure the change is reflected in IKinematicCompLinkable also
@@ -33,6 +34,9 @@ public partial class KinematicComp : CharacterBody2D {
         if (AutoLinkImmediateChildren) {
             LinkImmediateChildren();
         }
+        if (AutoExtraInitImmediateChildren) {
+            ExtraInitImmediateChildren();
+        }
         SignalInitialState();
     }
 
@@ -40,6 +44,14 @@ public partial class KinematicComp : CharacterBody2D {
         foreach (Node c in GetChildren()) {
             if (c is IDefaultPhys { DoNotLink: false } l) {
                 l.Link(this);
+            }
+        }
+    }
+
+    private void ExtraInitImmediateChildren() {
+        foreach (Node c in GetChildren()) {
+            if (c is IDefaultPhys { DoNotCallExtraInit: false } l) {
+                l.ExtraInit(this);
             }
         }
     }
