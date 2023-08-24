@@ -57,7 +57,7 @@ ToLink = NodePath("../WallDragging")
 
 [node name="WallJumpInputTakeover" type="Timer" parent="."]
 process_callback = 0
-wait_time = 0.1
+wait_time = 0.05
 one_shot = true
 
 [node name="WallDragChecker" type="CharacterBody2D" parent="."]

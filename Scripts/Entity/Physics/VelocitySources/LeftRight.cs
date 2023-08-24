@@ -9,7 +9,7 @@ public partial class LeftRight : VelocitySource {
         set {
             _ground = value;
             if (IsNodeReady() && _isOnGround) {
-                UpdateSpeed();
+                UpdateSpeedToIntended();
             }
         }
     }
@@ -19,7 +19,7 @@ public partial class LeftRight : VelocitySource {
         set {
             _air = value;
             if (IsNodeReady() && !_isOnGround) {
-                UpdateSpeed();
+                UpdateSpeedToIntended();
             }
         }
     }
@@ -30,34 +30,25 @@ public partial class LeftRight : VelocitySource {
         get => _isOnGround;
         set {
             _isOnGround = value;
-            UpdateSpeed();
+            UpdateSpeedToIntended();
         }
     }
     
-    public float CurrentSpeedScale {
-        get => CurrentSpeed / Params.BaseSpeed;
-        private set => CurrentSpeed = value * Params.BaseSpeed;
-    }
+    public float CurrentSpeedScale => CurrentSpeed / CurrentParams.BaseSpeed;
     
-    public float CurrentSpeed {
-        get => BaseVelocity.X;
-        private set => (_accelerationTween, _) = SmoothlySetBaseVelocityX(value, GetAccelTime());
-    }
+    public float CurrentSpeed => BaseVelocity.X;
 
     public float IntendedSpeedScale {
         get => _intendedSpeedScale;
-        set {
-            _intendedSpeedScale = MathF.Round(value, SPEED_SCALE_ROUNDING_DIGITS);
-            UpdateSpeed();
-        }
+        set => SetIntendedSpeedScale(value, GetAccelTime(value));
     }
 
     public float IntendedSpeed {
-        get => IntendedSpeedScale * Params.BaseSpeed;
-        set => IntendedSpeedScale = value / Params.BaseSpeed;
+        get => IntendedSpeedScale * CurrentParams.BaseSpeed;
+        set => IntendedSpeedScale = value / CurrentParams.BaseSpeed;
     }
 
-    private LeftRightData Params => IsOnGround ? Ground : Air;
+    private LeftRightData CurrentParams => IsOnGround ? Ground : Air;
 
     private LeftRightData _ground;
     private LeftRightData _air;
@@ -98,25 +89,36 @@ public partial class LeftRight : VelocitySource {
         _oldBaseVelocity = BaseVelocity;
     }
 
-    private void UpdateSpeed() {
-        CurrentSpeedScale = IntendedSpeedScale;
+    public void SetIntendedSpeed(float speed, float time) {
+        SetIntendedSpeedScale(speed / CurrentParams.BaseSpeed, time);
+    }
+
+    public void SetIntendedSpeedScale(float speedScale, float time) {
+        _intendedSpeedScale = MathF.Round(speedScale, SPEED_SCALE_ROUNDING_DIGITS);
+        (_accelerationTween, _) =
+            SmoothlySetBaseVelocityX(_intendedSpeedScale * CurrentParams.BaseSpeed, time);
+        
         EmitSignal(SignalName.IntendedSpeedUpdate, IntendedSpeedScale);
     }
 
-    private float GetAccelTime() {
-        float speedScaleDelta = Mathf.Abs(CurrentSpeedScale - IntendedSpeedScale);
-        float speedScaleAccelMultiplier = speedScaleDelta;
-        if (speedScaleDelta > 1) {
-            speedScaleAccelMultiplier = Mathf.Pow(speedScaleAccelMultiplier, Params.SpeedScaleHighDeltaPower);
-        }
-        
-        return speedScaleAccelMultiplier * GetAccelBaseTime();
+    private void UpdateSpeedToIntended() {
+        IntendedSpeedScale = _intendedSpeedScale;
     }
 
-    private float GetAccelBaseTime() {
-        bool decelerating = IntendedSpeedScale == 0
-                            || (Mathf.Abs(IntendedSpeedScale) < Mathf.Abs(CurrentSpeedScale)
-                                && Mathf.Sign(IntendedSpeedScale) == Mathf.Sign(CurrentSpeedScale));
-        return decelerating ? Params.DecelBaseTime : Params.AccelBaseTime;
+    private float GetAccelTime(float toSpeedScale) {
+        float speedScaleDelta = Mathf.Abs(CurrentSpeedScale - toSpeedScale);
+        float speedScaleAccelMultiplier = speedScaleDelta;
+        if (speedScaleDelta > 1) {
+            speedScaleAccelMultiplier = Mathf.Pow(speedScaleAccelMultiplier, CurrentParams.SpeedScaleHighDeltaPower);
+        }
+        
+        return speedScaleAccelMultiplier * GetAccelBaseTime(toSpeedScale);
+    }
+
+    private float GetAccelBaseTime(float toSpeedScale) {
+        bool decelerating = toSpeedScale == 0
+                            || (Mathf.Abs(toSpeedScale) < Mathf.Abs(CurrentSpeedScale)
+                                && Mathf.Sign(toSpeedScale) == Mathf.Sign(CurrentSpeedScale));
+        return decelerating ? CurrentParams.DecelBaseTime : CurrentParams.AccelBaseTime;
     }
 }
