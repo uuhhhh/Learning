@@ -4,7 +4,7 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 public partial class WallDragging : Node {
-    [Export] private Falling Falling { get; set; }
+    [Export] internal Falling Falling { get; set; }
     [Export] public WallDraggingData Wall {
         get => _wall;
         set {

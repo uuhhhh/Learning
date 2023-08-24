@@ -96,7 +96,6 @@ public abstract partial class VelocitySource : Node {
     }
 
     public (Tween, PropertyTweener) SmoothlySetBaseVelocityX(float to, float duration) {
-        GD.Print($"smoothly set base x {to} {duration}");
         _baseVelocityXTweenReady = true;
         _tweeningBaseVelocityXTo = to;
         return SmoothlySet(ref _baseVelocityXTween,
