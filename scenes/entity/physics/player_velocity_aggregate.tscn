@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/KinematicComp.cs" id="14_kscxd"]
 
 [node name="PlayerVelocityAggregate" type="CharacterBody2D"]
+collision_layer = 2
 floor_snap_length = 3.0
 script = ExtResource("1_7tts4")
 
@@ -62,6 +63,7 @@ wait_time = 0.05
 one_shot = true
 
 [node name="WallDragChecker" type="CharacterBody2D" parent="."]
+collision_layer = 2
 script = ExtResource("14_kscxd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallDragChecker"]

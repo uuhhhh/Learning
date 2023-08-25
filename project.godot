@@ -54,8 +54,8 @@ jump={
 
 [layer_names]
 
-3d_physics/layer_1="Environment"
-3d_physics/layer_2="Environment Detection"
+2d_physics/layer_1="Environment"
+2d_physics/layer_2="Player Hitbox"
 
 [rendering]
 
