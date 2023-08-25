@@ -67,7 +67,7 @@ public partial class WallDragging : Node {
         DraggingCheck();
     }
 
-    public void DraggingCheck() {
+    internal void DraggingCheck() {
         IsDragging = ValidWallTouching && Falling.VelocityAfterTransition.Y >= Wall.VelocityDragThreshold;
     }
 }

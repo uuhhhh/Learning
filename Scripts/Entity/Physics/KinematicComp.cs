@@ -7,7 +7,7 @@ public partial class KinematicComp : CharacterBody2D {
     [Export] private bool AutoExtraInitImmediateChildren { get; set; } = true;
     [Export] private float DirectionChangeEpsilon { get; set; } = .01f;
 
-    // Whenever a new signal is added here, be sure the change is reflected in IKinematicCompLinkable also
+    // Whenever a new signal is added here, be sure the change is reflected in IDefaultPhys also
     [Signal]
     public delegate void BecomeOnFloorEventHandler(KinematicComp state);
     [Signal]
@@ -42,7 +42,7 @@ public partial class KinematicComp : CharacterBody2D {
 
     private void LinkImmediateChildren() {
         foreach (Node c in GetChildren()) {
-            if (c is IDefaultPhys { DoNotLink: false } l) {
+            if (c is DefaultPhys { DoNotLink: false } l) {
                 l.Link(this);
             }
         }
@@ -50,7 +50,7 @@ public partial class KinematicComp : CharacterBody2D {
 
     private void ExtraInitImmediateChildren() {
         foreach (Node c in GetChildren()) {
-            if (c is IDefaultPhys { DoNotCallExtraInit: false } l) {
+            if (c is DefaultPhys { DoNotCallExtraInit: false } l) {
                 l.ExtraInit(this);
             }
         }
@@ -133,7 +133,7 @@ public partial class KinematicComp : CharacterBody2D {
         }
     }
     
-    public void SetParentPositionToOwn(Node2D parent) {
+    internal void SetParentPositionToOwn(Node2D parent) {
         parent.Position = GlobalPosition;
         Position = Vector2.Zero;
     }

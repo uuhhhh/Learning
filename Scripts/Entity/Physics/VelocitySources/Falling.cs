@@ -1,5 +1,4 @@
-﻿using System;
-using Godot;
+﻿using Godot;
 
 namespace Learning.Scripts.Entity.Physics.VelocitySources; 
 
@@ -29,6 +28,7 @@ public partial class Falling : VelocitySource {
             }
         }
     }
+    
     public float GravityScale => Velocity.Y < 0 ? FallData.UpwardsGravityScale : FallData.DownwardsGravityScale;
     
     public readonly float Gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
@@ -67,7 +67,7 @@ public partial class Falling : VelocitySource {
         }
     }
 
-    public void CeilingHitStop() {
+    internal void CeilingHitStop() {
         _originalCeilingHitStopTime = Mathf.Abs(BaseVelocity.Y) / (Gravity * GravityScale);
         (_ceilingHitStopTween, _) =
             SmoothlySetBaseVelocityY(0, _originalCeilingHitStopTime * FallData.CeilingHitStopTimeScale);

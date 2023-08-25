@@ -3,10 +3,10 @@
 namespace Learning.Scripts.Entity.Physics.VelocitySources; 
 
 public abstract partial class VelocitySource : Node {
-    [Export] public bool ExcludeThisVelocity { get; private set; }
-    [Export] public bool UseSpeedScale { get; private set; } = true;
-    [Export] public float DefaultSmoothlyDisableTime { get; private set; } = .25f;
-    [Export] public float DefaultSmoothlyEnableTime { get; private set; } = .25f;
+    [Export] internal bool ExcludeThisVelocity { get; private set; }
+    [Export] internal bool UseSpeedScale { get; private set; } = true;
+    [Export] internal float DefaultSmoothlyDisableTime { get; private set; } = .25f;
+    [Export] internal float DefaultSmoothlyEnableTime { get; private set; } = .25f;
 
     public bool Enabled { get; set; } = true;
 
@@ -15,10 +15,10 @@ public abstract partial class VelocitySource : Node {
     public Vector2 BaseVelocity { get; set; }
 
     public Vector2 BaseVelocityAfterTransition =>
-        TransitioningBaseVelocityX || TransitioningVelocityY ?
+        TransitioningBaseVelocityX || TransitioningBaseVelocityY ?
             new Vector2(
                 TransitioningBaseVelocityX ? _tweeningBaseVelocityXTo : BaseVelocity.X,
-                TransitioningVelocityY ? _tweeningBaseVelocityYTo : BaseVelocity.Y)
+                TransitioningBaseVelocityY ? _tweeningBaseVelocityYTo : BaseVelocity.Y)
             : BaseVelocity;
     
     public Vector2 Velocity => Enabled ? BaseVelocity * Multiplier : Vector2.Zero;
@@ -27,7 +27,7 @@ public abstract partial class VelocitySource : Node {
     
     public bool TransitioningBaseVelocityX => _baseVelocityXTween != null && _baseVelocityXTween.IsValid();
     
-    public bool TransitioningVelocityY => _baseVelocityYTween != null && _baseVelocityYTween.IsValid();
+    public bool TransitioningBaseVelocityY => _baseVelocityYTween != null && _baseVelocityYTween.IsValid();
 
     public bool TransitioningMultiplier => _multiplierTween != null && _multiplierTween.IsValid();
     
@@ -69,6 +69,7 @@ public abstract partial class VelocitySource : Node {
         string propertyName,
         Variant to,
         float duration) {
+        
         toSet?.Kill();
         toSet = CreateTween();
         toSet.Pause();
@@ -89,6 +90,7 @@ public abstract partial class VelocitySource : Node {
         Variant from,
         Variant to,
         float duration) {
+        
         (Tween t, PropertyTweener p) = SmoothlySet(ref toSet, propertyName, to, duration);
         p = p.From(from);
 

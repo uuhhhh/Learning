@@ -77,9 +77,7 @@ public partial class Jumping : Node {
 		WallJumpBuffer = GetNode<Timer>(nameof(WallJumpBuffer));
 
 		CoyoteJump.Timeout += () => CurrentLocation = Location.Air;
-		CoyoteWallJump.Timeout += () => {
-			CurrentLocation = Location.Air;
-		};
+		CoyoteWallJump.Timeout += () => CurrentLocation = Location.Air;
 		
 		ResetNumJumps();
 	}

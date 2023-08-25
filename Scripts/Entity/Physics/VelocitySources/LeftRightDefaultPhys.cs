@@ -2,16 +2,14 @@
 
 namespace Learning.Scripts.Entity.Physics.VelocitySources;
 
-public partial class LeftRightDefaultPhys : Node, IDefaultPhys {
-    [Export] public bool DoNotLink { get; set; }
-    [Export] public bool DoNotCallExtraInit { get; set; }
+public partial class LeftRightDefaultPhys : DefaultPhys {
     [Export] private LeftRight ToLink { get; set; }
 
-    public void OnBecomeOnFloor(KinematicComp physics) {
+    internal override void OnBecomeOnFloor(KinematicComp physics) {
         ToLink.IsOnGround = true;
     }
 
-    public void OnBecomeOffFloor(KinematicComp physics) {
+    internal override void OnBecomeOffFloor(KinematicComp physics) {
         ToLink.IsOnGround = false;
     }
 }

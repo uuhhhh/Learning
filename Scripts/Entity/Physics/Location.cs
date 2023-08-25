@@ -10,7 +10,7 @@ public enum Location {
     None = -1
 }
 
-static class Locations {
+public static class Locations {
     public static int NumLocationsNotNone() {
         return Enum.GetValues<Location>().Cast<int>().Max() + 1;
     }

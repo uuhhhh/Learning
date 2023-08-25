@@ -21,8 +21,7 @@ public partial class InputComp : Node {
 	[Signal]
 	public delegate void JumpInputOffEventHandler();
 	
-	public override void _Input(InputEvent @event)
-	{
+	public override void _Input(InputEvent @event) {
 		if (@event.IsActionPressed("moveLeft")) {
 			EmitSignal(SignalName.LeftInputOn);
 		} else if (@event.IsActionReleased("moveLeft")) {

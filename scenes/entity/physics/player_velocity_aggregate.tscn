@@ -44,8 +44,8 @@ LeftRight = NodePath("../LeftRight")
 
 [node name="JumpingDefaultPhys" type="Node" parent="." node_paths=PackedStringArray("ToLink")]
 script = ExtResource("10_iqiow")
-DoNotCallExtraInit = true
 ToLink = NodePath("../Jumping")
+DoNotCallExtraInit = true
 
 [node name="WallDragging" type="Node" parent="." node_paths=PackedStringArray("Falling")]
 script = ExtResource("11_5grid")
