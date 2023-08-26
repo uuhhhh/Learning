@@ -4,7 +4,7 @@ namespace Learning.Scripts.Entity.Physics.Intermediate;
 
 [GlobalClass]
 public partial class JumpingData : Resource {
-    public const int UNLIMITED_JUMPS = -1;
+    public const int UnlimitedJumps = -1;
     
     [Export] public int NumJumps { get; private set; }
     [Export] public Vector2 Velocity { get; private set; }
