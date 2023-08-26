@@ -9,8 +9,8 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
     public LeftRight LeftRight { get; private set; }
     public Jumping Jumping { get; private set; }
     public WallDragging WallDragging { get; private set; }
-    public Timer WallJumpInputTakeover { get; private set; }
     
+    private Timer WallJumpInputTakeover { get; set; }
     private WallDraggingDefaultPhys WallDraggingDefaultPhys { get; set; }
     private JumpingDefaultPhys JumpingDefaultPhys { get; set; }
 

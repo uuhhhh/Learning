@@ -21,7 +21,6 @@ public partial class WallDraggingDefaultPhys : DefaultPhys {
 
     internal override void OnBecomeOffWall(KinematicComp physics) {
         ToLink.ValidWallTouching = false;
-        ToLink.IsDragging = false;
     }
 
     internal static bool IsOnValidWall(CharacterBody2D physics) {

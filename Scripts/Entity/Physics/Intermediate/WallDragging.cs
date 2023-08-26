@@ -18,7 +18,7 @@ public partial class WallDragging : Node {
     
     public bool IsDragging {
         get => _isDragging;
-        set {
+        private set {
             if (value == IsDragging) return;
 
             _isDragging = value;
@@ -38,6 +38,10 @@ public partial class WallDragging : Node {
             if (value == _isValidWallTouching) return;
 
             _isValidWallTouching = value;
+
+            if (!_isValidWallTouching) {
+                IsDragging = false;
+            }
             EmitSignal(ValidWallTouching ? SignalName.StartedValidWallTouching : SignalName.StoppedValidWallTouching);
         }
     }

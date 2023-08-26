@@ -6,7 +6,19 @@ public partial class Falling : VelocitySource {
     [Export] public FallingData FallData {
         get => _fallData;
         set {
+            FallingData oldFallData = _fallData;
             _fallData = value;
+
+            if (_decelerateToMaxVelocityTween != null && _decelerateToMaxVelocityTween.IsValid()) {
+                if (BaseVelocity.Y > FallData.MaxVelocity) {
+                    float newDuration
+                        = _originalDecelerateToMaxVelocityTime / oldFallData.DecelToMaxVelocityTimePerVelocity *
+                          FallData.DecelToMaxVelocityTimePerVelocity;
+                    _decelerateToMaxVelocityTween.SetSpeedScale(1 / newDuration);
+                } else {
+                    _decelerateToMaxVelocityTween.Kill();
+                }
+            }
             if (_ceilingHitStopTween != null && _ceilingHitStopTween.IsValid()) {
                 float newDuration = _originalCeilingHitStopTime * FallData.CeilingHitStopTimeScale;
                 _ceilingHitStopTween.SetSpeedScale(1 / newDuration);
@@ -40,6 +52,7 @@ public partial class Falling : VelocitySource {
     private float _originalCeilingHitStopTime;
     private Tween _ceilingHitStopTween;
 
+    private float _originalDecelerateToMaxVelocityTime;
     private Tween _decelerateToMaxVelocityTween;
     
     [Signal]
@@ -56,9 +69,10 @@ public partial class Falling : VelocitySource {
         if (BaseVelocity.Y > FallData.MaxVelocity) {
             if (_decelerateToMaxVelocityTween != null && _decelerateToMaxVelocityTween.IsValid()) return;
 
-            float duration = (BaseVelocity.Y - FallData.MaxVelocity) * FallData.DecelToMaxVelocityTimePerVelocity;
+            _originalDecelerateToMaxVelocityTime
+                = (BaseVelocity.Y - FallData.MaxVelocity) * FallData.DecelToMaxVelocityTimePerVelocity;
             (_decelerateToMaxVelocityTween, PropertyTweener t)
-                = SmoothlySetBaseVelocityY(FallData.MaxVelocity, duration);
+                = SmoothlySetBaseVelocityY(FallData.MaxVelocity, _originalDecelerateToMaxVelocityTime);
             t.SetEase(Tween.EaseType.Out);
             t.SetTrans(Tween.TransitionType.Quad);
         } else {
