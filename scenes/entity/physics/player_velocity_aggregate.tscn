@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://dx8gnhdieo400"]
+[gd_scene load_steps=14 format=3 uid="uid://dx8gnhdieo400"]
 
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/PlayerVelocityAggregate.cs" id="1_7tts4"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/VelocitySources/Falling.cs" id="2_eahxk"]
@@ -13,7 +13,6 @@
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/JumpingDefaultPhys.cs" id="10_iqiow"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallDragging.cs" id="11_5grid"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallDraggingDefaultPhys.cs" id="13_fpxj0"]
-[ext_resource type="Script" path="res://Scripts/Entity/Physics/KinematicComp.cs" id="14_kscxd"]
 
 [node name="PlayerVelocityAggregate" type="CharacterBody2D"]
 collision_layer = 2
@@ -61,9 +60,3 @@ ToLink = NodePath("../WallDragging")
 process_callback = 0
 wait_time = 0.05
 one_shot = true
-
-[node name="WallDragChecker" type="CharacterBody2D" parent="."]
-collision_layer = 2
-script = ExtResource("14_kscxd")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallDragChecker"]

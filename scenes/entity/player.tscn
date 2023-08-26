@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cpr2hwrjvvld7"]
+[gd_scene load_steps=11 format=3 uid="uid://cpr2hwrjvvld7"]
 
 [ext_resource type="Script" path="res://Scripts/Entity/Player.cs" id="1_uyfcp"]
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="2_q7yrb"]
@@ -10,17 +10,14 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dih1a"]
 size = Vector2(16, 16)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_jhhyi"]
-size = Vector2(16, 8)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nhbww"]
 size = Vector2(16, 1)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u5cd1"]
-size = Vector2(1, 16)
+size = Vector2(1, 8)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_66ae7"]
-size = Vector2(1, 16)
+size = Vector2(1, 8)
 
 [node name="Player" type="Node2D"]
 script = ExtResource("1_uyfcp")
@@ -39,28 +36,26 @@ script = ExtResource("3_xfxpf")
 position = Vector2(0, -8)
 shape = SubResource("RectangleShape2D_dih1a")
 
-[node name="CollisionShape2D" parent="PlayerVelocityAggregate/WallDragChecker" index="0"]
-position = Vector2(0, -4)
-shape = SubResource("RectangleShape2D_jhhyi")
-debug_color = Color(0.894118, 0.301961, 0.286275, 0.419608)
-
 [node name="FloorDetector" type="Area2D" parent="."]
-script = ExtResource("5_ym2te")
+script = ExtResource("5_ua6gy")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FloorDetector"]
 position = Vector2(2.38419e-07, 0.5)
 shape = SubResource("RectangleShape2D_nhbww")
+debug_color = Color(0.796078, 0.329412, 0.305882, 0.419608)
 
 [node name="WallDetector" type="Area2D" parent="."]
 script = ExtResource("6_bih8x")
 
 [node name="CollisionShapeLeft" type="CollisionShape2D" parent="WallDetector"]
-position = Vector2(-8.5, -8)
+position = Vector2(-8.5, -4)
 shape = SubResource("RectangleShape2D_u5cd1")
+debug_color = Color(0.796078, 0.329412, 0.305882, 0.419608)
 
 [node name="CollisionShapeRight" type="CollisionShape2D" parent="WallDetector"]
-position = Vector2(8.5, -8)
+position = Vector2(8.5, -4)
 shape = SubResource("RectangleShape2D_66ae7")
+debug_color = Color(0.796078, 0.329412, 0.305882, 0.419608)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -8)

@@ -13,11 +13,25 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
     
     private WallDraggingDefaultPhys WallDraggingDefaultPhys { get; set; }
     private JumpingDefaultPhys JumpingDefaultPhys { get; set; }
-    private KinematicComp WallDragChecker { get; set; }
+
+    public bool CanDoWallBehavior {
+        get => _canDoWallBehavior;
+        set {
+            _canDoWallBehavior = value;
+
+            ValidWallTouchingCheck(this);
+            
+            if (!_canDoWallBehavior && Jumping.CurrentLocationAfterTransition == Location.WallNonGround) {
+                Jumping.TransitionToAir(immediately: true);
+            }
+        }
+    }
 
     private Vector2 _wallDragCheckerInitialPosition;
     
     private int _playerLeftRightInput;
+
+    private bool _canDoWallBehavior;
 
     public override void _Ready() {
         base._Ready();
@@ -26,7 +40,7 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
         InitNumJumpsBehavior();
         InitWallJumpInputTakeoverBehavior();
         InitWallTouchLeftRightStopBehavior();
-        InitWallDragCheckerWallTouchingBehavior();
+        ModifyWallTouchingBehavior();
     }
 
     private void SetChildren() {
@@ -38,9 +52,6 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
 
         WallDraggingDefaultPhys = GetNode<WallDraggingDefaultPhys>(nameof(WallDraggingDefaultPhys));
         JumpingDefaultPhys = GetNode<JumpingDefaultPhys>(nameof(JumpingDefaultPhys));
-        
-        WallDragChecker = GetNode<KinematicComp>(nameof(WallDragChecker));
-        _wallDragCheckerInitialPosition = WallDragChecker.Position;
     }
 
     private void InitNumJumpsBehavior() {
@@ -67,42 +78,27 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
         BecomeOnFloor += _ => UpdateLeftRightSpeed();
     }
 
-    private void InitWallDragCheckerWallTouchingBehavior() {
+    private void ModifyWallTouchingBehavior() {
         BecomeOnWall -= WallDraggingDefaultPhys.OnBecomeOnWall;
+        BecomeOnWall -= JumpingDefaultPhys.OnBecomeOnWall;
         BecomeOnWall += ValidWallTouchingCheck;
-        WallDragChecker.BecomeOnWall += ValidWallTouchingCheck;
         
         BecomeOffFloor -= WallDraggingDefaultPhys.OnBecomeOffFloor;
         BecomeOffFloor += ValidWallTouchingCheck;
-        WallDragChecker.BecomeOffFloor += ValidWallTouchingCheck;
-        
-        WallDragChecker.BecomeOffWall += _ => NonWallDragCheckerPartStillDraggingCheck();
-        WallDragChecker.BecomeOffWall += WallDraggingDefaultPhys.OnBecomeOffWall;
-        
-        BecomeOnWall -= JumpingDefaultPhys.OnBecomeOnWall;
-        WallDragChecker.BecomeOnWall += JumpingDefaultPhys.OnBecomeOnWall;
     }
 
     private void ValidWallTouchingCheck(KinematicComp physics) {
-        bool playerPressingAgainstWall = Mathf.Sign(GetWallNormal().X) == -Mathf.Sign(_playerLeftRightInput);
+        bool playerPressingAgainstWall = Mathf.Sign(physics.GetWallNormal().X) == -Mathf.Sign(_playerLeftRightInput);
         bool noInputDragging = WallDragging.IsDragging && _playerLeftRightInput == 0;
 
         WallDragging.ValidWallTouching =
             WallDraggingDefaultPhys.IsOnValidWall(physics)
             && (playerPressingAgainstWall || noInputDragging)
-            && WallDragChecker.IsOnWall();
-    }
+            && CanDoWallBehavior;
 
-    private void NonWallDragCheckerPartStillDraggingCheck() {
-        if (IsOnWall() && !WallDragChecker.IsOnWall() && Jumping.CurrentLocation == Location.WallNonGround) {
-            Jumping.TransitionToAir(immediately: true);
+        if (physics.IsOnWall() && CanDoWallBehavior) {
+            JumpingDefaultPhys.OnBecomeOnWall(physics);
         }
-    }
-
-    public override void _PhysicsProcess(double delta) {
-        base._PhysicsProcess(delta);
-
-        WallDragChecker.Position = _wallDragCheckerInitialPosition;
     }
 
     public void MoveLeft() {

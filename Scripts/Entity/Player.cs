@@ -4,24 +4,39 @@ using Learning.Scripts.Entity.Physics;
 namespace Learning.Scripts.Entity; 
 
 public partial class Player : Node2D {
-    private InputComp _input;
-    private PlayerVelocityAggregate _physics;
+    public InputComp Input { get; private set; }
+    public PlayerVelocityAggregate Physics { get; private set; }
+    public FloorDetector FloorDetector { get; private set; }
+    public WallDetector WallDetector { get; private set; }
 
     public override void _Ready() {
-        _input = GetNode<InputComp>(nameof(InputComp));
-        _physics = GetNode<PlayerVelocityAggregate>(nameof(PlayerVelocityAggregate));
+        SetChildren();
 
-        _input.LeftInputOn += _physics.MoveLeft;
-        _input.LeftInputOff += _physics.MoveRight;
-        _input.RightInputOn += _physics.MoveRight;
-        _input.RightInputOff += _physics.MoveLeft;
-        _input.JumpInputOn += _physics.AttemptJump;
-        _input.JumpInputOff += _physics.JumpCancel;
+        ConfigureInput();
 
-        ProcessPhysicsPriority = _physics.ProcessPhysicsPriority + 1;
+        WallDetector.ZeroToOneEnvObjects += () => Physics.CanDoWallBehavior = true;
+        WallDetector.ZeroEnvObjects += () => Physics.CanDoWallBehavior = false;
+        
+        ProcessPhysicsPriority = Physics.ProcessPhysicsPriority + 1;
+    }
+
+    private void SetChildren() {
+        Input = GetNode<InputComp>(nameof(InputComp));
+        Physics = GetNode<PlayerVelocityAggregate>(nameof(PlayerVelocityAggregate));
+        FloorDetector = GetNode<FloorDetector>(nameof(FloorDetector));
+        WallDetector = GetNode<WallDetector>(nameof(WallDetector));
+    }
+
+    private void ConfigureInput() {
+        Input.LeftInputOn += Physics.MoveLeft;
+        Input.LeftInputOff += Physics.MoveRight;
+        Input.RightInputOn += Physics.MoveRight;
+        Input.RightInputOff += Physics.MoveLeft;
+        Input.JumpInputOn += Physics.AttemptJump;
+        Input.JumpInputOff += Physics.JumpCancel;
     }
 
     public override void _PhysicsProcess(double delta) {
-        _physics.SetParentPositionToOwn(this);
+        Physics.SetParentPositionToOwn(this);
     }
 }

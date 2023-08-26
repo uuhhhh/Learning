@@ -52,6 +52,11 @@ public partial class Jumping : Node {
 	
 	public float JumpFacing { get; set; }
 	public Location CurrentLocation { get; private set; } = Location.None;
+	public Location CurrentLocationAfterTransition =>
+		(CurrentLocation == Location.WallNonGround && CoyoteWallJump.TimeLeft > 0) ||
+		 (CurrentLocation == Location.Ground && CoyoteJump.TimeLeft > 0)
+			? Location.Air
+			: CurrentLocation;
 	public Location JumpedFrom { get; private set; } = Location.None;
 
 	private Timer CoyoteJump { get; set; }
@@ -80,19 +85,6 @@ public partial class Jumping : Node {
 		CoyoteWallJump.Timeout += () => CurrentLocation = Location.Air;
 		
 		ResetNumJumps();
-	}
-	
-	public override void _PhysicsProcess(double delta) {
-		CheckCoyoteWallJumpValidity();
-	}
-
-	private void CheckCoyoteWallJumpValidity() {
-		bool goingPastWall = Mathf.Sign(LeftRight.CurrentSpeed) == -Mathf.Sign(_lastWallDirection);
-		
-		if (CoyoteWallJump.TimeLeft > 0 && goingPastWall) {
-			CoyoteWallJump.Stop();
-			CurrentLocation = Location.Air;
-		}
 	}
 
 	public void ResetNumJumps() {
