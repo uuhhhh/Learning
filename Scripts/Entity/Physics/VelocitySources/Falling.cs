@@ -57,8 +57,10 @@ public partial class Falling : VelocitySource {
             if (_decelerateToMaxVelocityTween != null && _decelerateToMaxVelocityTween.IsValid()) return;
 
             float duration = (BaseVelocity.Y - FallData.MaxVelocity) * FallData.DecelToMaxVelocityTimePerVelocity;
-            (_decelerateToMaxVelocityTween, PropertyTweener _)
+            (_decelerateToMaxVelocityTween, PropertyTweener t)
                 = SmoothlySetBaseVelocityY(FallData.MaxVelocity, duration);
+            t.SetEase(Tween.EaseType.Out);
+            t.SetTrans(Tween.TransitionType.Quad);
         } else {
             Vector2 velocity = BaseVelocity;
             velocity.Y += Gravity * GravityScale * (float) delta;

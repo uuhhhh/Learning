@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_cye23")
 UpwardsGravityScale = 1.0
-DownwardsGravityScale = 1.25
-MaxVelocity = 500.0
+DownwardsGravityScale = 1.0
+MaxVelocity = 350.0
 CeilingHitStopTimeScale = 0.25
-DecelToMaxVelocityTimePerVelocity = 0.001
+DecelToMaxVelocityTimePer100Velocity = 0.1

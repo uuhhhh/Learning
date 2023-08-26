@@ -8,4 +8,4 @@ UpwardsGravityScale = 2.0
 DownwardsGravityScale = 0.5
 MaxVelocity = 100.0
 CeilingHitStopTimeScale = 0.25
-DecelToMaxVelocityTimePerVelocity = 0.001
+DecelToMaxVelocityTimePer100Velocity = 0.1

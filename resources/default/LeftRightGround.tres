@@ -7,4 +7,4 @@ script = ExtResource("1_kxapg")
 BaseSpeed = 150.0
 AccelBaseTime = 0.125
 DecelBaseTime = 0.125
-SpeedScaleHighDeltaPower = 0.5
+SpeedScaleHighDeltaPower = 0.333
