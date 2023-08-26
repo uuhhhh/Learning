@@ -1,14 +1,16 @@
-[gd_scene load_steps=10 format=3 uid="uid://cpr2hwrjvvld7"]
+[gd_scene load_steps=12 format=3 uid="uid://cpr2hwrjvvld7"]
 
 [ext_resource type="Script" path="res://Scripts/Entity/Player.cs" id="1_uyfcp"]
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="2_q7yrb"]
 [ext_resource type="Script" path="res://Scripts/Entity/InputComp.cs" id="3_xfxpf"]
 [ext_resource type="PackedScene" uid="uid://dx8gnhdieo400" path="res://scenes/entity/physics/player_velocity_aggregate.tscn" id="4_xn5i2"]
+[ext_resource type="Script" path="res://Scripts/Entity/GroundDetector.cs" id="5_ym2te"]
+[ext_resource type="Script" path="res://Scripts/Entity/WallDetector.cs" id="6_bih8x"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dih1a"]
 size = Vector2(16, 16)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_gtkbx"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jhhyi"]
 size = Vector2(16, 8)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nhbww"]
@@ -39,16 +41,18 @@ shape = SubResource("RectangleShape2D_dih1a")
 
 [node name="CollisionShape2D" parent="PlayerVelocityAggregate/WallDragChecker" index="0"]
 position = Vector2(0, -4)
-shape = SubResource("RectangleShape2D_gtkbx")
-debug_color = Color(0.898039, 0.258824, 0.478431, 0.419608)
+shape = SubResource("RectangleShape2D_jhhyi")
+debug_color = Color(0.894118, 0.301961, 0.286275, 0.419608)
 
 [node name="FloorDetector" type="Area2D" parent="."]
+script = ExtResource("5_ym2te")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FloorDetector"]
 position = Vector2(2.38419e-07, 0.5)
 shape = SubResource("RectangleShape2D_nhbww")
 
 [node name="WallDetector" type="Area2D" parent="."]
+script = ExtResource("6_bih8x")
 
 [node name="CollisionShapeLeft" type="CollisionShape2D" parent="WallDetector"]
 position = Vector2(-8.5, -8)
