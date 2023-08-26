@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="2_q7yrb"]
 [ext_resource type="Script" path="res://Scripts/Entity/InputComp.cs" id="3_xfxpf"]
 [ext_resource type="PackedScene" uid="uid://dx8gnhdieo400" path="res://scenes/entity/physics/player_velocity_aggregate.tscn" id="4_xn5i2"]
-[ext_resource type="Script" path="res://Scripts/Entity/GroundDetector.cs" id="5_ym2te"]
+[ext_resource type="Script" path="res://Scripts/Entity/FloorDetector.cs" id="5_ua6gy"]
 [ext_resource type="Script" path="res://Scripts/Entity/WallDetector.cs" id="6_bih8x"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dih1a"]
