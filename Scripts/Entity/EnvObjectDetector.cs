@@ -14,7 +14,8 @@ public abstract partial class EnvObjectDetector : Area2D {
     [Signal]
     public delegate void EnvObjectExitedAreaEventHandler(EnvObject exited);
     [Signal]
-    public delegate void NewHighestPriorityEnvObjectEventHandler(EnvObject highestPriority);
+    public delegate void NewHighestPriorityEnvObjectEventHandler(
+        EnvObject oldHighestPriority, EnvObject highestPriority);
     [Signal]
     public delegate void ZeroToOneEnvObjectsEventHandler();
     [Signal]
@@ -74,7 +75,7 @@ public abstract partial class EnvObjectDetector : Area2D {
     private void CheckForNewHighestPriority(EnvObject oldHighestPriority) {
         EnvObject newHighestPriority = GetCurrentEnvObject();
         if (oldHighestPriority != newHighestPriority) {
-            EmitSignal(SignalName.NewHighestPriorityEnvObject, newHighestPriority);
+            EmitSignal(SignalName.NewHighestPriorityEnvObject, oldHighestPriority, newHighestPriority);
         }
     }
 

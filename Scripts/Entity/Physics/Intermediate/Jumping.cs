@@ -124,7 +124,8 @@ public partial class Jumping : Node {
 	public void SetJumpingDataFor(JumpingData data, Location forWhich, bool updateNumJumps = true) {
 		_jumpDataAll[(int)forWhich] = data;
 		if (updateNumJumps) {
-			SetNumJumpsFor(MinNumJumps(GetNumJumpsFor(forWhich), GetJumpingDataFor(forWhich).NumJumps), forWhich);
+			SetNumJumpsFor(
+				JumpingData.MinNumJumps(GetNumJumpsFor(forWhich), GetJumpingDataFor(forWhich).NumJumps), forWhich);
 		}
 	}
 
@@ -134,7 +135,7 @@ public partial class Jumping : Node {
 
 	public void SetNumJumpsFor(int numJumps, Location forWhich) {
 		int jumpCap = GetJumpCapFor(forWhich);
-		_numJumpsAll[(int)forWhich] = MinNumJumps(numJumps, jumpCap);
+		_numJumpsAll[(int)forWhich] = JumpingData.MinNumJumps(numJumps, jumpCap);
 	}
 
 	public int GetJumpCapFor(Location forWhich) {
@@ -144,14 +145,6 @@ public partial class Jumping : Node {
 	public void SetJumpCapFor(int jumpCap, Location forWhich) {
 		_jumpCapAll[(int)forWhich] = jumpCap;
 		SetNumJumpsFor(GetNumJumpsFor(forWhich), forWhich);
-	}
-
-	private static int MinNumJumps(int numJumps1, int numJumps2) {
-		return (numJumps1, numJumps2) switch {
-			(_, JumpingData.UnlimitedJumps) => numJumps1,
-			(JumpingData.UnlimitedJumps, _) => numJumps2,
-			(_, _) => Math.Min(numJumps1, numJumps2)
-		};
 	}
 
 	public void AttemptJump() {

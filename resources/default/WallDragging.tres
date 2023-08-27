@@ -1,9 +1,13 @@
-[gd_resource type="Resource" script_class="WallDraggingData" load_steps=3 format=3 uid="uid://cp061nqciwnhp"]
+[gd_resource type="Resource" script_class="WallDraggingData" load_steps=2 format=3 uid="uid://cp061nqciwnhp"]
 
-[ext_resource type="Resource" uid="uid://b2xv7assurx3f" path="res://resources/default/WallDraggingFalling.tres" id="1_kil0d"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallDraggingData.cs" id="2_6p54a"]
 
 [resource]
 script = ExtResource("2_6p54a")
-DraggingData = ExtResource("1_kil0d")
+UpwardsGravityScaleReplacement = 2.0
+DownwardsGravityScaleReplacement = 0.5
+MaxVelocityReplacement = 100.0
+CeilingHitStopTimeScaleReplacement = 0.25
+DecelToMaxVelocityTimePer100VelocityReplacement = 0.1
 VelocityDragThreshold = -100.0
+Priority = -100

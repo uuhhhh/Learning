@@ -1,8 +1,8 @@
 ﻿using Godot;
+using Learning.Scripts.Entity.Physics;
 
 namespace Learning.Scripts.Environment; 
 
 public partial class EnvObject : Node2D {
-    [Export] public int GroundPriority { get; private set; }
-    [Export] public int WallPriority { get; private set; }
+    [Export] public EnvObjectData Data { get; private set; }
 }

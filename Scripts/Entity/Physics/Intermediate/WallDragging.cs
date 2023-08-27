@@ -10,7 +10,8 @@ public partial class WallDragging : Node {
         set {
             _wall = value;
             if (IsDragging) {
-                Falling.FallData = Wall.DraggingData;
+                // TODO use modifiers for wall drag behavior, and have Falling tween based off that
+                //Falling.FallData = Wall.DraggingData;
             }
             DraggingCheck();
         }
@@ -23,7 +24,7 @@ public partial class WallDragging : Node {
 
             _isDragging = value;
             if (_isDragging) {
-                Falling.FallData = Wall.DraggingData;
+                //Falling.FallData = Wall.DraggingData;
                 EmitSignal(SignalName.StartedDragging);
             } else {
                 Falling.FallData = _originalData;

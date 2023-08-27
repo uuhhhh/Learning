@@ -5,6 +5,6 @@ namespace Learning.Scripts.Entity;
 
 public partial class FloorDetector : EnvObjectDetector {
     protected override int GetPriorityOf(EnvObject envObject) {
-        return envObject.GroundPriority;
+        return envObject.Data.FloorPriority;
     }
 }
