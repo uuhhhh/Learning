@@ -50,16 +50,22 @@ public abstract partial class VelocitySource : Node {
     }
 
     private void BeginReadyTweens() {
-        if (_baseVelocityXTweenReady && _baseVelocityXTween.IsValid()) {
-            _baseVelocityXTween.Play();
+        if (_baseVelocityXTweenReady) {
+            if (_baseVelocityXTween.IsValid()) {
+                _baseVelocityXTween.Play();
+            }
             _baseVelocityXTweenReady = false;
         }
-        if (_baseVelocityYTweenReady && _baseVelocityYTween.IsValid()) {
-            _baseVelocityYTween.Play();
+        if (_baseVelocityYTweenReady) {
+            if (_baseVelocityYTween.IsValid()) {
+                _baseVelocityYTween.Play();
+            }
             _baseVelocityYTweenReady = false;
         }
-        if (_multiplierTweenReady && _multiplierTween.IsValid()) {
-            _multiplierTween.Play();
+        if (_multiplierTweenReady) {
+            if (_multiplierTween.IsValid()) {
+                _multiplierTween.Play();
+            }
             _multiplierTweenReady = false;
         }
     }
