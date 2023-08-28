@@ -14,9 +14,7 @@ public partial class WallDraggingDataMultiplier : Resource, IValueModifier {
     [Export] public int Priority { get; private set; }
     
     public TValue ApplyModifier<TValue>(string valueName, TValue value) {
-        if (value is not float) return value;
-        
-        float? replacement = valueName switch {
+        float? multiplier = valueName switch {
             nameof(WallDraggingData.UpwardsGravityScaleReplacement) => UpwardsGravityScaleReplacementMultiplier,
             nameof(WallDraggingData.DownwardsGravityScaleReplacement) => DownwardsGravityScaleReplacementMultiplier,
             nameof(WallDraggingData.MaxVelocityReplacement) => MaxVelocityReplacementMultiplier,
@@ -25,7 +23,6 @@ public partial class WallDraggingDataMultiplier : Resource, IValueModifier {
                 => DecelToMaxVelocityTimePer100VelocityReplacementMultiplier,
             _ => null
         };
-
-        return replacement is TValue replacementT ? replacementT : value;
+        return IValueModifier.MultiplyFloat(value, multiplier);
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using Godot;
+﻿using Godot;
 
 namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
@@ -17,24 +16,21 @@ public partial class JumpingDataModifier : Resource, IValueModifier {
     public TValue ApplyModifier<TValue>(string valueName, TValue value) {
         if (value is int toCap && valueName == nameof(JumpingData.NumJumps)) {
             int cappedNumJumps = JumpingData.MinNumJumps(toCap, NumJumpsCap);
-            return cappedNumJumps is TValue capT ? capT : value;
+            return IValueModifier.Cast<int, TValue>(cappedNumJumps);
         }
         
         if (value is Vector2 toMultiplyVec && valueName == nameof(JumpingData.Velocity)) {
             Vector2 productVec = toMultiplyVec * VelocityMultiplier;
-            return productVec is TValue productVecT ? productVecT : value;
+            return IValueModifier.Cast<Vector2, TValue>(productVec);
         }
         
-        if (value is not float toMultiply) return value;
-        
-        float? product = valueName switch {
-            nameof(JumpingData.AccelTimeX) => toMultiply * AccelTimeXMultiplier,
-            nameof(JumpingData.AccelTimeY) => toMultiply * AccelTimeYMultiplier,
-            nameof(JumpingData.CancelVelocity) => toMultiply * CancelVelocityMultiplier,
-            nameof(JumpingData.CancelAccelTime) => toMultiply * CancelAccelTimeMultiplier,
+        float? multiplier = valueName switch {
+            nameof(JumpingData.AccelTimeX) => AccelTimeXMultiplier,
+            nameof(JumpingData.AccelTimeY) => AccelTimeYMultiplier,
+            nameof(JumpingData.CancelVelocity) => CancelVelocityMultiplier,
+            nameof(JumpingData.CancelAccelTime) => CancelAccelTimeMultiplier,
             _ => null
         };
-
-        return product is TValue productT ? productT : value;
+        return IValueModifier.MultiplyFloat(value, multiplier);
     }
 }

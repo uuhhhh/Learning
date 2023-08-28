@@ -13,17 +13,14 @@ public partial class FallingDataMultiplier : Resource, IValueModifier {
     [Export] public int Priority { get; private set; }
 
     public TValue ApplyModifier<TValue>(string valueName, TValue value) {
-        if (value is not float toMultiply) return value;
-        
-        float? product = valueName switch {
-            nameof(FallingData.UpwardsGravityScale) => toMultiply * UpwardsGravityScaleMultiplier,
-            nameof(FallingData.DownwardsGravityScale) => toMultiply * DownwardsGravityScaleMultiplier,
-            nameof(FallingData.MaxVelocity) => toMultiply * MaxVelocityMultiplier,
-            nameof(FallingData.CeilingHitStopTimeScale) => toMultiply * CeilingHitStopTimeScaleMultiplier,
-            nameof(FallingData.DecelToMaxVelocityTimePer100Velocity) => toMultiply * DecelToMaxVelocityTimePer100VelocityMultiplier,
+        float? multiplier = valueName switch {
+            nameof(FallingData.UpwardsGravityScale) => UpwardsGravityScaleMultiplier,
+            nameof(FallingData.DownwardsGravityScale) => DownwardsGravityScaleMultiplier,
+            nameof(FallingData.MaxVelocity) => MaxVelocityMultiplier,
+            nameof(FallingData.CeilingHitStopTimeScale) => CeilingHitStopTimeScaleMultiplier,
+            nameof(FallingData.DecelToMaxVelocityTimePer100Velocity) => DecelToMaxVelocityTimePer100VelocityMultiplier,
             _ => null
         };
-
-        return product is TValue productT ? productT : value;
+        return IValueModifier.MultiplyFloat(value, multiplier);
     }
 }

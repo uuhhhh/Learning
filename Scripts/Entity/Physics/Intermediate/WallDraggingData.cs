@@ -45,6 +45,6 @@ public partial class WallDraggingData : ResourceWithModifiers, IValueModifier {
             _ => null
         };
 
-        return replacement is TValue replacementT ? replacementT : value;
+        return replacement.HasValue ? IValueModifier.Cast<float, TValue>(replacement.Value) : value;
     }
 }

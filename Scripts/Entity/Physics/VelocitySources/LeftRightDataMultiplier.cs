@@ -12,16 +12,13 @@ public partial class LeftRightDataMultiplier : Resource, IValueModifier {
     [Export] public int Priority { get; private set; }
     
     public TValue ApplyModifier<TValue>(string valueName, TValue value) {
-        if (value is not float toMultiply) return value;
-        
-        float? product = valueName switch {
-            nameof(LeftRightData.BaseSpeed) => toMultiply * BaseSpeedMultiplier,
-            nameof(LeftRightData.AccelBaseTime) => toMultiply * AccelBaseTimeMultiplier,
-            nameof(LeftRightData.DecelBaseTime) => toMultiply * DecelBaseTimeMultiplier,
-            nameof(LeftRightData.SpeedScaleHighDeltaPower) => toMultiply * SpeedScaleHighDeltaPowerMultiplier,
+        float? multiplier = valueName switch {
+            nameof(LeftRightData.BaseSpeed) => BaseSpeedMultiplier,
+            nameof(LeftRightData.AccelBaseTime) => AccelBaseTimeMultiplier,
+            nameof(LeftRightData.DecelBaseTime) => DecelBaseTimeMultiplier,
+            nameof(LeftRightData.SpeedScaleHighDeltaPower) => SpeedScaleHighDeltaPowerMultiplier,
             _ => null
         };
-        
-        return product is TValue productT ? productT : value;
+        return IValueModifier.MultiplyFloat(value, multiplier);
     }
 }
