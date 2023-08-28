@@ -7,13 +7,9 @@ public partial class WallDragging : Node {
     [Export] internal Falling Falling { get; set; }
     [Export] public WallDraggingData Wall {
         get => _wall;
-        set {
+        private set {
             _wall = value;
-            if (IsDragging) {
-                // TODO use modifiers for wall drag behavior, and have Falling tween based off that
-                //Falling.FallData = Wall.DraggingData;
-            }
-            DraggingCheck();
+            WallDataUpdated();
         }
     }
     
@@ -23,11 +19,11 @@ public partial class WallDragging : Node {
             if (value == IsDragging) return;
 
             _isDragging = value;
-            if (_isDragging) {
-                //Falling.FallData = Wall.DraggingData;
+            if (IsDragging) {
+                Falling.FallData.AddModifiers(Wall);
                 EmitSignal(SignalName.StartedDragging);
             } else {
-                Falling.FallData = _originalData;
+                Falling.FallData.RemoveModifiers(Wall);
                 EmitSignal(SignalName.StoppedDragging);
             }
         }
@@ -49,7 +45,6 @@ public partial class WallDragging : Node {
     
     private bool _isDragging;
     private bool _isValidWallTouching;
-    private FallingData _originalData;
     private WallDraggingData _wall;
 
     [Signal]
@@ -65,7 +60,14 @@ public partial class WallDragging : Node {
     public delegate void StoppedValidWallTouchingEventHandler();
 
     public override void _Ready() {
-        _originalData = Falling.FallData;
+        Wall.ModifiersUpdated += WallDataUpdated;
+    }
+
+    private void WallDataUpdated() {
+        if (IsNodeReady()) {
+            DraggingCheck();
+            Falling.FallData.UpdateModifiers();
+        }
     }
 
     public override void _PhysicsProcess(double delta) {

@@ -1,21 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Learning.Scripts; 
 
 public interface IValueModifierAggregate {
-    ISet<IValueModifier> Modifiers { get; }
-
-    protected static ISet<IValueModifier> DefaultModifierInit() {
-        return new SortedSet<IValueModifier>(new PriorityComparer());
-    }
-
+    delegate void ModifiersUpdatedEventHandler();
+    event ModifiersUpdatedEventHandler ModifiersUpdated;
+    
     TValue ApplyModifiers<TValue>(string valueName, TValue initialValue) {
         TValue currentValue = initialValue;
-        foreach (IValueModifier modifier in Modifiers) {
+        foreach (IValueModifier modifier in GetCurrentModifiers()) {
             currentValue = modifier.ApplyModifier(valueName, initialValue);
         }
-
+        
         return currentValue;
+    }
+
+    bool AddModifiers(params IValueModifier[] modifiers);
+
+    bool RemoveModifiers(params IValueModifier[] modifiers);
+
+    IImmutableSet<IValueModifier> GetCurrentModifiers();
+    
+    protected static ISet<IValueModifier> DefaultModifierSetInit() {
+        return new SortedSet<IValueModifier>(new PriorityComparer());
     }
 
     protected class PriorityComparer : IComparer<IValueModifier> {

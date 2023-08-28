@@ -6,21 +6,17 @@ namespace Learning.Scripts.Entity.Physics.VelocitySources;
 public partial class LeftRight : VelocitySource {
     [Export] public LeftRightData Ground {
         get => _ground;
-        set {
+        private set {
             _ground = value;
-            if (IsNodeReady() && _isOnGround) {
-                UpdateSpeedToIntended();
-            }
+            GroundUpdated();
         }
     }
 
     [Export] public LeftRightData Air {
         get => _air;
-        set {
+        private set {
             _air = value;
-            if (IsNodeReady() && !_isOnGround) {
-                UpdateSpeedToIntended();
-            }
+            AirUpdated();
         }
     }
 
@@ -29,6 +25,8 @@ public partial class LeftRight : VelocitySource {
     public bool IsOnGround {
         get => _isOnGround;
         set {
+            if (IsOnGround == value) return;
+            
             _isOnGround = value;
             UpdateSpeedToIntended();
         }
@@ -69,6 +67,23 @@ public partial class LeftRight : VelocitySource {
 
     [Signal]
     public delegate void IntendedSpeedUpdateEventHandler(float newSpeed);
+
+    public override void _Ready() {
+        Ground.ModifiersUpdated += GroundUpdated;
+        Air.ModifiersUpdated += AirUpdated;
+    }
+
+    private void GroundUpdated() {
+        if (IsNodeReady() && IsOnGround) {
+            UpdateSpeedToIntended();
+        }
+    }
+
+    private void AirUpdated() {
+        if (IsNodeReady() && !IsOnGround) {
+            UpdateSpeedToIntended();
+        }
+    }
     
     public override void _PhysicsProcess(double delta) {
         if (!Enabled) return;

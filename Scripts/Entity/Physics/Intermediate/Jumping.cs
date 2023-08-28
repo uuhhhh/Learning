@@ -15,15 +15,15 @@ public partial class Jumping : Node {
 
 	[Export] public JumpingData Ground {
 		get => GetJumpingDataFor(Location.Ground);
-		set => SetJumpingDataFor(value, Location.Ground);
+		private set => SetJumpingDataFor(value, Location.Ground);
 	}
 	[Export] public JumpingData Air {
 		get => GetJumpingDataFor(Location.Air);
-		set => SetJumpingDataFor(value, Location.Air);
+		private set => SetJumpingDataFor(value, Location.Air);
 	}
 	[Export] public JumpingData Wall {
 		get => GetJumpingDataFor(Location.WallNonGround);
-		set => SetJumpingDataFor(value, Location.WallNonGround);
+		private set => SetJumpingDataFor(value, Location.WallNonGround);
 	}
 	public JumpingData CurrentJumpData {
 		get => GetJumpingDataFor(CurrentLocation);
@@ -101,8 +101,30 @@ public partial class Jumping : Node {
 
 		CoyoteJump.Timeout += () => CurrentLocation = Location.Air;
 		CoyoteWallJump.Timeout += () => CurrentLocation = Location.Air;
+        
+		Ground.ModifiersUpdated += () => UpdateNumJumpsFor(Location.Ground);
+		Air.ModifiersUpdated += () => UpdateNumJumpsFor(Location.Air);
+		Wall.ModifiersUpdated += () => UpdateNumJumpsFor(Location.WallNonGround);
 		
 		ResetNumJumps();
+	}
+
+	public int GetJumpCapFor(Location forWhich) {
+		return _jumpCapAll[(int)forWhich];
+	}
+
+	public void SetJumpCapFor(int jumpCap, Location forWhich) {
+		_jumpCapAll[(int)forWhich] = jumpCap;
+		SetNumJumpsFor(GetNumJumpsFor(forWhich), forWhich);
+	}
+
+	public int GetNumJumpsFor(Location forWhich) {
+		return _numJumpsAll[(int)forWhich];
+	}
+
+	public void SetNumJumpsFor(int numJumps, Location forWhich) {
+		int jumpCap = GetJumpCapFor(forWhich);
+		_numJumpsAll[(int)forWhich] = JumpingData.MinNumJumps(numJumps, jumpCap);
 	}
 
 	public void ResetNumJumps() {
@@ -117,34 +139,17 @@ public partial class Jumping : Node {
 		SetNumJumpsFor(GetJumpingDataFor(which).NumJumps, which);
 	}
 
+	private void UpdateNumJumpsFor(Location which) {
+		SetNumJumpsFor(JumpingData.MinNumJumps(GetNumJumpsFor(which), GetJumpingDataFor(which).NumJumps), which);
+	}
+
 	public JumpingData GetJumpingDataFor(Location forWhich) {
 		return _jumpDataAll[(int)forWhich];
 	}
 
-	public void SetJumpingDataFor(JumpingData data, Location forWhich, bool updateNumJumps = true) {
+	private void SetJumpingDataFor(JumpingData data, Location forWhich) {
 		_jumpDataAll[(int)forWhich] = data;
-		if (updateNumJumps) {
-			SetNumJumpsFor(
-				JumpingData.MinNumJumps(GetNumJumpsFor(forWhich), GetJumpingDataFor(forWhich).NumJumps), forWhich);
-		}
-	}
-
-	public int GetNumJumpsFor(Location forWhich) {
-		return _numJumpsAll[(int)forWhich];
-	}
-
-	public void SetNumJumpsFor(int numJumps, Location forWhich) {
-		int jumpCap = GetJumpCapFor(forWhich);
-		_numJumpsAll[(int)forWhich] = JumpingData.MinNumJumps(numJumps, jumpCap);
-	}
-
-	public int GetJumpCapFor(Location forWhich) {
-		return _jumpCapAll[(int)forWhich];
-	}
-
-	public void SetJumpCapFor(int jumpCap, Location forWhich) {
-		_jumpCapAll[(int)forWhich] = jumpCap;
-		SetNumJumpsFor(GetNumJumpsFor(forWhich), forWhich);
+		UpdateNumJumpsFor(forWhich);
 	}
 
 	public void AttemptJump() {

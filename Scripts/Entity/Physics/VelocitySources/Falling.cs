@@ -5,34 +5,19 @@ namespace Learning.Scripts.Entity.Physics.VelocitySources;
 public partial class Falling : VelocitySource {
     [Export] public FallingData FallData {
         get => _fallData;
-        set {
-            FallingData oldFallData = _fallData;
+        private set {
             _fallData = value;
-
-            if (_decelerateToMaxVelocityTween != null && _decelerateToMaxVelocityTween.IsValid()) {
-                if (BaseVelocity.Y > FallData.MaxVelocity) {
-                    float newDuration
-                        = _originalDecelerateToMaxVelocityTime / oldFallData.DecelToMaxVelocityTimePerVelocity *
-                          FallData.DecelToMaxVelocityTimePerVelocity;
-                    _decelerateToMaxVelocityTween.SetSpeedScale(1 / newDuration);
-                } else {
-                    _decelerateToMaxVelocityTween.Kill();
-                }
-            }
-            if (_ceilingHitStopTween != null && _ceilingHitStopTween.IsValid()) {
-                float newDuration = _originalCeilingHitStopTime * FallData.CeilingHitStopTimeScale;
-                _ceilingHitStopTween.SetSpeedScale(1 / newDuration);
-            }
+            FallDataUpdated();
         }
     }
     
     public bool IsFalling {
         get => _isFalling;
         set {
-            if (_isFalling == value) return;
+            if (IsFalling == value) return;
             
             _isFalling = value;
-            if (_isFalling) {
+            if (IsFalling) {
                 EmitSignal(SignalName.StartFalling);
             } else {
                 BaseVelocity = Vector2.Zero;
@@ -52,7 +37,7 @@ public partial class Falling : VelocitySource {
     private float _originalCeilingHitStopTime;
     private Tween _ceilingHitStopTween;
 
-    private float _originalDecelerateToMaxVelocityTime;
+    private float _originalDecelerateVelocityDelta;
     private Tween _decelerateToMaxVelocityTween;
     
     [Signal]
@@ -60,6 +45,35 @@ public partial class Falling : VelocitySource {
 
     [Signal]
     public delegate void StopFallingEventHandler();
+
+    public override void _Ready() {
+        FallData.ModifiersUpdated += FallDataUpdated;
+    }
+
+    private void FallDataUpdated() {
+        if (IsNodeReady()) {
+            UpdateDecelerationToMaxVelocity();
+            UpdateCeilingHitStop();
+        }
+    }
+
+    private void UpdateDecelerationToMaxVelocity() {
+        if (_decelerateToMaxVelocityTween != null && _decelerateToMaxVelocityTween.IsValid()) {
+            if (BaseVelocity.Y > FallData.MaxVelocity) {
+                float newDuration = _originalDecelerateVelocityDelta * FallData.DecelToMaxVelocityTimePerVelocity;
+                _decelerateToMaxVelocityTween.SetSpeedScale(1 / newDuration);
+            } else {
+                _decelerateToMaxVelocityTween.Kill();
+            }
+        }
+    }
+
+    private void UpdateCeilingHitStop() {
+        if (_ceilingHitStopTween != null && _ceilingHitStopTween.IsValid()) {
+            float newDuration = _originalCeilingHitStopTime * FallData.CeilingHitStopTimeScale;
+            _ceilingHitStopTween.SetSpeedScale(1 / newDuration);
+        }
+    }
     
     public override void _PhysicsProcess(double delta) {
         if (!Enabled) return;
@@ -67,20 +81,28 @@ public partial class Falling : VelocitySource {
         if (!IsFalling) return;
 
         if (BaseVelocity.Y > FallData.MaxVelocity) {
-            if (_decelerateToMaxVelocityTween != null && _decelerateToMaxVelocityTween.IsValid()) return;
-
-            _originalDecelerateToMaxVelocityTime
-                = (BaseVelocity.Y - FallData.MaxVelocity) * FallData.DecelToMaxVelocityTimePerVelocity;
-            (_decelerateToMaxVelocityTween, PropertyTweener t)
-                = SmoothlySetBaseVelocityY(FallData.MaxVelocity, _originalDecelerateToMaxVelocityTime);
-            t.SetEase(Tween.EaseType.Out);
-            t.SetTrans(Tween.TransitionType.Quad);
+            DecelerateToMaxVelocity();
         } else {
-            Vector2 velocity = BaseVelocity;
-            velocity.Y += Gravity * GravityScale * (float) delta;
-            velocity.Y = Mathf.Min(velocity.Y, FallData.MaxVelocity);
-            BaseVelocity = velocity;
+            AccelerateFromGravity(delta);
         }
+    }
+
+    private void DecelerateToMaxVelocity() {
+        if (_decelerateToMaxVelocityTween != null && _decelerateToMaxVelocityTween.IsValid()) return;
+            
+        _originalDecelerateVelocityDelta = BaseVelocity.Y - FallData.MaxVelocity;
+        float decelerateTime = _originalDecelerateVelocityDelta * FallData.DecelToMaxVelocityTimePerVelocity;
+        (_decelerateToMaxVelocityTween, PropertyTweener t)
+            = SmoothlySetBaseVelocityY(FallData.MaxVelocity, decelerateTime);
+        t.SetEase(Tween.EaseType.Out);
+        t.SetTrans(Tween.TransitionType.Quad);
+    }
+
+    private void AccelerateFromGravity(double delta) {
+        Vector2 velocity = BaseVelocity;
+        velocity.Y += Gravity * GravityScale * (float) delta;
+        velocity.Y = Mathf.Min(velocity.Y, FallData.MaxVelocity);
+        BaseVelocity = velocity;
     }
 
     internal void CeilingHitStop() {
