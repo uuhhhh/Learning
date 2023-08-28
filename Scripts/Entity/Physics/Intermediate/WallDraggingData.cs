@@ -1,55 +1,38 @@
-﻿using System.Collections.Generic;
-using Godot;
+﻿using Godot;
 using Learning.Scripts.Entity.Physics.VelocitySources;
 
 namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 [GlobalClass]
-public partial class WallDraggingData : Resource, IValueModifier, IValueModifierAggregate {
+public partial class WallDraggingData : ResourceWithModifiers, IValueModifier {
     [Export] public float UpwardsGravityScaleReplacement {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(
-            nameof(UpwardsGravityScaleReplacement), _upwardsGravityScaleReplacement);
-        private set => _upwardsGravityScaleReplacement = value;
+        get => GetField<float>(nameof(UpwardsGravityScaleReplacement));
+        private set => SetField(nameof(UpwardsGravityScaleReplacement), value);
     }
     [Export] public float DownwardsGravityScaleReplacement {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(
-            nameof(DownwardsGravityScaleReplacement), _downwardsGravityScaleReplacement);
-        private set => _downwardsGravityScaleReplacement = value;
+        get => GetField<float>(nameof(DownwardsGravityScaleReplacement));
+        private set => SetField(nameof(DownwardsGravityScaleReplacement), value);
     }
     [Export] public float MaxVelocityReplacement {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(
-            nameof(MaxVelocityReplacement), _maxVelocityReplacement);
-        private set => _maxVelocityReplacement = value;
+        get => GetField<float>(nameof(MaxVelocityReplacement));
+        private set => SetField(nameof(MaxVelocityReplacement), value);
     }
     [Export] public float CeilingHitStopTimeScaleReplacement {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(
-            nameof(CeilingHitStopTimeScaleReplacement), _ceilingHitStopTimeScaleReplacement);
-        private set => _ceilingHitStopTimeScaleReplacement = value;
+        get => GetField<float>(nameof(CeilingHitStopTimeScaleReplacement));
+        private set => SetField(nameof(CeilingHitStopTimeScaleReplacement), value);
     }
     [Export] public float DecelToMaxVelocityTimePer100VelocityReplacement {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(
-            nameof(DecelToMaxVelocityTimePer100VelocityReplacement), _decelToMaxVelocityTimePer100VelocityReplacement);
-        private set => _decelToMaxVelocityTimePer100VelocityReplacement = value;
+        get => GetField<float>(nameof(DecelToMaxVelocityTimePer100VelocityReplacement));
+        private set => SetField(nameof(DecelToMaxVelocityTimePer100VelocityReplacement), value);
     }
     
     [Export] public float VelocityDragThreshold {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(
-            nameof(VelocityDragThreshold), _velocityDragThreshold);
-        private set => _velocityDragThreshold = value;
+        get => GetField<float>(nameof(VelocityDragThreshold));
+        private set => SetField(nameof(VelocityDragThreshold), value);
     }
     
     [Export] public int Priority { get; private set; }
 
-    public ISet<IValueModifier> Modifiers { get; } = IValueModifierAggregate.DefaultModifierInit();
-
-    private float _upwardsGravityScaleReplacement;
-    private float _downwardsGravityScaleReplacement;
-    private float _maxVelocityReplacement;
-    private float _ceilingHitStopTimeScaleReplacement;
-    private float _decelToMaxVelocityTimePer100VelocityReplacement;
-
-    private float _velocityDragThreshold;
-    
     public TValue ApplyModifier<TValue>(string valueName, TValue value) {
         if (value is not float) return value;
         

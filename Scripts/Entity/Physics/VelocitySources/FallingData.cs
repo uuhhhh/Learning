@@ -1,40 +1,29 @@
-﻿using System.Collections.Generic;
-using Godot;
+﻿using Godot;
 
 namespace Learning.Scripts.Entity.Physics.VelocitySources; 
 
 [GlobalClass]
-public partial class FallingData : Resource, IValueModifierAggregate {
+public partial class FallingData : ResourceWithModifiers {
     [Export] public float UpwardsGravityScale {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(nameof(UpwardsGravityScale), _upwardsGravityScale);
-        private set => _upwardsGravityScale = value;
+        get => GetField<float>(nameof(UpwardsGravityScale));
+        private set => SetField(nameof(UpwardsGravityScale), value);
     }
     [Export] public float DownwardsGravityScale {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(nameof(DownwardsGravityScale), _downwardsGravityScale);
-        private set => _downwardsGravityScale = value;
+        get => GetField<float>(nameof(DownwardsGravityScale));
+        private set => SetField(nameof(DownwardsGravityScale), value);
     }
     [Export] public float MaxVelocity {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(nameof(MaxVelocity), _maxVelocity);
-        private set => _maxVelocity = value;
+        get => GetField<float>(nameof(MaxVelocity));
+        private set => SetField(nameof(MaxVelocity), value);
     }
     [Export] public float CeilingHitStopTimeScale {
-        get => ((IValueModifierAggregate)this)
-            .ApplyModifiers(nameof(CeilingHitStopTimeScale), _ceilingHitStopTimeScale);
-        private set => _ceilingHitStopTimeScale = value;
+        get => GetField<float>(nameof(CeilingHitStopTimeScale));
+        private set => SetField(nameof(CeilingHitStopTimeScale), value);
     }
     [Export] public float DecelToMaxVelocityTimePer100Velocity {
-        get => ((IValueModifierAggregate)this)
-            .ApplyModifiers(nameof(DecelToMaxVelocityTimePer100Velocity), _decelToMaxVelocityTimePer100Velocity);
-        private set => _decelToMaxVelocityTimePer100Velocity = value;
+        get => GetField<float>(nameof(DecelToMaxVelocityTimePer100Velocity));
+        private set => SetField(nameof(DecelToMaxVelocityTimePer100Velocity), value);
     }
 
     public float DecelToMaxVelocityTimePerVelocity => DecelToMaxVelocityTimePer100Velocity / 100;
-
-    public ISet<IValueModifier> Modifiers { get; } = IValueModifierAggregate.DefaultModifierInit();
-
-    private float _upwardsGravityScale;
-    private float _downwardsGravityScale;
-    private float _maxVelocity;
-    private float _ceilingHitStopTimeScale;
-    private float _decelToMaxVelocityTimePer100Velocity;
 }

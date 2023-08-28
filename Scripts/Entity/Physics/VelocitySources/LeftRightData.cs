@@ -1,32 +1,23 @@
-﻿using System.Collections.Generic;
-using Godot;
+﻿using Godot;
 
 namespace Learning.Scripts.Entity.Physics.VelocitySources; 
 
 [GlobalClass]
-public partial class LeftRightData : Resource, IValueModifierAggregate {
+public partial class LeftRightData : ResourceWithModifiers {
     [Export] public float BaseSpeed {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(nameof(BaseSpeed), _baseSpeed);
-        private set => _baseSpeed = value;
+        get => GetField<float>(nameof(BaseSpeed));
+        private set => SetField(nameof(BaseSpeed), value);
     }
     [Export] public float AccelBaseTime {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(nameof(AccelBaseTime), _accelBaseTime);
-        private set => _accelBaseTime = value;
+        get => GetField<float>(nameof(AccelBaseTime));
+        private set => SetField(nameof(AccelBaseTime), value);
     }
     [Export] public float DecelBaseTime {
-        get => ((IValueModifierAggregate)this).ApplyModifiers(nameof(DecelBaseTime), _decelBaseTime);
-        private set => _decelBaseTime = value;
+        get => GetField<float>(nameof(DecelBaseTime));
+        private set => SetField(nameof(DecelBaseTime), value);
     }
     [Export] public float SpeedScaleHighDeltaPower {
-        get => ((IValueModifierAggregate)this)
-            .ApplyModifiers(nameof(SpeedScaleHighDeltaPower), _speedScaleHighDeltaPower);
-        private set => _speedScaleHighDeltaPower = value;
+        get => GetField<float>(nameof(SpeedScaleHighDeltaPower));
+        private set => SetField(nameof(SpeedScaleHighDeltaPower), value);
     }
-
-    public ISet<IValueModifier> Modifiers { get; } = IValueModifierAggregate.DefaultModifierInit();
-
-    private float _baseSpeed;
-    private float _accelBaseTime;
-    private float _decelBaseTime;
-    private float _speedScaleHighDeltaPower;
 }
