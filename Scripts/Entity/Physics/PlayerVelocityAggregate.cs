@@ -72,7 +72,7 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
         // can't set to exactly 0 due to physics weirdness
         // (this body changing state to becoming off wall when Falling tweening from above max velocity to max velocity)
         WallDragging.StartedValidWallTouching += () =>
-            LeftRight.IntendedSpeedScale = Mathf.Sign(LeftRight.IntendedSpeedScale);
+            LeftRight.IntendedSpeed = Mathf.Sign(LeftRight.IntendedSpeed);
         
         BecomeOffWall += _ => UpdateLeftRightSpeed();
         BecomeOnFloor += _ => UpdateLeftRightSpeed();
