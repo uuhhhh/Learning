@@ -15,10 +15,10 @@ public abstract partial class ResourceWithModifiers : Resource, IValueModifierAg
         }
         
         object value = _backingFields[fieldName];
-        if (value is not TValue valueAsT) {
+        if (value is not TValue initialValue) {
             throw new ArgumentException($"Field with fieldName {fieldName} is not of given type param");
         }
-        return valueAsT;
+        return ((IValueModifierAggregate) this).ApplyModifiers(fieldName, initialValue);
     }
 
     protected void SetField(string fieldName, object value) {
