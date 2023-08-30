@@ -66,7 +66,7 @@ public partial class LeftRight : VelocitySource {
     public delegate void StopMovingEventHandler();
 
     [Signal]
-    public delegate void IntendedSpeedUpdateEventHandler(float newSpeed);
+    public delegate void IntendedSpeedChangeEventHandler(float newSpeed);
 
     public override void _Ready() {
         Ground.ModifiersUpdated += GroundUpdated;
@@ -109,11 +109,16 @@ public partial class LeftRight : VelocitySource {
     }
 
     public (Tween, PropertyTweener) SetIntendedSpeedScale(float speedScale, float time) {
-        _intendedSpeedScale = MathF.Round(speedScale, SPEED_SCALE_ROUNDING_DIGITS);
+        float newIntendedSpeedScale = MathF.Round(speedScale, SPEED_SCALE_ROUNDING_DIGITS);
+        bool speedScaleChange = !Mathf.IsEqualApprox(_intendedSpeedScale, newIntendedSpeedScale);
+        _intendedSpeedScale = newIntendedSpeedScale;
+        
         (_accelerationTween, PropertyTweener t) =
             SmoothlySetBaseVelocityX(_intendedSpeedScale * CurrentParams.BaseSpeed, time);
         
-        EmitSignal(SignalName.IntendedSpeedUpdate, IntendedSpeedScale);
+        if (speedScaleChange) {
+            EmitSignal(SignalName.IntendedSpeedChange, IntendedSpeedScale);
+        }
         
         return (_accelerationTween, t);
     }
