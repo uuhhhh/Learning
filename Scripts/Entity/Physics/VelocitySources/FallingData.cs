@@ -26,4 +26,12 @@ public partial class FallingData : ResourceWithModifiers {
     }
 
     public float DecelToMaxVelocityTimePerVelocity => DecelToMaxVelocityTimePer100Velocity / 100;
+
+    protected override void RefreshAllFields() {
+        RefreshField<float>(nameof(UpwardsGravityScale));
+        RefreshField<float>(nameof(DownwardsGravityScale));
+        RefreshField<float>(nameof(MaxVelocity));
+        RefreshField<float>(nameof(CeilingHitStopTimeScale));
+        RefreshField<float>(nameof(DecelToMaxVelocityTimePer100Velocity));
+    }
 }

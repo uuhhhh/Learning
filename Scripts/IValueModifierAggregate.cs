@@ -16,9 +16,9 @@ public interface IValueModifierAggregate {
         return currentValue;
     }
 
-    bool AddModifiers(params IValueModifier[] modifiers);
+    bool AddModifier(IValueModifier modifier);
 
-    bool RemoveModifiers(params IValueModifier[] modifiers);
+    bool RemoveModifier(IValueModifier modifier);
 
     IImmutableSet<IValueModifier> GetCurrentModifiers();
     

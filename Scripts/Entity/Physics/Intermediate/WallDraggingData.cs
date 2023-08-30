@@ -33,6 +33,15 @@ public partial class WallDraggingData : ResourceWithModifiers, IValueModifier {
     
     [Export] public int Priority { get; private set; }
 
+    protected override void RefreshAllFields() {
+        RefreshField<float>(nameof(UpwardsGravityScaleReplacement));
+        RefreshField<float>(nameof(DownwardsGravityScaleReplacement));
+        RefreshField<float>(nameof(MaxVelocityReplacement));
+        RefreshField<float>(nameof(CeilingHitStopTimeScaleReplacement));
+        RefreshField<float>(nameof(DecelToMaxVelocityTimePer100VelocityReplacement));
+        RefreshField<float>(nameof(VelocityDragThreshold));
+    }
+
     public TValue ApplyModifier<TValue>(string valueName, TValue value) {
         if (value is not float) return value;
         

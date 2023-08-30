@@ -20,10 +20,10 @@ public partial class WallDragging : Node {
 
             _isDragging = value;
             if (IsDragging) {
-                Falling.FallData.AddModifiers(Wall);
+                Falling.FallData.AddModifier(Wall);
                 EmitSignal(SignalName.StartedDragging);
             } else {
-                Falling.FallData.RemoveModifiers(Wall);
+                Falling.FallData.RemoveModifier(Wall);
                 EmitSignal(SignalName.StoppedDragging);
             }
         }
@@ -66,7 +66,7 @@ public partial class WallDragging : Node {
     private void WallDataUpdated() {
         if (IsNodeReady()) {
             DraggingCheck();
-            Falling.FallData.UpdateModifiers();
+            Falling.FallData.RefreshValues();
         }
     }
 

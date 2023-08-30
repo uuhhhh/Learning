@@ -31,6 +31,15 @@ public partial class JumpingData : ResourceWithModifiers {
         get => GetField<float>(nameof(CancelAccelTime));
         private set => SetField(nameof(CancelAccelTime), value);
     }
+
+    protected override void RefreshAllFields() {
+        RefreshField<int>(nameof(NumJumps));
+        RefreshField<Vector2>(nameof(Velocity));
+        RefreshField<float>(nameof(AccelTimeX));
+        RefreshField<float>(nameof(AccelTimeY));
+        RefreshField<float>(nameof(CancelVelocity));
+        RefreshField<float>(nameof(CancelAccelTime));
+    }
     
     public static int MinNumJumps(int numJumps1, int numJumps2) {
         return (numJumps1, numJumps2) switch {

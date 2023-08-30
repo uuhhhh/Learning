@@ -20,4 +20,11 @@ public partial class LeftRightData : ResourceWithModifiers {
         get => GetField<float>(nameof(SpeedScaleHighDeltaPower));
         private set => SetField(nameof(SpeedScaleHighDeltaPower), value);
     }
+
+    protected override void RefreshAllFields() {
+        RefreshField<float>(nameof(BaseSpeed));
+        RefreshField<float>(nameof(AccelBaseTime));
+        RefreshField<float>(nameof(DecelBaseTime));
+        RefreshField<float>(nameof(SpeedScaleHighDeltaPower));
+    }
 }

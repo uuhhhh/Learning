@@ -1,14 +1,12 @@
-[gd_scene load_steps=14 format=3 uid="uid://dx8gnhdieo400"]
+[gd_scene load_steps=12 format=3 uid="uid://dx8gnhdieo400"]
 
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/PlayerVelocityAggregate.cs" id="1_7tts4"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/VelocitySources/Falling.cs" id="2_eahxk"]
 [ext_resource type="Resource" uid="uid://cfajuxtpoi0rm" path="res://resources/default/Falling.tres" id="3_gbjcm"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/VelocitySources/FallingDefaultPhys.cs" id="4_qxv3x"]
-[ext_resource type="Script" path="res://Scripts/Entity/Physics/VelocitySources/LeftRight.cs" id="5_g4o3p"]
-[ext_resource type="Resource" uid="uid://dfjahv3u2y3ae" path="res://resources/default/LeftRightGround.tres" id="5_i0vj3"]
-[ext_resource type="Resource" uid="uid://bivvatqtffmra" path="res://resources/default/LeftRightAir.tres" id="6_y6oyd"]
+[ext_resource type="PackedScene" uid="uid://c82liwbrlvroj" path="res://scenes/entity/physics/left_right.tscn" id="5_ogvtw"]
+[ext_resource type="PackedScene" uid="uid://d1yrlr6ewkj04" path="res://scenes/entity/physics/left_right_default_phys.tscn" id="6_mv0rs"]
 [ext_resource type="PackedScene" uid="uid://sriowpt87rc2" path="res://scenes/entity/physics/jumping.tscn" id="7_8otcr"]
-[ext_resource type="Script" path="res://Scripts/Entity/Physics/VelocitySources/LeftRightDefaultPhys.cs" id="8_a68uq"]
 [ext_resource type="Resource" uid="uid://cp061nqciwnhp" path="res://resources/default/WallDragging.tres" id="9_gt0qr"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/JumpingDefaultPhys.cs" id="10_iqiow"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallDragging.cs" id="11_5grid"]
@@ -29,13 +27,9 @@ FallData = ExtResource("3_gbjcm")
 script = ExtResource("4_qxv3x")
 ToLink = NodePath("../Falling")
 
-[node name="LeftRight" type="Node" parent="."]
-script = ExtResource("5_g4o3p")
-Ground = ExtResource("5_i0vj3")
-Air = ExtResource("6_y6oyd")
+[node name="LeftRight" parent="." instance=ExtResource("5_ogvtw")]
 
-[node name="LeftRightDefaultPhys" type="Node" parent="." node_paths=PackedStringArray("ToLink")]
-script = ExtResource("8_a68uq")
+[node name="LeftRightDefaultPhys" parent="." node_paths=PackedStringArray("ToLink") instance=ExtResource("6_mv0rs")]
 ToLink = NodePath("../LeftRight")
 
 [node name="Jumping" parent="." node_paths=PackedStringArray("Falling", "LeftRight") instance=ExtResource("7_8otcr")]

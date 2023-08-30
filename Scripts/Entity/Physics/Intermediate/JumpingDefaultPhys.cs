@@ -25,7 +25,7 @@ public partial class JumpingDefaultPhys : DefaultPhys {
     private float _directionGoing;
 
     internal override void ExtraInit(KinematicComp physics) {
-        ToLink.LeftRight.IntendedSpeedUpdate += speed => DirectionGoing = speed;
+        ToLink.LeftRight.IntendedSpeedChange += speed => DirectionGoing = speed;
     }
 
     internal override void OnBecomeOnFloor(KinematicComp physics) {
