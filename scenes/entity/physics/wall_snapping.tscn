@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://dqvo0nh5wnu6k"]
+
+[ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallSnapping.cs" id="1_x6akn"]
+[ext_resource type="Resource" uid="uid://58r6bdlmix3q" path="res://resources/default/WallSnapping.tres" id="2_c3rvj"]
+
+[node name="WallSnapping" type="Node"]
+script = ExtResource("1_x6akn")
+SnapData = ExtResource("2_c3rvj")
+
+[node name="WallSnapStartWindow" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.05
+one_shot = true
+
+[node name="WallSnapExpiry" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.25
+one_shot = true

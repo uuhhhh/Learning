@@ -11,3 +11,4 @@ CeilingHitStopTimeScaleReplacement = 0.25
 DecelToMaxVelocityTimePer100VelocityReplacement = 0.1
 VelocityDragThreshold = -100.0
 Priority = -100
+CacheModifiedValues = true

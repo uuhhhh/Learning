@@ -7,14 +7,15 @@ namespace Learning.Scripts.Entity.Physics;
 public partial class PlayerVelocityAggregate : VelocityAggregate {
     public Falling Falling { get; private set; }
     public LeftRight LeftRight { get; private set; }
+    
     public Jumping Jumping { get; private set; }
     public WallDragging WallDragging { get; private set; }
+    public WallSnapping WallSnapping { get; private set; }
+    
+    private JumpingDefaultPhys JumpingDefaultPhys { get; set; }
+    private WallDraggingDefaultPhys WallDraggingDefaultPhys { get; set; }
     
     private Timer WallJumpInputTakeover { get; set; }
-    
-    private WallDraggingDefaultPhys WallDraggingDefaultPhys { get; set; }
-    private JumpingDefaultPhys JumpingDefaultPhys { get; set; }
-    private LeftRightDefaultPhys LeftRightDefaultPhys { get; set; }
 
     public bool CanDoWallBehavior {
         get => _canDoWallBehavior;
@@ -49,13 +50,15 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
     private void SetChildren() {
         Falling = GetNode<Falling>(nameof(Falling));
         LeftRight = GetNode<LeftRight>(nameof(LeftRight));
+        
         Jumping = GetNode<Jumping>(nameof(Jumping));
         WallDragging = GetNode<WallDragging>(nameof(WallDragging));
-        WallJumpInputTakeover = GetNode<Timer>(nameof(WallJumpInputTakeover));
-
-        WallDraggingDefaultPhys = GetNode<WallDraggingDefaultPhys>(nameof(WallDraggingDefaultPhys));
+        WallSnapping = GetNode<WallSnapping>(nameof(WallSnapping));
+        
         JumpingDefaultPhys = GetNode<JumpingDefaultPhys>(nameof(JumpingDefaultPhys));
-        LeftRightDefaultPhys = GetNode<LeftRightDefaultPhys>(nameof(LeftRightDefaultPhys));
+        WallDraggingDefaultPhys = GetNode<WallDraggingDefaultPhys>(nameof(WallDraggingDefaultPhys));
+        
+        WallJumpInputTakeover = GetNode<Timer>(nameof(WallJumpInputTakeover));
     }
 
     private void InitNumJumpsBehavior() {
@@ -83,15 +86,15 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
     }
     
     private void InitWallSnappingBehavior() {
-        LeftRightDefaultPhys.WallSnapStopped += () => {
+        WallSnapping.WallSnapStopped += () => {
             if (!IsOnWall()) {
                 UpdateLeftRightSpeed();
             }
         };
-        WallDragging.StartedValidWallTouching += () => LeftRightDefaultPhys.WallSnapping = false;
+        WallDragging.StartedValidWallTouching += () => WallSnapping.IsWallSnapping = false;
         BecomeOffWall += _ => {
-            if (LeftRightDefaultPhys.WallSnapping) {
-                LeftRightDefaultPhys.WallSnapping = false;
+            if (WallSnapping.IsWallSnapping) {
+                WallSnapping.IsWallSnapping = false;
                 UpdateLeftRightSpeed();
             }
         };
@@ -110,7 +113,7 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
         bool playerPressingAgainstWall = Mathf.Sign(physics.GetWallNormal().X) == -Mathf.Sign(_playerLeftRightInput);
         bool noInputDragging = WallDragging.IsDragging && _playerLeftRightInput == 0;
         
-        bool isValidWallPressing = playerPressingAgainstWall || noInputDragging || LeftRightDefaultPhys.WallSnapping;
+        bool isValidWallPressing = playerPressingAgainstWall || noInputDragging || WallSnapping.IsWallSnapping;
 
         WallDragging.ValidWallTouching = WallDraggingDefaultPhys.IsOnValidWall(physics)
                                          && isValidWallPressing
@@ -136,7 +139,7 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
         
         WallSnapOppositeInputCheck();
 
-        if (!LeftRightDefaultPhys.WallSnapping) {
+        if (!WallSnapping.IsWallSnapping) {
             JumpingDefaultPhys.DirectionGoing = _playerLeftRightInput;
         }
         
@@ -145,16 +148,16 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
             && Mathf.Sign(GetWallNormal().X) != Mathf.Sign(_playerLeftRightInput);
         if (!pressingOrStayingAgainstWall
             && !(WallJumpInputTakeover.TimeLeft > 0)
-            && !LeftRightDefaultPhys.WallSnapping) {
+            && !WallSnapping.IsWallSnapping) {
             UpdateLeftRightSpeed();
         }
     }
 
     private void WallSnapOppositeInputCheck() {
-        if (LeftRightDefaultPhys.WallSnapping
+        if (WallSnapping.IsWallSnapping
             && _playerLeftRightInput != 0
             && Mathf.Sign(_playerLeftRightInput) == -Mathf.Sign(LeftRight.IntendedSpeedScale)) {
-            LeftRightDefaultPhys.WallSnapping = false;
+            WallSnapping.IsWallSnapping = false;
         }
     }
 

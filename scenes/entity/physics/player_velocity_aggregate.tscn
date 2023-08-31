@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dx8gnhdieo400"]
+[gd_scene load_steps=14 format=3 uid="uid://dx8gnhdieo400"]
 
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/PlayerVelocityAggregate.cs" id="1_7tts4"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/VelocitySources/Falling.cs" id="2_eahxk"]
@@ -10,7 +10,9 @@
 [ext_resource type="Resource" uid="uid://cp061nqciwnhp" path="res://resources/default/WallDragging.tres" id="9_gt0qr"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/JumpingDefaultPhys.cs" id="10_iqiow"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallDragging.cs" id="11_5grid"]
+[ext_resource type="PackedScene" uid="uid://dqvo0nh5wnu6k" path="res://scenes/entity/physics/wall_snapping.tscn" id="12_2ium2"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallDraggingDefaultPhys.cs" id="13_fpxj0"]
+[ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallSnappingDefaultPhys.cs" id="13_ily76"]
 
 [node name="PlayerVelocityAggregate" type="CharacterBody2D"]
 collision_layer = 2
@@ -49,6 +51,13 @@ Wall = ExtResource("9_gt0qr")
 [node name="WallDraggingDefaultPhys" type="Node" parent="." node_paths=PackedStringArray("ToLink")]
 script = ExtResource("13_fpxj0")
 ToLink = NodePath("../WallDragging")
+
+[node name="WallSnapping" parent="." node_paths=PackedStringArray("Movement") instance=ExtResource("12_2ium2")]
+Movement = NodePath("../LeftRight")
+
+[node name="WallSnappingDefaultPhys" type="Node" parent="." node_paths=PackedStringArray("ToLink")]
+script = ExtResource("13_ily76")
+ToLink = NodePath("../WallSnapping")
 
 [node name="WallJumpInputTakeover" type="Timer" parent="."]
 process_callback = 0

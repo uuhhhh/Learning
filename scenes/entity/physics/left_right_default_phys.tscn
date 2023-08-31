@@ -4,15 +4,3 @@
 
 [node name="LeftRightDefaultPhys" type="Node"]
 script = ExtResource("1_iv6ti")
-WallSnapAccelTimeMultiplierInitial = 0.5
-WallSnapAccelTimeMultiplierFinal = 0.1
-
-[node name="WallSnapStartWindow" type="Timer" parent="."]
-process_callback = 0
-wait_time = 0.05
-one_shot = true
-
-[node name="WallSnapExpiry" type="Timer" parent="."]
-process_callback = 0
-wait_time = 0.25
-one_shot = true
