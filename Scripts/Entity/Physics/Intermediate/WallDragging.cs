@@ -4,6 +4,7 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 public partial class WallDragging : Node {
+    [Export] private bool Enabled { get; set; } = true;
     [Export] internal Falling Falling { get; set; }
     [Export] public WallDraggingData Wall {
         get => _wall;
@@ -12,11 +13,13 @@ public partial class WallDragging : Node {
             WallDataUpdated();
         }
     }
+    [Export] private bool DraggingEnabled { get; set; } = true;
+    [Export] private bool ValidWallTouchingEnabled { get; set; } = true;
     
     public bool IsDragging {
-        get => _isDragging;
+        get => Enabled && DraggingEnabled && _isDragging;
         private set {
-            if (value == IsDragging) return;
+            if (!(Enabled && DraggingEnabled) || value == IsDragging) return;
 
             _isDragging = value;
             if (IsDragging) {
@@ -30,9 +33,9 @@ public partial class WallDragging : Node {
     }
 
     public bool ValidWallTouching {
-        get => _isValidWallTouching;
+        get => Enabled && ValidWallTouchingEnabled && _isValidWallTouching;
         set {
-            if (value == _isValidWallTouching) return;
+            if (!(Enabled && ValidWallTouchingEnabled) || value == _isValidWallTouching) return;
 
             _isValidWallTouching = value;
 

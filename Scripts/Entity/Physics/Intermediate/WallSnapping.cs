@@ -4,6 +4,7 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 public partial class WallSnapping : Node {
+    [Export] private bool Enabled { get; set; } = true;
     [Export] internal LeftRight Movement { get; private set; }
     [Export] public WallSnappingData SnapData { get; private set; }
     
@@ -13,9 +14,9 @@ public partial class WallSnapping : Node {
             WallSnapStartWindow.WaitTime != 0 ? WallSnapStartWindow.TimeLeft / WallSnapStartWindow.WaitTime : 0);
 
     public bool IsWallSnapping {
-        get => _isWallSnapping;
+        get => Enabled && _isWallSnapping;
         set {
-            if (IsWallSnapping == value) return;
+            if (!Enabled || IsWallSnapping == value) return;
             _isWallSnapping = value;
             
             if (IsWallSnapping) {
@@ -34,9 +35,9 @@ public partial class WallSnapping : Node {
     }
 
     public bool InWallSnapStartWindow {
-        get => _inWallSnapStartWindow;
+        get => Enabled && _inWallSnapStartWindow;
         set {
-            if (InWallSnapStartWindow == value) return;
+            if (!Enabled || InWallSnapStartWindow == value) return;
             _inWallSnapStartWindow = value;
 
             if (InWallSnapStartWindow) {

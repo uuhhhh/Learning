@@ -5,8 +5,14 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 public partial class Jumping : Node {
+	[Export] private bool Enabled { get; set; } = true;
+	
 	[Export] internal Falling Falling { get; private set; }
 	[Export] internal LeftRight LeftRight { get; private set; }
+
+	[Export] private bool GroundJumpingEnabled { get; set; } = true;
+	[Export] private bool AirJumpingEnabled { get; set; } = true;
+	[Export] private bool WallJumpingEnabled { get; set; } = true;
 
 	[Export] private bool CoyoteGroundJumpEnabled { get; set; } = true;
 	[Export] private bool GroundJumpBufferEnabled { get; set; } = true;
@@ -152,10 +158,20 @@ public partial class Jumping : Node {
 		UpdateNumJumpsFor(forWhich);
 	}
 
+	public bool IsJumpingEnabledFor(Location forWhich) {
+		// can't use array here since array initialization to true doesn't show up as true in Godot editor
+		return Enabled && forWhich switch {
+			Location.Ground => GroundJumpingEnabled,
+			Location.Air => AirJumpingEnabled,
+			Location.WallNonGround => WallJumpingEnabled,
+			_ => false
+		};
+	}
+
 	public void AttemptJump() {
 		if (CanJump()) {
 			Jump();
-		} else {
+		} else if (IsJumpingEnabledFor(CurrentLocation)) {
 			if (GroundJumpBufferEnabled) {
 				JumpBuffer.Start();
 			}
@@ -178,7 +194,7 @@ public partial class Jumping : Node {
 	}
 
 	private bool CanJump() {
-		return CurrentNumJumps is JumpingData.UnlimitedJumps or > 0;
+		return IsJumpingEnabledFor(CurrentLocation) && CurrentNumJumps is JumpingData.UnlimitedJumps or > 0;
 	}
 
 	private void Jump() {
@@ -217,6 +233,8 @@ public partial class Jumping : Node {
 		JumpBuffer.Stop();
 		WallJumpBuffer.Stop();
 
+		if (JumpedFrom == Location.None) return;
+		
 		JumpingData lastJumpData = GetJumpingDataFor(JumpedFrom);
 		if ((CurrentLocation == Location.Air && Falling.Velocity.Y < GetJumpCancelVelocityThreshold())
 			|| InJumpTransitionY()) {

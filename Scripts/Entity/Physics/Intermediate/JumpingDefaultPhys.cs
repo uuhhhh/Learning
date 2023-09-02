@@ -58,6 +58,8 @@ public partial class JumpingDefaultPhys : DefaultPhys {
     }
 
     internal void WallPressCheck() {
+        if (!ToLink.IsJumpingEnabledFor(Location.WallNonGround) && ToLink.IsJumpingEnabledFor(Location.Air)) return;
+        
         int wallDirectionSign = Mathf.Sign(WallDirection);
         if (wallDirectionSign != 0 && (wallDirectionSign == -Mathf.Sign(DirectionGoing)
                                        || ToLink.CurrentLocationAfterTransition == Location.WallNonGround)) {
