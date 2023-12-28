@@ -69,6 +69,9 @@ public partial class Jumping : Node {
 		get => GetJumpCapFor(CurrentLocation);
 		private set => SetJumpCapFor(value, CurrentLocation);
 	}
+    
+	private bool CanJump =>
+		IsJumpingEnabledFor(CurrentLocation) && CurrentNumJumps is JumpingData.UnlimitedJumps or > 0;
 	
 	public float JumpFacing { get; set; }
 	public Location CurrentLocation { get; private set; } = Location.None;
@@ -78,6 +81,18 @@ public partial class Jumping : Node {
 			? Location.Air
 			: CurrentLocation;
 	public Location JumpedFrom { get; private set; } = Location.None;
+
+	public bool InJumpTransitionY => _jumpTweenY != null && _jumpTweenY.IsValid();
+
+	public bool InJumpTransitionX => _jumpTweenX != null && _jumpTweenX.IsValid();
+
+	private float JumpCancelVelocityThreshold {
+		get {
+			JumpingData lastJumpData = GetJumpingDataFor(JumpedFrom);
+			float extraVelocity = Falling.Gravity * Falling.GravityScale * lastJumpData.CancelAccelTime;
+			return lastJumpData.CancelVelocity - extraVelocity;
+		}
+	}
 
 	private JumpingData[] _jumpDataAll = new JumpingData[Locations.NumLocationsNotNone()];
 	private int[] _numJumpsAll = new int[Locations.NumLocationsNotNone()];
@@ -169,7 +184,7 @@ public partial class Jumping : Node {
 	}
 
 	public void AttemptJump() {
-		if (CanJump()) {
+		if (CanJump) {
 			Jump();
 		} else if (IsJumpingEnabledFor(CurrentLocation)) {
 			if (GroundJumpBufferEnabled) {
@@ -182,19 +197,15 @@ public partial class Jumping : Node {
 	}
 
 	private void AttemptBufferedGroundJump() {
-		if (CanJump() && JumpBuffer.TimeLeft > 0) {
+		if (CanJump && JumpBuffer.TimeLeft > 0) {
 			Jump();
 		}
 	}
 
 	private void AttemptBufferedWallJump() {
-		if (CanJump() && WallJumpBuffer.TimeLeft > 0) {
+		if (CanJump && WallJumpBuffer.TimeLeft > 0) {
 			Jump();
 		}
-	}
-
-	private bool CanJump() {
-		return IsJumpingEnabledFor(CurrentLocation) && CurrentNumJumps is JumpingData.UnlimitedJumps or > 0;
 	}
 
 	private void Jump() {
@@ -234,28 +245,14 @@ public partial class Jumping : Node {
 		WallJumpBuffer.Stop();
 
 		if (JumpedFrom == Location.None) return;
-		
-		JumpingData lastJumpData = GetJumpingDataFor(JumpedFrom);
-		if ((CurrentLocation == Location.Air && Falling.Velocity.Y < GetJumpCancelVelocityThreshold())
-			|| InJumpTransitionY()) {
+
+		bool inNormalJump = CurrentLocation == Location.Air && Falling.Velocity.Y < JumpCancelVelocityThreshold;
+		if ((inNormalJump || InJumpTransitionY) && !Falling.StoppingDueToCeilingHit) {
+			JumpingData lastJumpData = GetJumpingDataFor(JumpedFrom);
 			Falling.SmoothlySetBaseVelocityY(lastJumpData.CancelVelocity, lastJumpData.CancelAccelTime);
 		}
 
 		EmitSignal(SignalName.CancelledJump, (int)JumpedFrom);
-	}
-
-	private float GetJumpCancelVelocityThreshold() {
-		JumpingData lastJumpData = GetJumpingDataFor(JumpedFrom);
-		float extraVelocity = Falling.Gravity * Falling.GravityScale * lastJumpData.CancelAccelTime;
-		return lastJumpData.CancelVelocity - extraVelocity;
-	}
-
-	public bool InJumpTransitionY() {
-		return _jumpTweenY != null && _jumpTweenY.IsValid();
-	}
-
-	public bool InJumpTransitionX() {
-		return _jumpTweenX != null && _jumpTweenX.IsValid();
 	}
 
 	public void TransitionToGround() {

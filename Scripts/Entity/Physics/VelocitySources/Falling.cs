@@ -27,6 +27,11 @@ public partial class Falling : VelocitySource {
     }
     
     public float GravityScale => Velocity.Y < 0 ? FallData.UpwardsGravityScale : FallData.DownwardsGravityScale;
+
+    public bool StoppingDueToCeilingHit => _ceilingHitStopTween is not null && _ceilingHitStopTween.IsValid();
+
+    public bool DeceleratingToMaxFallVelocity =>
+        _decelerateToMaxVelocityTween is not null && _decelerateToMaxVelocityTween.IsValid();
     
     public readonly float Gravity = ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
 
@@ -59,7 +64,7 @@ public partial class Falling : VelocitySource {
 
     private void UpdateDecelerationToMaxVelocity() {
         if (_decelerateToMaxVelocityTween != null && _decelerateToMaxVelocityTween.IsValid()) {
-            if (BaseVelocity.Y > FallData.MaxVelocity) {
+            if (BaseVelocity.Y > FallData.MaxFallVelocity) {
                 float newDuration = _originalDecelerateVelocityDelta * FallData.DecelToMaxVelocityTimePerVelocity;
                 _decelerateToMaxVelocityTween.SetSpeedScale(1 / newDuration);
             } else {
@@ -80,20 +85,20 @@ public partial class Falling : VelocitySource {
         base._PhysicsProcess(delta);
         if (!IsFalling) return;
 
-        if (BaseVelocity.Y > FallData.MaxVelocity) {
-            DecelerateToMaxVelocity();
+        if (BaseVelocity.Y > FallData.MaxFallVelocity) {
+            DecelerateToMaxFallVelocity();
         } else {
             AccelerateFromGravity(delta);
         }
     }
 
-    private void DecelerateToMaxVelocity() {
+    private void DecelerateToMaxFallVelocity() {
         if (_decelerateToMaxVelocityTween != null && _decelerateToMaxVelocityTween.IsValid()) return;
             
-        _originalDecelerateVelocityDelta = BaseVelocity.Y - FallData.MaxVelocity;
+        _originalDecelerateVelocityDelta = BaseVelocity.Y - FallData.MaxFallVelocity;
         float decelerateTime = _originalDecelerateVelocityDelta * FallData.DecelToMaxVelocityTimePerVelocity;
         (_decelerateToMaxVelocityTween, PropertyTweener t)
-            = SmoothlySetBaseVelocityY(FallData.MaxVelocity, decelerateTime);
+            = SmoothlySetBaseVelocityY(FallData.MaxFallVelocity, decelerateTime);
         t.SetEase(Tween.EaseType.Out);
         t.SetTrans(Tween.TransitionType.Quad);
     }
@@ -101,7 +106,7 @@ public partial class Falling : VelocitySource {
     private void AccelerateFromGravity(double delta) {
         Vector2 velocity = BaseVelocity;
         velocity.Y += Gravity * GravityScale * (float) delta;
-        velocity.Y = Mathf.Min(velocity.Y, FallData.MaxVelocity);
+        velocity.Y = Mathf.Min(velocity.Y, FallData.MaxFallVelocity);
         BaseVelocity = velocity;
     }
 

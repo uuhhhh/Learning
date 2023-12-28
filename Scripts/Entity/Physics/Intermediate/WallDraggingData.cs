@@ -48,7 +48,7 @@ public partial class WallDraggingData : ResourceWithModifiers, IValueModifier {
         float? replacement = valueName switch {
             nameof(FallingData.UpwardsGravityScale) => UpwardsGravityScaleReplacement,
             nameof(FallingData.DownwardsGravityScale) => DownwardsGravityScaleReplacement,
-            nameof(FallingData.MaxVelocity) => MaxVelocityReplacement,
+            nameof(FallingData.MaxFallVelocity) => MaxVelocityReplacement,
             nameof(FallingData.CeilingHitStopTimeScale) => CeilingHitStopTimeScaleReplacement,
             nameof(FallingData.DecelToMaxVelocityTimePer100Velocity) => DecelToMaxVelocityTimePer100VelocityReplacement,
             _ => null

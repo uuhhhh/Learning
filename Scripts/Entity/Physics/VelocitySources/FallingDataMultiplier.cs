@@ -16,7 +16,7 @@ public partial class FallingDataMultiplier : Resource, IValueModifier {
         float? multiplier = valueName switch {
             nameof(FallingData.UpwardsGravityScale) => UpwardsGravityScaleMultiplier,
             nameof(FallingData.DownwardsGravityScale) => DownwardsGravityScaleMultiplier,
-            nameof(FallingData.MaxVelocity) => MaxVelocityMultiplier,
+            nameof(FallingData.MaxFallVelocity) => MaxVelocityMultiplier,
             nameof(FallingData.CeilingHitStopTimeScale) => CeilingHitStopTimeScaleMultiplier,
             nameof(FallingData.DecelToMaxVelocityTimePer100Velocity) => DecelToMaxVelocityTimePer100VelocityMultiplier,
             _ => null

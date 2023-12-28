@@ -12,9 +12,9 @@ public partial class FallingData : ResourceWithModifiers {
         get => GetField<float>(nameof(DownwardsGravityScale));
         private set => SetField(nameof(DownwardsGravityScale), value);
     }
-    [Export] public float MaxVelocity {
-        get => GetField<float>(nameof(MaxVelocity));
-        private set => SetField(nameof(MaxVelocity), value);
+    [Export] public float MaxFallVelocity {
+        get => GetField<float>(nameof(MaxFallVelocity));
+        private set => SetField(nameof(MaxFallVelocity), value);
     }
     [Export] public float CeilingHitStopTimeScale {
         get => GetField<float>(nameof(CeilingHitStopTimeScale));
@@ -30,7 +30,7 @@ public partial class FallingData : ResourceWithModifiers {
     protected override void RefreshAllFields() {
         RefreshField<float>(nameof(UpwardsGravityScale));
         RefreshField<float>(nameof(DownwardsGravityScale));
-        RefreshField<float>(nameof(MaxVelocity));
+        RefreshField<float>(nameof(MaxFallVelocity));
         RefreshField<float>(nameof(CeilingHitStopTimeScale));
         RefreshField<float>(nameof(DecelToMaxVelocityTimePer100Velocity));
     }
