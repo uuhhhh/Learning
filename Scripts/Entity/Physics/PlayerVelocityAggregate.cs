@@ -5,6 +5,8 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 namespace Learning.Scripts.Entity.Physics;
 
 public partial class PlayerVelocityAggregate : VelocityAggregate {
+    [Export] private KinematicComp PhysicsInteractions { get; set; }
+    
     public Falling Falling { get; private set; }
     public LeftRight LeftRight { get; private set; }
     
@@ -22,7 +24,7 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
         set {
             _canDoWallBehavior = value;
 
-            ValidWallTouchingCheck(this);
+            ValidWallTouchingCheck(PhysicsInteractions);
             
             if (!_canDoWallBehavior && Jumping.CurrentLocationAfterTransition == Location.WallNonGround) {
                 Jumping.TransitionToAir(immediately: true);
@@ -62,7 +64,7 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
     }
 
     private void InitNumJumpsBehavior() {
-        BecomeOnFloor += _ => Jumping.ResetNumJumps();
+        PhysicsInteractions.BecomeOnFloor += _ => Jumping.ResetNumJumps();
         WallDragging.StartedValidWallTouching += Jumping.ResetNumJumps;
     }
 
@@ -81,18 +83,18 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
         WallDragging.StartedValidWallTouching += () =>
             LeftRight.IntendedSpeed = Mathf.Sign(LeftRight.IntendedSpeed);
         
-        BecomeOffWall += _ => UpdateLeftRightSpeedIfAble();
-        BecomeOnFloor += _ => UpdateLeftRightSpeedIfAble();
+        PhysicsInteractions.BecomeOffWall += _ => UpdateLeftRightSpeedIfAble();
+        PhysicsInteractions.BecomeOnFloor += _ => UpdateLeftRightSpeedIfAble();
     }
     
     private void InitWallSnappingBehavior() {
         WallSnapping.WallSnapStopped += () => {
-            if (!IsOnWall()) {
+            if (!PhysicsInteractions.IsOnWall()) {
                 UpdateLeftRightSpeed();
             }
         };
         WallDragging.StartedValidWallTouching += () => WallSnapping.IsWallSnapping = false;
-        BecomeOffWall += _ => {
+        PhysicsInteractions.BecomeOffWall += _ => {
             if (WallSnapping.IsWallSnapping) {
                 WallSnapping.IsWallSnapping = false;
                 UpdateLeftRightSpeed();
@@ -101,12 +103,12 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
     }
 
     private void ModifyWallTouchingBehavior() {
-        BecomeOnWall -= WallDraggingDefaultPhys.OnBecomeOnWall;
-        BecomeOnWall -= JumpingDefaultPhys.OnBecomeOnWall;
-        BecomeOnWall += ValidWallTouchingCheck;
+        PhysicsInteractions.BecomeOnWall -= WallDraggingDefaultPhys.OnBecomeOnWall;
+        PhysicsInteractions.BecomeOnWall -= JumpingDefaultPhys.OnBecomeOnWall;
+        PhysicsInteractions.BecomeOnWall += ValidWallTouchingCheck;
         
-        BecomeOffFloor -= WallDraggingDefaultPhys.OnBecomeOffFloor;
-        BecomeOffFloor += ValidWallTouchingCheck;
+        PhysicsInteractions.BecomeOffFloor -= WallDraggingDefaultPhys.OnBecomeOffFloor;
+        PhysicsInteractions.BecomeOffFloor += ValidWallTouchingCheck;
     }
 
     private void ValidWallTouchingCheck(KinematicComp physics) {
@@ -135,7 +137,7 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
     }
 
     private void UpdateLeftRightSpeedIfAble() {
-        ValidWallTouchingCheck(this);
+        ValidWallTouchingCheck(PhysicsInteractions);
         
         WallSnapOppositeInputCheck();
 
@@ -145,7 +147,7 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
         
         bool pressingOrStayingAgainstWall =
             WallDragging.ValidWallTouching
-            && Mathf.Sign(GetWallNormal().X) != Mathf.Sign(_playerLeftRightInput);
+            && Mathf.Sign(PhysicsInteractions.GetWallNormal().X) != Mathf.Sign(_playerLeftRightInput);
         if (!pressingOrStayingAgainstWall
             && !(WallJumpInputTakeover.TimeLeft > 0)
             && !WallSnapping.IsWallSnapping) {

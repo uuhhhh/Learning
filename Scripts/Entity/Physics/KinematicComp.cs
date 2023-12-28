@@ -1,13 +1,11 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Entity.Physics; 
+namespace Learning.Scripts.Entity.Physics;
 
 public partial class KinematicComp : CharacterBody2D {
-    [Export] private bool AutoLinkImmediateChildren { get; set; } = true;
-    [Export] private bool AutoExtraInitImmediateChildren { get; set; } = true;
     [Export] private float DirectionChangeEpsilon { get; set; } = .01f;
 
-    // Whenever a new signal is added here, be sure the change is reflected in IDefaultPhys also
+    // Whenever a new signal is added here, be sure the change is reflected in DefaultPhys also
     [Signal]
     public delegate void BecomeOnFloorEventHandler(KinematicComp state);
     [Signal]
@@ -29,31 +27,10 @@ public partial class KinematicComp : CharacterBody2D {
     private bool _increasingX, _increasingY;
     
     public override void _Ready() {
+        base._Ready();
         _mostExtremePosition = GlobalPosition;
 
-        if (AutoLinkImmediateChildren) {
-            LinkImmediateChildren();
-        }
-        if (AutoExtraInitImmediateChildren) {
-            ExtraInitImmediateChildren();
-        }
         SignalInitialState();
-    }
-
-    private void LinkImmediateChildren() {
-        foreach (Node c in GetChildren()) {
-            if (c is DefaultPhys { DoNotLink: false } l) {
-                l.Link(this);
-            }
-        }
-    }
-
-    private void ExtraInitImmediateChildren() {
-        foreach (Node c in GetChildren()) {
-            if (c is DefaultPhys { DoNotCallExtraInit: false } l) {
-                l.ExtraInit(this);
-            }
-        }
     }
 
     private void SignalInitialState() {
@@ -62,20 +39,18 @@ public partial class KinematicComp : CharacterBody2D {
         EmitSignal(IsOnFloor() ? SignalName.BecomeOnFloor : SignalName.BecomeOffFloor, this);
     }
 
-    public override void _PhysicsProcess(double delta) {
-        MoveAndSlideWithStatusChanges();
-    }
-
-    protected virtual void MoveAndSlideWithStatusChanges() {
+    public virtual bool MoveAndSlideWithStatusChanges() {
         bool wasOnFloor = IsOnFloor(), wasOnCeiling = IsOnCeiling(), wasOnWall = IsOnWall();
 
-        MoveAndSlide();
+        bool collided = MoveAndSlide();
         
         CheckFloorStatusChange(wasOnFloor);
         CheckCeilingStatusChange(wasOnCeiling);
         CheckWallStatusChange(wasOnWall);
         
         CheckDirectionChange();
+
+        return collided;
     }
 
     private void CheckFloorStatusChange(bool wasOnFloor) {
@@ -115,8 +90,9 @@ public partial class KinematicComp : CharacterBody2D {
         _mostExtremePosition.X = _increasingX ?
             Mathf.Max(GlobalPosition.X, _mostExtremePosition.X)
             : Mathf.Min(GlobalPosition.X, _mostExtremePosition.X);
+        bool turnedAroundX = Mathf.Abs(GlobalPosition.X - _mostExtremePosition.X) > DirectionChangeEpsilon;
         
-        if (Mathf.Abs(GlobalPosition.X - _mostExtremePosition.X) > DirectionChangeEpsilon) {
+        if (turnedAroundX) {
             EmitSignal(SignalName.DirectionChangeX, this, GlobalPosition.X - _mostExtremePosition.X);
             _increasingX = !_increasingX;
             _mostExtremePosition.X = GlobalPosition.X;
@@ -125,14 +101,27 @@ public partial class KinematicComp : CharacterBody2D {
         _mostExtremePosition.Y = _increasingY ?
             Mathf.Max(GlobalPosition.Y, _mostExtremePosition.Y)
             : Mathf.Min(GlobalPosition.Y, _mostExtremePosition.Y);
+        bool turnedAroundY = Mathf.Abs(GlobalPosition.Y - _mostExtremePosition.Y) > DirectionChangeEpsilon;
         
-        if (Mathf.Abs(GlobalPosition.Y - _mostExtremePosition.Y) > DirectionChangeEpsilon) {
+        if (turnedAroundY) {
             EmitSignal(SignalName.DirectionChangeY, this, GlobalPosition.Y - _mostExtremePosition.Y);
             _increasingY = !_increasingY;
             _mostExtremePosition.Y = GlobalPosition.Y;
         }
     }
-    
+
+    public void LinkDefaultPhys(Node toLink) {
+        if (toLink is DefaultPhys { DoNotLink: false } l) {
+            l.Link(this);
+        }
+    }
+
+    public void ExtraInitDefaultPhys(Node toExtraInit) {
+        if (toExtraInit is DefaultPhys { DoNotCallExtraInit: false } l) {
+            l.ExtraInit(this);
+        }
+    }
+
     internal void SetParentPositionToOwn(Node2D parent) {
         parent.Position = GlobalPosition;
         Position = Vector2.Zero;

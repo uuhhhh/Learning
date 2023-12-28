@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://dx8gnhdieo400"]
+[gd_scene load_steps=14 format=3 uid="uid://icatr3nuob7n"]
 
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/PlayerVelocityAggregate.cs" id="1_7tts4"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/VelocitySources/Falling.cs" id="2_eahxk"]
@@ -14,12 +14,8 @@
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallDraggingDefaultPhys.cs" id="13_fpxj0"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallSnappingDefaultPhys.cs" id="13_ily76"]
 
-[node name="PlayerVelocityAggregate" type="CharacterBody2D"]
-collision_layer = 2
-floor_snap_length = 3.0
+[node name="PlayerVelocityAggregate" type="Node"]
 script = ExtResource("1_7tts4")
-
-[node name="Hitbox" type="CollisionShape2D" parent="."]
 
 [node name="Falling" type="Node" parent="."]
 script = ExtResource("2_eahxk")

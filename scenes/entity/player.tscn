@@ -1,13 +1,14 @@
-[gd_scene load_steps=11 format=3 uid="uid://cpr2hwrjvvld7"]
+[gd_scene load_steps=12 format=3 uid="uid://cpr2hwrjvvld7"]
 
 [ext_resource type="Script" path="res://Scripts/Entity/Player.cs" id="1_uyfcp"]
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="2_q7yrb"]
 [ext_resource type="Script" path="res://Scripts/Entity/InputComp.cs" id="3_xfxpf"]
-[ext_resource type="PackedScene" uid="uid://dx8gnhdieo400" path="res://scenes/entity/physics/player_velocity_aggregate.tscn" id="4_xn5i2"]
+[ext_resource type="Script" path="res://Scripts/Entity/Physics/VelocityAggregatingKinematicComp.cs" id="4_o2wqv"]
+[ext_resource type="PackedScene" uid="uid://icatr3nuob7n" path="res://scenes/entity/physics/player_velocity_aggregate.tscn" id="4_xn5i2"]
 [ext_resource type="Script" path="res://Scripts/Entity/FloorDetector.cs" id="5_ua6gy"]
 [ext_resource type="Script" path="res://Scripts/Entity/WallDetector.cs" id="6_bih8x"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_dih1a"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_st71c"]
 size = Vector2(16, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nhbww"]
@@ -30,11 +31,17 @@ texture = ExtResource("2_q7yrb")
 [node name="InputComp" type="Node" parent="."]
 script = ExtResource("3_xfxpf")
 
-[node name="PlayerVelocityAggregate" parent="." instance=ExtResource("4_xn5i2")]
+[node name="PlayerVelocityAggregate" parent="." node_paths=PackedStringArray("PhysicsInteractions", "PhysicsForDefaultPhysChildren") instance=ExtResource("4_xn5i2")]
+PhysicsInteractions = NodePath("../VelocityAggregatingKinematicComp")
+PhysicsForDefaultPhysChildren = NodePath("../VelocityAggregatingKinematicComp")
 
-[node name="Hitbox" parent="PlayerVelocityAggregate" index="0"]
+[node name="VelocityAggregatingKinematicComp" type="CharacterBody2D" parent="." node_paths=PackedStringArray("Velocities")]
+script = ExtResource("4_o2wqv")
+Velocities = NodePath("../PlayerVelocityAggregate")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="VelocityAggregatingKinematicComp"]
 position = Vector2(0, -8)
-shape = SubResource("RectangleShape2D_dih1a")
+shape = SubResource("RectangleShape2D_st71c")
 
 [node name="FloorDetector" type="Area2D" parent="."]
 script = ExtResource("5_ua6gy")
@@ -66,5 +73,3 @@ drag_horizontal_enabled = true
 drag_vertical_enabled = true
 editor_draw_limits = true
 editor_draw_drag_margin = true
-
-[editable path="PlayerVelocityAggregate"]

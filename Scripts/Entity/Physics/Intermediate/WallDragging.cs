@@ -5,7 +5,7 @@ namespace Learning.Scripts.Entity.Physics.Intermediate;
 
 public partial class WallDragging : Node {
     [Export] private bool Enabled { get; set; } = true;
-    [Export] internal Falling Falling { get; set; }
+    [Export] internal Falling Falling { get; private set; }
     [Export] public WallDraggingData Wall {
         get => _wall;
         private set {

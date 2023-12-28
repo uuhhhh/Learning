@@ -5,7 +5,8 @@ namespace Learning.Scripts.Entity;
 
 public partial class Player : Node2D {
     public InputComp Input { get; private set; }
-    public PlayerVelocityAggregate Physics { get; private set; }
+    public PlayerVelocityAggregate PlayerController { get; private set; }
+    public KinematicComp PhysicalPlayer { get; private set; }
     public FloorDetector FloorDetector { get; private set; }
     public WallDetector WallDetector { get; private set; }
 
@@ -14,29 +15,30 @@ public partial class Player : Node2D {
 
         ConfigureInput();
 
-        WallDetector.ZeroToOneEnvObjects += () => Physics.CanDoWallBehavior = true;
-        WallDetector.ZeroEnvObjects += () => Physics.CanDoWallBehavior = false;
+        WallDetector.ZeroToOneEnvObjects += () => PlayerController.CanDoWallBehavior = true;
+        WallDetector.ZeroEnvObjects += () => PlayerController.CanDoWallBehavior = false;
         
-        ProcessPhysicsPriority = Physics.ProcessPhysicsPriority + 1;
+        ProcessPhysicsPriority = PhysicalPlayer.ProcessPhysicsPriority + 1;
     }
 
     private void SetChildren() {
         Input = GetNode<InputComp>(nameof(InputComp));
-        Physics = GetNode<PlayerVelocityAggregate>(nameof(PlayerVelocityAggregate));
+        PlayerController = GetNode<PlayerVelocityAggregate>(nameof(PlayerVelocityAggregate));
+        PhysicalPlayer = GetNode<KinematicComp>(nameof(VelocityAggregatingKinematicComp));
         FloorDetector = GetNode<FloorDetector>(nameof(FloorDetector));
         WallDetector = GetNode<WallDetector>(nameof(WallDetector));
     }
 
     private void ConfigureInput() {
-        Input.LeftInputOn += Physics.MoveLeft;
-        Input.LeftInputOff += Physics.MoveRight;
-        Input.RightInputOn += Physics.MoveRight;
-        Input.RightInputOff += Physics.MoveLeft;
-        Input.JumpInputOn += Physics.AttemptJump;
-        Input.JumpInputOff += Physics.JumpCancel;
+        Input.LeftInputOn += PlayerController.MoveLeft;
+        Input.LeftInputOff += PlayerController.MoveRight;
+        Input.RightInputOn += PlayerController.MoveRight;
+        Input.RightInputOff += PlayerController.MoveLeft;
+        Input.JumpInputOn += PlayerController.AttemptJump;
+        Input.JumpInputOff += PlayerController.JumpCancel;
     }
 
     public override void _PhysicsProcess(double delta) {
-        Physics.SetParentPositionToOwn(this);
+        PhysicalPlayer.SetParentPositionToOwn(this);
     }
 }
