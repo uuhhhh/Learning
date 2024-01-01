@@ -1,9 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://cpr2hwrjvvld7"]
+[gd_scene load_steps=11 format=3 uid="uid://dvmojs4ssxuwf"]
 
 [ext_resource type="Script" path="res://Scripts/Entity/Player.cs" id="1_uyfcp"]
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="2_q7yrb"]
 [ext_resource type="Script" path="res://Scripts/Entity/InputComp.cs" id="3_xfxpf"]
-[ext_resource type="Script" path="res://Scripts/Entity/Physics/VelocityAggregatingKinematicComp.cs" id="4_o2wqv"]
 [ext_resource type="PackedScene" uid="uid://icatr3nuob7n" path="res://scenes/entity/physics/player_velocity_aggregate.tscn" id="4_xn5i2"]
 [ext_resource type="Script" path="res://Scripts/Entity/FloorDetector.cs" id="5_ua6gy"]
 [ext_resource type="Script" path="res://Scripts/Entity/WallDetector.cs" id="6_bih8x"]
@@ -20,7 +19,8 @@ size = Vector2(1, 8)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_66ae7"]
 size = Vector2(1, 8)
 
-[node name="Player" type="Node2D"]
+[node name="Player" type="CharacterBody2D"]
+floor_snap_length = 3.0
 script = ExtResource("1_uyfcp")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -28,21 +28,16 @@ position = Vector2(0, -8)
 scale = Vector2(0.125, 0.125)
 texture = ExtResource("2_q7yrb")
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -8)
+shape = SubResource("RectangleShape2D_st71c")
+
 [node name="InputComp" type="Node" parent="."]
 script = ExtResource("3_xfxpf")
 
 [node name="PlayerVelocityAggregate" parent="." node_paths=PackedStringArray("PhysicsInteractions", "PhysicsForDefaultPhysChildren") instance=ExtResource("4_xn5i2")]
-PhysicsInteractions = NodePath("../VelocityAggregatingKinematicComp")
-PhysicsForDefaultPhysChildren = NodePath("../VelocityAggregatingKinematicComp")
-
-[node name="VelocityAggregatingKinematicComp" type="CharacterBody2D" parent="." node_paths=PackedStringArray("Velocities")]
-floor_snap_length = 3.0
-script = ExtResource("4_o2wqv")
-Velocities = NodePath("../PlayerVelocityAggregate")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="VelocityAggregatingKinematicComp"]
-position = Vector2(0, -8)
-shape = SubResource("RectangleShape2D_st71c")
+PhysicsInteractions = NodePath("..")
+PhysicsForDefaultPhysChildren = NodePath("..")
 
 [node name="FloorDetector" type="Area2D" parent="."]
 script = ExtResource("5_ua6gy")
