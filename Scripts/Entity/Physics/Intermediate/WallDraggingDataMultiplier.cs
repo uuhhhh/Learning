@@ -3,26 +3,35 @@
 namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 [GlobalClass]
-public partial class WallDraggingDataMultiplier : Resource, IValueModifier {
-    [Export] public float UpwardsGravityScaleReplacementMultiplier { get; private set; }
-    [Export] public float DownwardsGravityScaleReplacementMultiplier { get; private set; }
-    [Export] public float MaxVelocityReplacementMultiplier { get; private set; }
-    [Export] public float CeilingHitStopTimeScaleReplacementMultiplier { get; private set; }
-    [Export] public float DecelToMaxVelocityTimePer100VelocityReplacementMultiplier { get; private set; }
-    [Export] public float VelocityDragThresholdMultiplier { get; private set; }
-    
-    [Export] public int Priority { get; private set; }
-    
-    public TValue ApplyModifier<TValue>(string valueName, TValue value) {
-        float? multiplier = valueName switch {
-            nameof(WallDraggingData.UpwardsGravityScaleReplacement) => UpwardsGravityScaleReplacementMultiplier,
-            nameof(WallDraggingData.DownwardsGravityScaleReplacement) => DownwardsGravityScaleReplacementMultiplier,
-            nameof(WallDraggingData.MaxVelocityReplacement) => MaxVelocityReplacementMultiplier,
-            nameof(WallDraggingData.CeilingHitStopTimeScaleReplacement) => CeilingHitStopTimeScaleReplacementMultiplier,
-            nameof(WallDraggingData.DecelToMaxVelocityTimePer100VelocityReplacement)
-                => DecelToMaxVelocityTimePer100VelocityReplacementMultiplier,
-            _ => null
-        };
-        return IValueModifier.MultiplyFloat(value, multiplier);
+public partial class WallDraggingDataMultiplier : ModifierResource<WallDraggingData> {
+    [Export] public FloatMultiplier UpwardsGravityScaleReplacementMultiplier {
+        get => GetModifier<FloatMultiplier>(nameof(UpwardsGravityScaleReplacementMultiplier));
+        private set => AddModifierToBeAdded(nameof(UpwardsGravityScaleReplacementMultiplier),
+            nameof(WallDraggingData.UpwardsGravityScaleReplacement), value);
+    }
+    [Export] public FloatMultiplier DownwardsGravityScaleReplacementMultiplier {
+        get => GetModifier<FloatMultiplier>(nameof(DownwardsGravityScaleReplacementMultiplier));
+        private set => AddModifierToBeAdded(nameof(DownwardsGravityScaleReplacementMultiplier),
+            nameof(WallDraggingData.DownwardsGravityScaleReplacement), value);
+    }
+    [Export] public FloatMultiplier MaxFallVelocityReplacementMultiplier {
+        get => GetModifier<FloatMultiplier>(nameof(MaxFallVelocityReplacementMultiplier));
+        private set => AddModifierToBeAdded(nameof(MaxFallVelocityReplacementMultiplier),
+            nameof(WallDraggingData.MaxFallVelocityReplacement), value);
+    }
+    [Export] public FloatMultiplier CeilingHitStopTimeScaleReplacementMultiplier {
+        get => GetModifier<FloatMultiplier>(nameof(CeilingHitStopTimeScaleReplacementMultiplier));
+        private set => AddModifierToBeAdded(nameof(CeilingHitStopTimeScaleReplacementMultiplier),
+            nameof(WallDraggingData.CeilingHitStopTimeScaleReplacement), value);
+    }
+    [Export] public FloatMultiplier DecelToMaxVelocityTimePer100VelocityReplacementMultiplier {
+        get => GetModifier<FloatMultiplier>(nameof(DecelToMaxVelocityTimePer100VelocityReplacementMultiplier));
+        private set => AddModifierToBeAdded(nameof(DecelToMaxVelocityTimePer100VelocityReplacementMultiplier),
+            nameof(WallDraggingData.DecelToMaxVelocityTimePer100VelocityReplacement), value);
+    }
+    [Export] public FloatMultiplier VelocityDragThresholdMultiplier {
+        get => GetModifier<FloatMultiplier>(nameof(VelocityDragThresholdMultiplier));
+        private set => AddModifierToBeAdded(nameof(VelocityDragThresholdMultiplier),
+            nameof(WallDraggingData.VelocityDragThreshold), value);
     }
 }

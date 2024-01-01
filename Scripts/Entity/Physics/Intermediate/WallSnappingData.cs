@@ -1,25 +1,48 @@
 ﻿using Godot;
+using Learning.Scripts.Entity.Physics.VelocitySources;
 
 namespace Learning.Scripts.Entity.Physics.Intermediate; 
 
 [GlobalClass]
-public partial class WallSnappingData : ResourceWithModifiers {
+public partial class WallSnappingData : ResourceWithModifiers, IModifierGroup<LeftRightData> {
     [Export] public float AccelTimeMultiplierInitial {
-        get => GetField<float>(nameof(AccelTimeMultiplierInitial));
-        private set => SetField(nameof(AccelTimeMultiplierInitial), value);
+        get => GetValue<float>(nameof(AccelTimeMultiplierInitial));
+        private set => InitValue(nameof(AccelTimeMultiplierInitial), value);
     }
     [Export] public float AccelTimeMultiplierFinal {
-        get => GetField<float>(nameof(AccelTimeMultiplierFinal));
-        private set => SetField(nameof(AccelTimeMultiplierFinal), value);
+        get => GetValue<float>(nameof(AccelTimeMultiplierFinal));
+        private set => InitValue(nameof(AccelTimeMultiplierFinal), value);
     }
     [Export] public float SpeedScaleDeltaPowerReplacement {
-        get => GetField<float>(nameof(SpeedScaleDeltaPowerReplacement));
-        private set => SetField(nameof(SpeedScaleDeltaPowerReplacement), value);
+        get => GetValue<float>(nameof(SpeedScaleDeltaPowerReplacement));
+        private set => InitValue(nameof(SpeedScaleDeltaPowerReplacement), value);
     }
+    [Export] public Timer WallSnapStartWindow { get; private set; }
     
-    protected override void RefreshAllFields() {
-        RefreshField<float>(nameof(AccelTimeMultiplierInitial));
-        RefreshField<float>(nameof(AccelTimeMultiplierFinal));
-        RefreshField<float>(nameof(SpeedScaleDeltaPowerReplacement));
+    public float AccelTimeMultiplier =>
+        (float)Mathf.Lerp(AccelTimeMultiplierInitial,
+            AccelTimeMultiplierFinal,
+            WallSnapStartWindow.WaitTime != 0 ? WallSnapStartWindow.TimeLeft / WallSnapStartWindow.WaitTime : 0);
+
+    private FunctionalModifier<float> _accelTimeMultiplierModifier;
+    private FunctionalModifier<float> _speedScaleDeltaPowerReplacementModifier;
+    
+    public WallSnappingData() {
+        _accelTimeMultiplierModifier = new(
+            value => AccelTimeMultiplier * value, Modifier<object>.DefaultPriority, false);
+        
+        _speedScaleDeltaPowerReplacementModifier = new(
+            _ => SpeedScaleDeltaPowerReplacement, Modifier<object>.DefaultPriority, false);
+    }
+
+    public void AddModifiersTo(LeftRightData values) {
+        values.AddModifierTo(nameof(LeftRightData.AccelBaseTime), _accelTimeMultiplierModifier);
+        values.AddModifierTo(nameof(LeftRightData.SpeedScaleHighDeltaPower), _speedScaleDeltaPowerReplacementModifier);
+    }
+
+    public void RemoveModifiersFrom(LeftRightData values) {
+        values.RemoveModifierFrom(nameof(LeftRightData.AccelBaseTime), _accelTimeMultiplierModifier);
+        values.RemoveModifierFrom(nameof(LeftRightData.SpeedScaleHighDeltaPower),
+            _speedScaleDeltaPowerReplacementModifier);
     }
 }

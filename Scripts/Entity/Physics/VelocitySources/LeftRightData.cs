@@ -5,26 +5,19 @@ namespace Learning.Scripts.Entity.Physics.VelocitySources;
 [GlobalClass]
 public partial class LeftRightData : ResourceWithModifiers {
     [Export] public float BaseSpeed {
-        get => GetField<float>(nameof(BaseSpeed));
-        private set => SetField(nameof(BaseSpeed), value);
+        get => GetValue<float>(nameof(BaseSpeed));
+        private set => InitValue(nameof(BaseSpeed), value);
     }
     [Export] public float AccelBaseTime {
-        get => GetField<float>(nameof(AccelBaseTime));
-        private set => SetField(nameof(AccelBaseTime), value);
+        get => GetValue<float>(nameof(AccelBaseTime));
+        private set => InitValue(nameof(AccelBaseTime), value);
     }
     [Export] public float DecelBaseTime {
-        get => GetField<float>(nameof(DecelBaseTime));
-        private set => SetField(nameof(DecelBaseTime), value);
+        get => GetValue<float>(nameof(DecelBaseTime));
+        private set => InitValue(nameof(DecelBaseTime), value);
     }
     [Export] public float SpeedScaleHighDeltaPower {
-        get => GetField<float>(nameof(SpeedScaleHighDeltaPower));
-        private set => SetField(nameof(SpeedScaleHighDeltaPower), value);
-    }
-
-    protected override void RefreshAllFields() {
-        RefreshField<float>(nameof(BaseSpeed));
-        RefreshField<float>(nameof(AccelBaseTime));
-        RefreshField<float>(nameof(DecelBaseTime));
-        RefreshField<float>(nameof(SpeedScaleHighDeltaPower));
+        get => GetValue<float>(nameof(SpeedScaleHighDeltaPower));
+        private set => InitValue(nameof(SpeedScaleHighDeltaPower), value);
     }
 }

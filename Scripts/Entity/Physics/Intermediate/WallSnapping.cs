@@ -7,11 +7,6 @@ public partial class WallSnapping : Node {
     [Export] private bool Enabled { get; set; } = true;
     [Export] internal LeftRight Movement { get; private set; }
     [Export] public WallSnappingData SnapData { get; private set; }
-    
-    private float AccelTimeMultiplier =>
-        (float)Mathf.Lerp(SnapData.AccelTimeMultiplierInitial,
-            SnapData.AccelTimeMultiplierFinal,
-            WallSnapStartWindow.WaitTime != 0 ? WallSnapStartWindow.TimeLeft / WallSnapStartWindow.WaitTime : 0);
 
     public bool IsWallSnapping {
         get => Enabled && _isWallSnapping;
@@ -21,13 +16,13 @@ public partial class WallSnapping : Node {
             
             if (IsWallSnapping) {
                 _wallSnapUsedUp = true;
-                Movement.Air.AddModifier(_accelModifier);
+                SnapData.AddModifiersTo(Movement.Air);
                 WallSnapExpiry.Start();
                 InWallSnapStartWindow = false;
                 EmitSignal(SignalName.WallSnapStarted);
             } else {
                 _wallSnapUsedUp = false;
-                Movement.Air.RemoveModifier(_accelModifier);
+                SnapData.RemoveModifiersFrom(Movement.Air);
                 WallSnapExpiry.Stop();
                 EmitSignal(SignalName.WallSnapStopped);
             }
@@ -55,8 +50,6 @@ public partial class WallSnapping : Node {
     private bool _isWallSnapping;
     private bool _inWallSnapStartWindow;
     private bool _wallSnapUsedUp;
-
-    private WallSnapAccel _accelModifier;
     
     [Signal]
     public delegate void WallSnapStartedEventHandler();
@@ -70,8 +63,6 @@ public partial class WallSnapping : Node {
         Movement.IntendedSpeedChange += _ => WallSnapCheck();
         WallSnapStartWindow.Timeout += () => InWallSnapStartWindow = false;
         WallSnapExpiry.Timeout += () => IsWallSnapping = false;
-
-        _accelModifier = new WallSnapAccel(this);
     }
     
     public override void _ExitTree() {
@@ -89,27 +80,5 @@ public partial class WallSnapping : Node {
             (true, false, _) => false,
             _ => IsWallSnapping
         };
-    }
-
-    private class WallSnapAccel : IValueModifier {
-        [Export] public int Priority { get; private set; }
-        
-        private readonly WallSnapping _snapping;
-
-        public WallSnapAccel(WallSnapping snapping) {
-            _snapping = snapping;
-        }
-        
-        public TValue ApplyModifier<TValue>(string valueName, TValue value) {
-            if (value is not float valueF) return value;
-            
-            float? result = valueName switch {
-                nameof(LeftRightData.AccelBaseTime) => valueF * _snapping.AccelTimeMultiplier,
-                nameof(LeftRightData.SpeedScaleHighDeltaPower) => _snapping.SnapData.SpeedScaleDeltaPowerReplacement,
-                _ => null
-            };
-            
-            return result.HasValue ? IValueModifier.Cast<float, TValue>(result.Value) : value;
-        }
     }
 }

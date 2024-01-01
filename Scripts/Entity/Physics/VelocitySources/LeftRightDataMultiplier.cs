@@ -3,22 +3,25 @@
 namespace Learning.Scripts.Entity.Physics.VelocitySources; 
 
 [GlobalClass]
-public partial class LeftRightDataMultiplier : Resource, IValueModifier {
-    [Export] public float BaseSpeedMultiplier { get; private set; }
-    [Export] public float AccelBaseTimeMultiplier { get; private set; }
-    [Export] public float DecelBaseTimeMultiplier { get; private set; }
-    [Export] public float SpeedScaleHighDeltaPowerMultiplier { get; private set; }
-    
-    [Export] public int Priority { get; private set; }
-    
-    public TValue ApplyModifier<TValue>(string valueName, TValue value) {
-        float? multiplier = valueName switch {
-            nameof(LeftRightData.BaseSpeed) => BaseSpeedMultiplier,
-            nameof(LeftRightData.AccelBaseTime) => AccelBaseTimeMultiplier,
-            nameof(LeftRightData.DecelBaseTime) => DecelBaseTimeMultiplier,
-            nameof(LeftRightData.SpeedScaleHighDeltaPower) => SpeedScaleHighDeltaPowerMultiplier,
-            _ => null
-        };
-        return IValueModifier.MultiplyFloat(value, multiplier);
+public partial class LeftRightDataMultiplier : ModifierResource<LeftRightData> {
+    [Export] public FloatMultiplier BaseSpeedMultiplier {
+        get => GetModifier<FloatMultiplier>(nameof(BaseSpeedMultiplier));
+        private set => AddModifierToBeAdded(nameof(BaseSpeedMultiplier),
+            nameof(LeftRightData.BaseSpeed), value);
+    }
+    [Export] public FloatMultiplier AccelBaseTimeMultiplier {
+        get => GetModifier<FloatMultiplier>(nameof(AccelBaseTimeMultiplier));
+        private set => AddModifierToBeAdded(nameof(AccelBaseTimeMultiplier),
+            nameof(LeftRightData.AccelBaseTime), value);
+    }
+    [Export] public FloatMultiplier DecelBaseTimeMultiplier {
+        get => GetModifier<FloatMultiplier>(nameof(DecelBaseTimeMultiplier));
+        private set => AddModifierToBeAdded(nameof(DecelBaseTimeMultiplier),
+            nameof(LeftRightData.DecelBaseTime), value);
+    }
+    [Export] public FloatMultiplier SpeedScaleHighDeltaPowerMultiplier {
+        get => GetModifier<FloatMultiplier>(nameof(SpeedScaleHighDeltaPowerMultiplier));
+        private set => AddModifierToBeAdded(nameof(SpeedScaleHighDeltaPowerMultiplier),
+            nameof(LeftRightData.SpeedScaleHighDeltaPower), value);
     }
 }
