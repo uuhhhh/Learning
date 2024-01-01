@@ -1,4 +1,4 @@
-﻿namespace Learning.Scripts; 
+﻿namespace Learning.Scripts.Values; 
 
 public interface IValueWithModifiersGroup {
     public delegate void ModifiersUpdatedEventHandler();

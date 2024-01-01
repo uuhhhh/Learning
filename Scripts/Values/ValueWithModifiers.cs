@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Learning.Scripts; 
+namespace Learning.Scripts.Values; 
 
 public class ValueWithModifiers<TValue> {
     public TValue ModifiedValue => _currentCachedValueValid ? _cachedValue : ApplyModifiersTo(BaseValue);

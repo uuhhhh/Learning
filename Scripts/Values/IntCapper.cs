@@ -1,7 +1,7 @@
 ﻿using System;
 using Godot;
 
-namespace Learning.Scripts; 
+namespace Learning.Scripts.Values; 
 
 public partial class IntCapper : Modifier<int> {
     [Export] public int Cap { get; private set; }

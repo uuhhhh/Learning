@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Learning.Scripts; 
+namespace Learning.Scripts.Values; 
 
 public abstract partial class ModifierResource<TValues>
     : Resource, IModifierGroup<TValues> where TValues : ResourceWithModifiers {

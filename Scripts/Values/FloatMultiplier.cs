@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.Scripts; 
+namespace Learning.Scripts.Values; 
 
 public partial class FloatMultiplier : Modifier<float> {
     [Export] public float Multiplier { get; private set; }
