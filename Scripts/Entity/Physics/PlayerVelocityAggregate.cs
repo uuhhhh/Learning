@@ -157,8 +157,8 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
 
     private void WallSnapOppositeInputCheck() {
         if (WallSnapping.IsWallSnapping
-            && _playerLeftRightInput != 0
-            && Mathf.Sign(_playerLeftRightInput) == -Mathf.Sign(LeftRight.IntendedSpeedScale)) {
+            && (_playerLeftRightInput == 0
+                || Mathf.Sign(_playerLeftRightInput) == -Mathf.Sign(LeftRight.IntendedSpeedScale))) {
             WallSnapping.IsWallSnapping = false;
         }
     }
