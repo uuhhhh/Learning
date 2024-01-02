@@ -6,31 +6,31 @@
 [sub_resource type="Resource" id="Resource_bvl2k"]
 script = ExtResource("1_lyvyo")
 BaseValue = 0.25
-Priority = 0
+Priority = -100
 Cacheable = false
 
 [sub_resource type="Resource" id="Resource_3ia0w"]
 script = ExtResource("1_lyvyo")
 BaseValue = 0.1
-Priority = 0
+Priority = -100
 Cacheable = false
 
 [sub_resource type="Resource" id="Resource_8dm50"]
 script = ExtResource("1_lyvyo")
 BaseValue = 0.5
-Priority = 0
+Priority = -100
 Cacheable = false
 
 [sub_resource type="Resource" id="Resource_mbwly"]
 script = ExtResource("1_lyvyo")
 BaseValue = 100.0
-Priority = 0
+Priority = -100
 Cacheable = false
 
 [sub_resource type="Resource" id="Resource_sma8w"]
 script = ExtResource("1_lyvyo")
 BaseValue = 2.0
-Priority = 0
+Priority = -100
 Cacheable = false
 
 [resource]

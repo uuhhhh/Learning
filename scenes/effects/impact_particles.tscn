@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://dx07l70re7mbk"]
+
+[ext_resource type="Script" path="res://Scripts/Effects/ImpactParticles.cs" id="1_cer8e"]
+
+[node name="ImpactParticles" type="CPUParticles2D"]
+emitting = false
+amount = 10
+lifetime = 0.25
+one_shot = true
+explosiveness = 0.8
+direction = Vector2(0, -1)
+gravity = Vector2(0, 98)
+initial_velocity_min = 10.0
+initial_velocity_max = 30.0
+angular_velocity_min = -90.0
+angular_velocity_max = 90.0
+script = ExtResource("1_cer8e")

@@ -6,7 +6,7 @@
 [sub_resource type="Resource" id="Resource_svkf3"]
 script = ExtResource("1_76phr")
 BaseValue = 0.0
-Priority = 0
+Priority = -100
 Cacheable = false
 
 [resource]
