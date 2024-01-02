@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Values; 
+namespace Learning.Scripts.Values.Modifiers; 
 
 public abstract partial class ModifierWithModifiers<TValue> : Resource, IValueWithModifiers<TValue>, IModifier<TValue> {
     public event IValueWithModifiers<TValue>.ModifiersUpdatedEventHandler ModifiersUpdated;

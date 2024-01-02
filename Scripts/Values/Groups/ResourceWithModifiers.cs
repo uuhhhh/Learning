@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Godot;
+using Learning.Scripts.Values.Modifiers;
 
-namespace Learning.Scripts.Values; 
+namespace Learning.Scripts.Values.Groups; 
 
 public abstract partial class ResourceWithModifiers : Resource, IValueWithModifiersGroup {
     public event IValueWithModifiersGroup.ModifiersUpdatedEventHandler ModifiersUpdated;

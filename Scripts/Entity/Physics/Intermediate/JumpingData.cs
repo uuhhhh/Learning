@@ -1,6 +1,6 @@
 ﻿using System;
 using Godot;
-using Learning.Scripts.Values;
+using Learning.Scripts.Values.Groups;
 
 namespace Learning.Scripts.Entity.Physics.Intermediate; 
 

@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Values; 
+namespace Learning.Scripts.Values.Modifiers; 
 
 [GlobalClass]
 public partial class VectorScaler : Modifier<Vector2> {

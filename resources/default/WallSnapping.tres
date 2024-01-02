@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="WallSnappingData" load_steps=4 format=3 uid="uid://58r6bdlmix3q"]
 
-[ext_resource type="Script" path="res://Scripts/Values/ModifiedFloatReplacer.cs" id="1_r536h"]
+[ext_resource type="Script" path="res://Scripts/Values/Modifiers/ModifiedFloatReplacer.cs" id="1_76phr"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallSnappingData.cs" id="1_uv1ls"]
 
-[sub_resource type="Resource" id="Resource_3n2jw"]
-script = ExtResource("1_r536h")
+[sub_resource type="Resource" id="Resource_svkf3"]
+script = ExtResource("1_76phr")
 BaseValue = 0.0
 Priority = 0
 Cacheable = false
@@ -13,7 +13,7 @@ Cacheable = false
 script = ExtResource("1_uv1ls")
 AccelTimeMultiplierInitial = 0.5
 AccelTimeMultiplierFinal = 0.1
-SpeedScaleDeltaPowerReplacement = SubResource("Resource_3n2jw")
+SpeedScaleDeltaPowerReplacement = SubResource("Resource_svkf3")
 WallSnapStartWindow = Object(Timer,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"editor_description":"","process_callback":0,"wait_time":0.25,"one_shot":true,"autostart":false,"script":null)
 
 AccelTimeMultiplierReplacementPriority = 0

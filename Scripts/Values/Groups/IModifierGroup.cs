@@ -1,4 +1,4 @@
-﻿namespace Learning.Scripts.Values; 
+﻿namespace Learning.Scripts.Values.Groups; 
 
 public interface IModifierGroup<in TValues> where TValues : IValueWithModifiersGroup {
     public void AddModifiersTo(TValues values);

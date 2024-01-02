@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Learning.Scripts.Values; 
+namespace Learning.Scripts.Values.Modifiers; 
 
 public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue> {
     public event IValueWithModifiers<TValue>.ModifiersUpdatedEventHandler ModifiersUpdated;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Learning.Scripts.Values; 
+namespace Learning.Scripts.Values.Modifiers; 
 
 public interface IValueWithModifiers<TValue> {
     public delegate void ModifiersUpdatedEventHandler();

@@ -1,4 +1,4 @@
-﻿namespace Learning.Scripts.Values; 
+﻿namespace Learning.Scripts.Values.Modifiers; 
 
 public interface IModifier<TValue> {
     public int Priority { get; }

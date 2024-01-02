@@ -1,4 +1,4 @@
-﻿namespace Learning.Scripts.Values; 
+﻿namespace Learning.Scripts.Values.Modifiers; 
 
 public partial class FunctionalModifier<TValue> : Modifier<TValue> {
     public delegate TValue ToApplyModifierTo(TValue value);

@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Values; 
+namespace Learning.Scripts.Values.Modifiers; 
 
 public abstract partial class Modifier<TValue> : Resource, IModifier<TValue> {
     public const int DefaultPriority = 0;

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Godot;
+using Learning.Scripts.Values.Modifiers;
 
-namespace Learning.Scripts.Values; 
+namespace Learning.Scripts.Values.Groups;
 
 public abstract partial class ModifierResource<TValues>
     : Resource, IModifierGroup<TValues> where TValues : ResourceWithModifiers {
@@ -13,7 +14,7 @@ public abstract partial class ModifierResource<TValues>
     private event ModifierEventHandler AddingModifiers;
     private event ModifierEventHandler RemovingModifiers;
 
-    protected void AddModifierToBeAdded<TValue>(string modifierName, string fieldName, Modifier<TValue> modifier) {
+    protected void AddModifierToBeAdded<TValue>(string modifierName, string fieldName, IModifier<TValue> modifier) {
         AddingModifiers += values => values.AddModifierTo(fieldName, modifier);
         RemovingModifiers += values => values.RemoveModifierFrom(fieldName, modifier);
         _modifiers[modifierName] = modifier;
