@@ -8,7 +8,7 @@ public partial class VelocityAggregate : Node {
     [Export] private bool AggregateChildrenVelocitySources { get; set; } = true;
     [Export] private bool LinkChildrenDefaultPhys { get; set; } = true;
     [Export] private bool ExtraInitChildrenDefaultPhys { get; set; } = true;
-    [Export] private KinematicComp PhysicsForDefaultPhysChildren { get; set; }
+    protected KinematicComp PhysicsInteractions { get; private set; }
 
     public Vector2 Velocity {
         get {
@@ -22,10 +22,10 @@ public partial class VelocityAggregate : Node {
     }
     
     private readonly IList<VelocitySource> _velocitySources = new List<VelocitySource>();
-    
-    public override void _Ready() {
-        base._Ready();
 
+    public virtual void InitializeInteractions(KinematicComp interactions) {
+        PhysicsInteractions = interactions;
+        
         if (AggregateChildrenVelocitySources) {
             foreach (Node n in GetChildren()) {
                 AddVelocitySourceToAggregated(n);
@@ -34,13 +34,13 @@ public partial class VelocityAggregate : Node {
 
         if (LinkChildrenDefaultPhys) {
             foreach (Node n in GetChildren()) {
-                PhysicsForDefaultPhysChildren.LinkDefaultPhys(n);
+                PhysicsInteractions.LinkDefaultPhys(n);
             }
         }
 
         if (ExtraInitChildrenDefaultPhys) {
             foreach (Node n in GetChildren()) {
-                PhysicsForDefaultPhysChildren.ExtraInitDefaultPhys(n);
+                PhysicsInteractions.ExtraInitDefaultPhys(n);
             }
         }
     }

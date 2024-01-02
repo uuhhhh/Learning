@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dvmojs4ssxuwf"]
+[gd_scene load_steps=13 format=3 uid="uid://dvmojs4ssxuwf"]
 
 [ext_resource type="Script" path="res://Scripts/Entity/Player.cs" id="1_uyfcp"]
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="2_q7yrb"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://Scripts/Entity/FloorDetector.cs" id="5_ua6gy"]
 [ext_resource type="Script" path="res://Scripts/Entity/WallDetector.cs" id="6_bih8x"]
 [ext_resource type="PackedScene" uid="uid://dx07l70re7mbk" path="res://scenes/effects/impact_particles.tscn" id="7_nfogs"]
+[ext_resource type="PackedScene" uid="uid://buqn40p53wtwg" path="res://scenes/effects/drag_particles.tscn" id="8_jck76"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_st71c"]
 size = Vector2(16, 16)
@@ -36,9 +37,7 @@ shape = SubResource("RectangleShape2D_st71c")
 [node name="InputComp" type="Node" parent="."]
 script = ExtResource("3_xfxpf")
 
-[node name="PlayerVelocityAggregate" parent="." node_paths=PackedStringArray("PhysicsInteractions", "PhysicsForDefaultPhysChildren") instance=ExtResource("4_xn5i2")]
-PhysicsInteractions = NodePath("..")
-PhysicsForDefaultPhysChildren = NodePath("..")
+[node name="PlayerVelocityAggregate" parent="." instance=ExtResource("4_xn5i2")]
 
 [node name="FloorDetector" type="Area2D" parent="."]
 script = ExtResource("5_ua6gy")
@@ -71,29 +70,43 @@ drag_vertical_enabled = true
 editor_draw_limits = true
 editor_draw_drag_margin = true
 
-[node name="GroundJumpParticles" parent="." instance=ExtResource("7_nfogs")]
+[node name="Particles" type="Node2D" parent="."]
+
+[node name="GroundJumpParticles" parent="Particles" instance=ExtResource("7_nfogs")]
 emission_shape = 3
 emission_rect_extents = Vector2(8, 1)
 direction = Vector2(0, 1)
 color = Color(0.74902, 0.74902, 0.74902, 1)
 
-[node name="AirJumpParticles" parent="." instance=ExtResource("7_nfogs")]
+[node name="AirJumpParticles" parent="Particles" instance=ExtResource("7_nfogs")]
 emission_shape = 3
 emission_rect_extents = Vector2(8, 1)
 direction = Vector2(0, 1)
 spread = 22.5
 color = Color(0.5, 0.875, 1, 1)
 
-[node name="LeftWallJumpParticles" parent="." instance=ExtResource("7_nfogs")]
+[node name="LeftWallJumpParticles" parent="Particles" instance=ExtResource("7_nfogs")]
 position = Vector2(-8, -8)
 emission_shape = 3
 emission_rect_extents = Vector2(1, 8)
 direction = Vector2(-1, 0)
-color = Color(0.75, 0.75, 0.75, 1)
+color = Color(0.74902, 0.74902, 0.74902, 1)
 
-[node name="RightWallJumpParticles" parent="." instance=ExtResource("7_nfogs")]
+[node name="RightWallJumpParticles" parent="Particles" instance=ExtResource("7_nfogs")]
 position = Vector2(8, -8)
 emission_shape = 3
 emission_rect_extents = Vector2(1, 8)
 direction = Vector2(1, 0)
 color = Color(0.75, 0.75, 0.75, 1)
+
+[node name="WalkingParticles" parent="Particles" instance=ExtResource("8_jck76")]
+
+[node name="LeftWallDragParticles" parent="Particles" instance=ExtResource("8_jck76")]
+position = Vector2(-8, -8)
+direction = Vector2(1, -1)
+spread = 30.0
+
+[node name="RightWallDragParticles" parent="Particles" instance=ExtResource("8_jck76")]
+position = Vector2(8, -8)
+direction = Vector2(-1, -1)
+spread = 30.0

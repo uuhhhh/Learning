@@ -2,6 +2,7 @@
 
 namespace Learning.Scripts.Values.Modifiers; 
 
+[GlobalClass]
 public abstract partial class ModifierWithModifiers<TValue> : Resource, IValueWithModifiers<TValue>, IModifier<TValue> {
     public event IValueWithModifiers<TValue>.ModifiersUpdatedEventHandler ModifiersUpdated;
     [Export] public int Priority { get; private set; }

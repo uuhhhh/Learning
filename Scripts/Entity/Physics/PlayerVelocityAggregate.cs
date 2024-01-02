@@ -5,8 +5,6 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 namespace Learning.Scripts.Entity.Physics;
 
 public partial class PlayerVelocityAggregate : VelocityAggregate {
-    [Export] private KinematicComp PhysicsInteractions { get; set; }
-    
     public Falling Falling { get; private set; }
     public LeftRight LeftRight { get; private set; }
     
@@ -41,7 +39,11 @@ public partial class PlayerVelocityAggregate : VelocityAggregate {
     public override void _Ready() {
         base._Ready();
         SetChildren();
+    }
 
+    public override void InitializeInteractions(KinematicComp interactions) {
+        base.InitializeInteractions(interactions);
+        
         InitNumJumpsBehavior();
         InitWallJumpInputTakeoverBehavior();
         InitWallTouchLeftRightStopBehavior();
