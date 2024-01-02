@@ -1,12 +1,43 @@
-[gd_resource type="Resource" script_class="WallDraggingData" load_steps=2 format=3 uid="uid://cp061nqciwnhp"]
+[gd_resource type="Resource" script_class="WallDraggingData" load_steps=8 format=3 uid="uid://cp061nqciwnhp"]
 
+[ext_resource type="Script" path="res://Scripts/Values/ModifiedFloatReplacer.cs" id="1_a88kj"]
 [ext_resource type="Script" path="res://Scripts/Entity/Physics/Intermediate/WallDraggingData.cs" id="2_6p54a"]
+
+[sub_resource type="Resource" id="Resource_vn0b5"]
+script = ExtResource("1_a88kj")
+BaseValue = 0.25
+Priority = 0
+Cacheable = false
+
+[sub_resource type="Resource" id="Resource_3ktc1"]
+script = ExtResource("1_a88kj")
+BaseValue = 0.1
+Priority = 0
+Cacheable = false
+
+[sub_resource type="Resource" id="Resource_vjdoh"]
+script = ExtResource("1_a88kj")
+BaseValue = 0.5
+Priority = 0
+Cacheable = false
+
+[sub_resource type="Resource" id="Resource_jrhr0"]
+script = ExtResource("1_a88kj")
+BaseValue = 100.0
+Priority = 0
+Cacheable = false
+
+[sub_resource type="Resource" id="Resource_j6p5u"]
+script = ExtResource("1_a88kj")
+BaseValue = 2.0
+Priority = 0
+Cacheable = false
 
 [resource]
 script = ExtResource("2_6p54a")
-UpwardsGravityScaleReplacement = 2.0
-DownwardsGravityScaleReplacement = 0.5
-MaxFallVelocityReplacement = 100.0
-CeilingHitStopTimeScaleReplacement = 0.25
-DecelToMaxVelocityTimePer100VelocityReplacement = 0.1
+UpwardsGravityScaleReplacement = SubResource("Resource_j6p5u")
+DownwardsGravityScaleReplacement = SubResource("Resource_vjdoh")
+MaxFallVelocityReplacement = SubResource("Resource_jrhr0")
+CeilingHitStopTimeScaleReplacement = SubResource("Resource_vn0b5")
+DecelToMaxVelocityTimePer100VelocityReplacement = SubResource("Resource_3ktc1")
 VelocityDragThreshold = -100.0

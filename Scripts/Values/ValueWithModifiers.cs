@@ -4,19 +4,25 @@ using System.Linq;
 
 namespace Learning.Scripts.Values; 
 
-public class ValueWithModifiers<TValue> {
+public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue> {
+    public event IValueWithModifiers<TValue>.ModifiersUpdatedEventHandler ModifiersUpdated;
+    
     public TValue ModifiedValue => _currentCachedValueValid ? _cachedValue : ApplyModifiersTo(BaseValue);
     
-    public IImmutableSet<Modifier<TValue>> CurrentModifiers => _currentModifiers.ToImmutableSortedSet();
+    public IImmutableSet<IModifier<TValue>> CurrentModifiers => _currentModifiers.ToImmutableSortedSet();
 
-    public readonly TValue BaseValue;
+    public TValue BaseValue {
+        get => _baseValue;
+        set {
+            _baseValue = value;
+            InvalidateCachedValue();
+        }
+    }
 
-    private readonly ISet<Modifier<TValue>> _currentModifiers
-        = new SortedSet<Modifier<TValue>>(new PriorityComparer());
-    
-    public delegate void ModifiersUpdatedEventHandler();
-    public event ModifiersUpdatedEventHandler ModifiersUpdated;
+    private readonly ISet<IModifier<TValue>> _currentModifiers
+        = new SortedSet<IModifier<TValue>>(new IValueWithModifiers<TValue>.PriorityComparer());
 
+    private TValue _baseValue;
     private TValue _cachedValue;
     private int _numNonCacheableModifiers;
     private bool _currentCachedValueValid;
@@ -41,7 +47,7 @@ public class ValueWithModifiers<TValue> {
         return modifiedValue;
     }
 
-    public bool AddModifier(Modifier<TValue> modifier) {
+    public bool AddModifier(IModifier<TValue> modifier) {
         bool modifierAdded = _currentModifiers.Add(modifier);
 
         if (modifierAdded) {
@@ -53,7 +59,7 @@ public class ValueWithModifiers<TValue> {
         return modifierAdded;
     }
 
-    public bool RemoveModifier(Modifier<TValue> modifier) {
+    public bool RemoveModifier(IModifier<TValue> modifier) {
         bool modifierRemoved = _currentModifiers.Remove(modifier);
 
         if (modifierRemoved) {
@@ -68,16 +74,5 @@ public class ValueWithModifiers<TValue> {
     public void InvalidateCachedValue() {
         _currentCachedValueValid = false;
         _cachedValue = default;
-    }
-
-    private class PriorityComparer : IComparer<Modifier<TValue>> {
-        public int Compare(Modifier<TValue> x, Modifier<TValue> y) {
-            return (x, y) switch {
-                (null, null) => 0,
-                (null, _) => -1,
-                (_, null) => 1,
-                _ => x.Priority.CompareTo(y.Priority)
-            };
-        }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Learning.Scripts.Values; 
 
-public abstract partial class Modifier<TValue> : Resource {
+public abstract partial class Modifier<TValue> : Resource, IModifier<TValue> {
     public const int DefaultPriority = 0;
     public const bool DefaultCacheable = true;
 

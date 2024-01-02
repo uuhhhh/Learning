@@ -6,65 +6,46 @@ namespace Learning.Scripts.Entity.Physics.Intermediate;
 
 [GlobalClass]
 public partial class WallDraggingData : ResourceWithModifiers, IModifierGroup<FallingData> {
-    [Export] public float UpwardsGravityScaleReplacement {
-        get => GetValue<float>(nameof(UpwardsGravityScaleReplacement));
-        private set => InitValue(nameof(UpwardsGravityScaleReplacement), value);
+    [Export] public ModifiedFloatReplacer UpwardsGravityScaleReplacement {
+        get => GetField<float, ModifiedFloatReplacer>(nameof(UpwardsGravityScaleReplacement));
+        private set => InitField(nameof(UpwardsGravityScaleReplacement), value);
     }
-    [Export] public float DownwardsGravityScaleReplacement {
-        get => GetValue<float>(nameof(DownwardsGravityScaleReplacement));
-        private set => InitValue(nameof(DownwardsGravityScaleReplacement), value);
+    [Export] public ModifiedFloatReplacer DownwardsGravityScaleReplacement {
+        get => GetField<float, ModifiedFloatReplacer>(nameof(DownwardsGravityScaleReplacement));
+        private set => InitField(nameof(DownwardsGravityScaleReplacement), value);
     }
-    [Export] public float MaxFallVelocityReplacement {
-        get => GetValue<float>(nameof(MaxFallVelocityReplacement));
-        private set => InitValue(nameof(MaxFallVelocityReplacement), value);
+    [Export] public ModifiedFloatReplacer MaxFallVelocityReplacement {
+        get => GetField<float, ModifiedFloatReplacer>(nameof(MaxFallVelocityReplacement));
+        private set => InitField(nameof(MaxFallVelocityReplacement), value);
     }
-    [Export] public float CeilingHitStopTimeScaleReplacement {
-        get => GetValue<float>(nameof(CeilingHitStopTimeScaleReplacement));
-        private set => InitValue(nameof(CeilingHitStopTimeScaleReplacement), value);
+    [Export] public ModifiedFloatReplacer CeilingHitStopTimeScaleReplacement {
+        get => GetField<float, ModifiedFloatReplacer>(nameof(CeilingHitStopTimeScaleReplacement));
+        private set => InitField(nameof(CeilingHitStopTimeScaleReplacement), value);
     }
-    [Export] public float DecelToMaxVelocityTimePer100VelocityReplacement {
-        get => GetValue<float>(nameof(DecelToMaxVelocityTimePer100VelocityReplacement));
-        private set => InitValue(nameof(DecelToMaxVelocityTimePer100VelocityReplacement), value);
+    [Export] public ModifiedFloatReplacer DecelToMaxVelocityTimePer100VelocityReplacement {
+        get => GetField<float, ModifiedFloatReplacer>(nameof(DecelToMaxVelocityTimePer100VelocityReplacement));
+        private set => InitField(nameof(DecelToMaxVelocityTimePer100VelocityReplacement), value);
     }
     [Export] public float VelocityDragThreshold {
         get => GetValue<float>(nameof(VelocityDragThreshold));
         private set => InitValue(nameof(VelocityDragThreshold), value);
     }
 
-    private FunctionalModifier<float> _upwardsGravityScaleReplacer;
-    private FunctionalModifier<float> _downwardsGravityScaleReplacer;
-    private FunctionalModifier<float> _maxVelocityReplacer;
-    private FunctionalModifier<float> _ceilingHitStopTimeScaleReplacer;
-    private FunctionalModifier<float> _decelToMaxVelocityTimePer100VelocityReplacer;
-
-    public WallDraggingData() {
-        _upwardsGravityScaleReplacer = new(
-            _ => UpwardsGravityScaleReplacement, Modifier<object>.DefaultPriority, false);
-        _downwardsGravityScaleReplacer = new(
-            _ => DownwardsGravityScaleReplacement, Modifier<object>.DefaultPriority, false);
-        _maxVelocityReplacer = new(
-            _ => MaxFallVelocityReplacement, Modifier<object>.DefaultPriority, false);
-        _ceilingHitStopTimeScaleReplacer = new(
-            _ => CeilingHitStopTimeScaleReplacement, Modifier<object>.DefaultPriority, false);
-        _decelToMaxVelocityTimePer100VelocityReplacer = new(
-            _ => DecelToMaxVelocityTimePer100VelocityReplacement, Modifier<object>.DefaultPriority, false);
-    }
-
     public void AddModifiersTo(FallingData values) {
-        values.AddModifierTo(nameof(FallingData.UpwardsGravityScale), _upwardsGravityScaleReplacer);
-        values.AddModifierTo(nameof(FallingData.DownwardsGravityScale), _downwardsGravityScaleReplacer);
-        values.AddModifierTo(nameof(FallingData.MaxFallVelocity), _maxVelocityReplacer);
-        values.AddModifierTo(nameof(FallingData.CeilingHitStopTimeScale), _ceilingHitStopTimeScaleReplacer);
+        values.AddModifierTo(nameof(FallingData.UpwardsGravityScale), UpwardsGravityScaleReplacement);
+        values.AddModifierTo(nameof(FallingData.DownwardsGravityScale), DownwardsGravityScaleReplacement);
+        values.AddModifierTo(nameof(FallingData.MaxFallVelocity), MaxFallVelocityReplacement);
+        values.AddModifierTo(nameof(FallingData.CeilingHitStopTimeScale), CeilingHitStopTimeScaleReplacement);
         values.AddModifierTo(
-            nameof(FallingData.DecelToMaxVelocityTimePer100Velocity), _decelToMaxVelocityTimePer100VelocityReplacer);
+            nameof(FallingData.DecelToMaxVelocityTimePer100Velocity), DecelToMaxVelocityTimePer100VelocityReplacement);
     }
 
     public void RemoveModifiersFrom(FallingData values) {
-        values.RemoveModifierFrom(nameof(FallingData.UpwardsGravityScale), _upwardsGravityScaleReplacer);
-        values.RemoveModifierFrom(nameof(FallingData.DownwardsGravityScale), _downwardsGravityScaleReplacer);
-        values.RemoveModifierFrom(nameof(FallingData.MaxFallVelocity), _maxVelocityReplacer);
-        values.RemoveModifierFrom(nameof(FallingData.CeilingHitStopTimeScale), _ceilingHitStopTimeScaleReplacer);
+        values.RemoveModifierFrom(nameof(FallingData.UpwardsGravityScale), UpwardsGravityScaleReplacement);
+        values.RemoveModifierFrom(nameof(FallingData.DownwardsGravityScale), DownwardsGravityScaleReplacement);
+        values.RemoveModifierFrom(nameof(FallingData.MaxFallVelocity), MaxFallVelocityReplacement);
+        values.RemoveModifierFrom(nameof(FallingData.CeilingHitStopTimeScale), CeilingHitStopTimeScaleReplacement);
         values.RemoveModifierFrom(
-            nameof(FallingData.DecelToMaxVelocityTimePer100Velocity), _decelToMaxVelocityTimePer100VelocityReplacer);
+            nameof(FallingData.DecelToMaxVelocityTimePer100Velocity), DecelToMaxVelocityTimePer100VelocityReplacement);
     }
 }

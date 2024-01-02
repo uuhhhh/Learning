@@ -10,4 +10,3 @@ AccelTimeX = 0.05
 AccelTimeY = 0.0
 CancelVelocity = -175.0
 CancelAccelTime = 0.05
-CacheModifiedValues = true

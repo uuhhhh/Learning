@@ -3,6 +3,7 @@ using Godot;
 
 namespace Learning.Scripts.Values; 
 
+[GlobalClass]
 public partial class IntCapper : Modifier<int> {
     [Export] public int Cap { get; private set; }
 

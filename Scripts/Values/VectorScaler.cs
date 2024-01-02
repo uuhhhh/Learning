@@ -2,6 +2,7 @@
 
 namespace Learning.Scripts.Values; 
 
+[GlobalClass]
 public partial class VectorScaler : Modifier<Vector2> {
     [Export] public Vector2 Scale { get; private set; }
 
