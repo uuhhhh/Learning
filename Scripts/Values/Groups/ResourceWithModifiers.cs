@@ -3,54 +3,58 @@ using System.Collections.Generic;
 using Godot;
 using Learning.Scripts.Values.Modifiers;
 
-namespace Learning.Scripts.Values.Groups; 
+namespace Learning.Scripts.Values.Groups;
 
-public abstract partial class ResourceWithModifiers : Resource, IValueWithModifiersGroup {
-    public event IValueWithModifiersGroup.ModifiersUpdatedEventHandler ModifiersUpdated;
-    
+public abstract partial class ResourceWithModifiers : Resource, IValueWithModifiersGroup
+{
     private readonly IDictionary<string, object> _fields = new Dictionary<string, object>();
+    public event IValueWithModifiersGroup.ModifiersUpdatedEventHandler ModifiersUpdated;
 
-    protected TValue GetValue<TValue>(string fieldName) {
-        return GetField<TValue, ValueWithModifiers<TValue>>(fieldName).ModifiedValue;
-    }
-    
-    protected void InitValue<TValue>(string fieldName, TValue value) {
-        _fields[fieldName] = new ValueWithModifiers<TValue>(value);
-    }
-
-    protected TValueWithModifiers GetField<TValue, TValueWithModifiers>(string fieldName)
-        where TValueWithModifiers : IValueWithModifiers<TValue> {
-        if (!_fields.ContainsKey(fieldName)) {
-            throw new ArgumentException($"{GetClass()} does not contain value for name {fieldName}");
-        }
-
-        object untypedValue = _fields[fieldName];
-        if (untypedValue is not TValueWithModifiers value) {
-            throw new ArgumentException($"{GetClass()}'s {fieldName} value is not of type {typeof(TValue)}");
-        }
-        
-        return value;
-    }
-
-    protected void InitField<TValue>(string fieldName, IValueWithModifiers<TValue> modifier) {
-        _fields[fieldName] = modifier;
-    }
-
-    public bool AddModifierTo<TValue>(string fieldName, IModifier<TValue> modifier) {
-        bool modifierAdded = GetField<TValue, IValueWithModifiers<TValue>>(fieldName).AddModifier(modifier);
-        if (modifierAdded) {
-            ModifiersUpdated?.Invoke();
-        }
+    public bool AddModifierTo<TValue>(string fieldName, IModifier<TValue> modifier)
+    {
+        bool modifierAdded = GetField<TValue, IValueWithModifiers<TValue>>(fieldName)
+            .AddModifier(modifier);
+        if (modifierAdded) ModifiersUpdated?.Invoke();
 
         return modifierAdded;
     }
 
-    public bool RemoveModifierFrom<TValue>(string fieldName, IModifier<TValue> modifier) {
-        bool modifierRemoved = GetField<TValue, IValueWithModifiers<TValue>>(fieldName).RemoveModifier(modifier);
-        if (modifierRemoved) {
-            ModifiersUpdated?.Invoke();
-        }
+    public bool RemoveModifierFrom<TValue>(string fieldName, IModifier<TValue> modifier)
+    {
+        bool modifierRemoved = GetField<TValue, IValueWithModifiers<TValue>>(fieldName)
+            .RemoveModifier(modifier);
+        if (modifierRemoved) ModifiersUpdated?.Invoke();
 
         return modifierRemoved;
+    }
+
+    protected TValue GetValue<TValue>(string fieldName)
+    {
+        return GetField<TValue, ValueWithModifiers<TValue>>(fieldName).ModifiedValue;
+    }
+
+    protected void InitValue<TValue>(string fieldName, TValue value)
+    {
+        _fields[fieldName] = new ValueWithModifiers<TValue>(value);
+    }
+
+    protected TValueWithModifiers GetField<TValue, TValueWithModifiers>(string fieldName)
+        where TValueWithModifiers : IValueWithModifiers<TValue>
+    {
+        if (!_fields.ContainsKey(fieldName))
+            throw new ArgumentException(
+                $"{GetClass()} does not contain value for name {fieldName}");
+
+        object untypedValue = _fields[fieldName];
+        if (untypedValue is not TValueWithModifiers value)
+            throw new ArgumentException(
+                $"{GetClass()}'s {fieldName} value is not of type {typeof(TValue)}");
+
+        return value;
+    }
+
+    protected void InitField<TValue>(string fieldName, IValueWithModifiers<TValue> modifier)
+    {
+        _fields[fieldName] = modifier;
     }
 }

@@ -2,289 +2,340 @@ using System;
 using Godot;
 using Learning.Scripts.Entity.Physics.VelocitySources;
 
-namespace Learning.Scripts.Entity.Physics.Intermediate; 
+namespace Learning.Scripts.Entity.Physics.Intermediate;
 
-public partial class Jumping : Node {
-	[Export] private bool Enabled { get; set; } = true;
-	
-	[Export] internal Falling Falling { get; private set; }
-	[Export] internal LeftRight LeftRight { get; private set; }
+public partial class Jumping : Node
+{
+    [Signal]
+    public delegate void CancelledJumpEventHandler(Location jumpWasFrom);
 
-	[Export] private bool GroundJumpingEnabled { get; set; } = true;
-	[Export] private bool AirJumpingEnabled { get; set; } = true;
-	[Export] private bool WallJumpingEnabled { get; set; } = true;
+    [Signal]
+    public delegate void JumpedEventHandler(Location from);
 
-	[Export] private bool CoyoteGroundJumpEnabled { get; set; } = true;
-	[Export] private bool GroundJumpBufferEnabled { get; set; } = true;
-	[Export] private bool CoyoteWallJumpEnabled { get; set; } = true;
-	[Export] private bool WallJumpBufferEnabled { get; set; } = true;
+    private int[] _jumpCapAll =
+        {JumpingData.UnlimitedJumps, JumpingData.UnlimitedJumps, JumpingData.UnlimitedJumps};
 
-	[Export] public JumpingData Ground {
-		get => GetJumpingDataFor(Location.Ground);
-		private set => SetJumpingDataFor(value, Location.Ground);
-	}
-	[Export] public JumpingData Air {
-		get => GetJumpingDataFor(Location.Air);
-		private set => SetJumpingDataFor(value, Location.Air);
-	}
-	[Export] public JumpingData Wall {
-		get => GetJumpingDataFor(Location.WallNonGround);
-		private set => SetJumpingDataFor(value, Location.WallNonGround);
-	}
-	public JumpingData CurrentJumpData {
-		get => GetJumpingDataFor(CurrentLocation);
-		private set => SetJumpingDataFor(value, CurrentLocation);
-	}
+    private JumpingData[] _jumpDataAll = new JumpingData[Locations.NumLocationsNotNone()];
+    private Tween _jumpTweenX;
 
-	public int NumGroundJumps {
-		get => GetNumJumpsFor(Location.Ground);
-		set => SetNumJumpsFor(value, Location.Ground);
-	}
-	public int NumAirJumps {
-		get => GetNumJumpsFor(Location.Air);
-		set => SetNumJumpsFor(value, Location.Air);
-	}
-	public int NumWallJumps {
-		get => GetNumJumpsFor(Location.WallNonGround);
-		set => SetNumJumpsFor(value, Location.WallNonGround);
-	}
-	public int CurrentNumJumps {
-		get => GetNumJumpsFor(CurrentLocation);
-		private set => SetNumJumpsFor(value, CurrentLocation);
-	}
+    private Tween _jumpTweenY;
 
-	public int GroundJumpCap {
-		get => GetJumpCapFor(Location.Ground);
-		set => SetJumpCapFor(value, Location.Ground);
-	}
-	public int AirJumpCap {
-		get => GetJumpCapFor(Location.Air);
-		set => SetJumpCapFor(value, Location.Air);
-	}
-	public int WallJumpCap {
-		get => GetJumpCapFor(Location.WallNonGround);
-		set => SetJumpCapFor(value, Location.WallNonGround);
-	}
-	public int CurrentJumpCap {
-		get => GetJumpCapFor(CurrentLocation);
-		private set => SetJumpCapFor(value, CurrentLocation);
-	}
-    
-	private bool CanJump =>
-		IsJumpingEnabledFor(CurrentLocation) && CurrentNumJumps is JumpingData.UnlimitedJumps or > 0;
-	
-	public float JumpFacing { get; set; }
-	public Location CurrentLocation { get; private set; } = Location.None;
-	public Location CurrentLocationAfterTransition =>
-		(CurrentLocation == Location.WallNonGround && CoyoteWallJump.TimeLeft > 0) ||
-		 (CurrentLocation == Location.Ground && CoyoteJump.TimeLeft > 0)
-			? Location.Air
-			: CurrentLocation;
-	public Location JumpedFrom { get; private set; } = Location.None;
+    private float _lastWallDirection;
+    private int[] _numJumpsAll = new int[Locations.NumLocationsNotNone()];
+    [Export] private bool Enabled { get; set; } = true;
 
-	public bool InJumpTransitionY => _jumpTweenY != null && _jumpTweenY.IsValid();
+    [Export] internal Falling Falling { get; private set; }
+    [Export] internal LeftRight LeftRight { get; private set; }
 
-	public bool InJumpTransitionX => _jumpTweenX != null && _jumpTweenX.IsValid();
+    [Export] private bool GroundJumpingEnabled { get; set; } = true;
+    [Export] private bool AirJumpingEnabled { get; set; } = true;
+    [Export] private bool WallJumpingEnabled { get; set; } = true;
 
-	private float JumpCancelVelocityThreshold {
-		get {
-			JumpingData lastJumpData = GetJumpingDataFor(JumpedFrom);
-			float extraVelocity = Falling.Gravity * Falling.GravityScale * lastJumpData.CancelAccelTime;
-			return lastJumpData.CancelVelocity - extraVelocity;
-		}
-	}
+    [Export] private bool CoyoteGroundJumpEnabled { get; set; } = true;
+    [Export] private bool GroundJumpBufferEnabled { get; set; } = true;
+    [Export] private bool CoyoteWallJumpEnabled { get; set; } = true;
+    [Export] private bool WallJumpBufferEnabled { get; set; } = true;
 
-	private JumpingData[] _jumpDataAll = new JumpingData[Locations.NumLocationsNotNone()];
-	private int[] _numJumpsAll = new int[Locations.NumLocationsNotNone()];
-	private int[] _jumpCapAll = {JumpingData.UnlimitedJumps, JumpingData.UnlimitedJumps, JumpingData.UnlimitedJumps};
+    [Export]
+    public JumpingData Ground
+    {
+        get => GetJumpingDataFor(Location.Ground);
+        private set => SetJumpingDataFor(value, Location.Ground);
+    }
 
-	private Timer CoyoteJump { get; set; }
-	private Timer JumpBuffer { get; set; }
-	private Timer CoyoteWallJump { get; set; }
-	private Timer WallJumpBuffer { get; set; }
+    [Export]
+    public JumpingData Air
+    {
+        get => GetJumpingDataFor(Location.Air);
+        private set => SetJumpingDataFor(value, Location.Air);
+    }
 
-	private Tween _jumpTweenY;
-	private Tween _jumpTweenX;
-	
-	private float _lastWallDirection;
+    [Export]
+    public JumpingData Wall
+    {
+        get => GetJumpingDataFor(Location.WallNonGround);
+        private set => SetJumpingDataFor(value, Location.WallNonGround);
+    }
 
-	[Signal]
-	public delegate void JumpedEventHandler(Location from);
+    public JumpingData CurrentJumpData
+    {
+        get => GetJumpingDataFor(CurrentLocation);
+        private set => SetJumpingDataFor(value, CurrentLocation);
+    }
 
-	[Signal]
-	public delegate void CancelledJumpEventHandler(Location jumpWasFrom);
+    public int NumGroundJumps
+    {
+        get => GetNumJumpsFor(Location.Ground);
+        set => SetNumJumpsFor(value, Location.Ground);
+    }
 
-	public override void _Ready() {
-		CoyoteJump = GetNode<Timer>(nameof(CoyoteJump));
-		JumpBuffer = GetNode<Timer>(nameof(JumpBuffer));
-		CoyoteWallJump = GetNode<Timer>(nameof(CoyoteWallJump));
-		WallJumpBuffer = GetNode<Timer>(nameof(WallJumpBuffer));
+    public int NumAirJumps
+    {
+        get => GetNumJumpsFor(Location.Air);
+        set => SetNumJumpsFor(value, Location.Air);
+    }
 
-		CoyoteJump.Timeout += () => CurrentLocation = Location.Air;
-		CoyoteWallJump.Timeout += () => CurrentLocation = Location.Air;
-        
-		Ground.ModifiersUpdated += () => UpdateNumJumpsFor(Location.Ground);
-		Air.ModifiersUpdated += () => UpdateNumJumpsFor(Location.Air);
-		Wall.ModifiersUpdated += () => UpdateNumJumpsFor(Location.WallNonGround);
-		
-		ResetNumJumps();
-	}
+    public int NumWallJumps
+    {
+        get => GetNumJumpsFor(Location.WallNonGround);
+        set => SetNumJumpsFor(value, Location.WallNonGround);
+    }
 
-	public int GetJumpCapFor(Location forWhich) {
-		return _jumpCapAll[(int)forWhich];
-	}
+    public int CurrentNumJumps
+    {
+        get => GetNumJumpsFor(CurrentLocation);
+        private set => SetNumJumpsFor(value, CurrentLocation);
+    }
 
-	public void SetJumpCapFor(int jumpCap, Location forWhich) {
-		_jumpCapAll[(int)forWhich] = jumpCap;
-		SetNumJumpsFor(GetNumJumpsFor(forWhich), forWhich);
-	}
+    public int GroundJumpCap
+    {
+        get => GetJumpCapFor(Location.Ground);
+        set => SetJumpCapFor(value, Location.Ground);
+    }
 
-	public int GetNumJumpsFor(Location forWhich) {
-		return _numJumpsAll[(int)forWhich];
-	}
+    public int AirJumpCap
+    {
+        get => GetJumpCapFor(Location.Air);
+        set => SetJumpCapFor(value, Location.Air);
+    }
 
-	public void SetNumJumpsFor(int numJumps, Location forWhich) {
-		int jumpCap = GetJumpCapFor(forWhich);
-		_numJumpsAll[(int)forWhich] = JumpingData.MinNumJumps(numJumps, jumpCap);
-	}
+    public int WallJumpCap
+    {
+        get => GetJumpCapFor(Location.WallNonGround);
+        set => SetJumpCapFor(value, Location.WallNonGround);
+    }
 
-	public void ResetNumJumps() {
-		foreach (Location l in Enum.GetValues<Location>()) {
-			ResetNumJumpsFor(l);
-		}
-	}
-	
-	public void ResetNumJumpsFor(Location which) {
-		if (which == Location.None) return;
+    public int CurrentJumpCap
+    {
+        get => GetJumpCapFor(CurrentLocation);
+        private set => SetJumpCapFor(value, CurrentLocation);
+    }
 
-		SetNumJumpsFor(GetJumpingDataFor(which).NumJumps, which);
-	}
+    private bool CanJump =>
+        IsJumpingEnabledFor(CurrentLocation) &&
+        CurrentNumJumps is JumpingData.UnlimitedJumps or > 0;
 
-	private void UpdateNumJumpsFor(Location which) {
-		SetNumJumpsFor(JumpingData.MinNumJumps(GetNumJumpsFor(which), GetJumpingDataFor(which).NumJumps), which);
-	}
+    public float JumpFacing { get; set; }
+    public Location CurrentLocation { get; private set; } = Location.None;
 
-	public JumpingData GetJumpingDataFor(Location forWhich) {
-		return _jumpDataAll[(int)forWhich];
-	}
+    public Location CurrentLocationAfterTransition =>
+        (CurrentLocation == Location.WallNonGround && CoyoteWallJump.TimeLeft > 0) ||
+        (CurrentLocation == Location.Ground && CoyoteJump.TimeLeft > 0)
+            ? Location.Air
+            : CurrentLocation;
 
-	private void SetJumpingDataFor(JumpingData data, Location forWhich) {
-		_jumpDataAll[(int)forWhich] = data;
-		UpdateNumJumpsFor(forWhich);
-	}
+    public Location JumpedFrom { get; private set; } = Location.None;
 
-	public bool IsJumpingEnabledFor(Location forWhich) {
-		// can't use array here since array initialization to true doesn't show up as true in Godot editor
-		return Enabled && forWhich switch {
-			Location.Ground => GroundJumpingEnabled,
-			Location.Air => AirJumpingEnabled,
-			Location.WallNonGround => WallJumpingEnabled,
-			_ => false
-		};
-	}
+    public bool InJumpTransitionY => _jumpTweenY != null && _jumpTweenY.IsValid();
 
-	public void AttemptJump() {
-		if (CanJump) {
-			Jump();
-		} else if (IsJumpingEnabledFor(CurrentLocation)) {
-			if (GroundJumpBufferEnabled) {
-				JumpBuffer.Start();
-			}
-			if (WallJumpBufferEnabled) {
-				WallJumpBuffer.Start();
-			}
-		}
-	}
+    public bool InJumpTransitionX => _jumpTweenX != null && _jumpTweenX.IsValid();
 
-	private void AttemptBufferedGroundJump() {
-		if (CanJump && JumpBuffer.TimeLeft > 0) {
-			Jump();
-		}
-	}
+    private float JumpCancelVelocityThreshold
+    {
+        get
+        {
+            JumpingData lastJumpData = GetJumpingDataFor(JumpedFrom);
+            float extraVelocity =
+                Falling.Gravity * Falling.GravityScale * lastJumpData.CancelAccelTime;
+            return lastJumpData.CancelVelocity - extraVelocity;
+        }
+    }
 
-	private void AttemptBufferedWallJump() {
-		if (CanJump && WallJumpBuffer.TimeLeft > 0) {
-			Jump();
-		}
-	}
+    private Timer CoyoteJump { get; set; }
+    private Timer JumpBuffer { get; set; }
+    private Timer CoyoteWallJump { get; set; }
+    private Timer WallJumpBuffer { get; set; }
 
-	private void Jump() {
-		PerformJump();
+    public override void _Ready()
+    {
+        CoyoteJump = GetNode<Timer>(nameof(CoyoteJump));
+        JumpBuffer = GetNode<Timer>(nameof(JumpBuffer));
+        CoyoteWallJump = GetNode<Timer>(nameof(CoyoteWallJump));
+        WallJumpBuffer = GetNode<Timer>(nameof(WallJumpBuffer));
 
-		if (CurrentNumJumps != JumpingData.UnlimitedJumps) {
-			CurrentNumJumps--;
-		}
-		
-		JumpedFrom = CurrentLocation;
-		EmitSignal(SignalName.Jumped, (int)JumpedFrom);
-		if (CoyoteJump.TimeLeft > 0 || CoyoteWallJump.TimeLeft > 0) {
-			CurrentLocation = Location.Air;
-		}
-		
-		JumpBuffer.Stop();
-		WallJumpBuffer.Stop();
-		CoyoteJump.Stop();
-		CoyoteWallJump.Stop();
-	}
+        CoyoteJump.Timeout += () => CurrentLocation = Location.Air;
+        CoyoteWallJump.Timeout += () => CurrentLocation = Location.Air;
 
-	private void PerformJump() {
-		if (CurrentJumpData.Velocity.Y != 0) {
-			(_jumpTweenY, PropertyTweener t)
-				= Falling.SmoothlySetBaseVelocityY(CurrentJumpData.Velocity.Y, CurrentJumpData.AccelTimeY);
-			t.SetTrans(Tween.TransitionType.Expo);
-		}
-		if (CurrentJumpData.Velocity.X != 0) {
-			(_jumpTweenX, PropertyTweener t)
-				= LeftRight.SetIntendedSpeed(CurrentJumpData.Velocity.X * JumpFacing, CurrentJumpData.AccelTimeX);
-			t.SetTrans(Tween.TransitionType.Expo);
-		}
-	}
+        Ground.ModifiersUpdated += () => UpdateNumJumpsFor(Location.Ground);
+        Air.ModifiersUpdated += () => UpdateNumJumpsFor(Location.Air);
+        Wall.ModifiersUpdated += () => UpdateNumJumpsFor(Location.WallNonGround);
 
-	public void JumpCancel() {
-		JumpBuffer.Stop();
-		WallJumpBuffer.Stop();
+        ResetNumJumps();
+    }
 
-		if (JumpedFrom == Location.None) return;
+    public int GetJumpCapFor(Location forWhich)
+    {
+        return _jumpCapAll[(int)forWhich];
+    }
 
-		bool inNormalJump = CurrentLocation == Location.Air && Falling.Velocity.Y < JumpCancelVelocityThreshold;
-		if ((inNormalJump || InJumpTransitionY) && !Falling.StoppingDueToCeilingHit) {
-			JumpingData lastJumpData = GetJumpingDataFor(JumpedFrom);
-			Falling.SmoothlySetBaseVelocityY(lastJumpData.CancelVelocity, lastJumpData.CancelAccelTime);
-		}
+    public void SetJumpCapFor(int jumpCap, Location forWhich)
+    {
+        _jumpCapAll[(int)forWhich] = jumpCap;
+        SetNumJumpsFor(GetNumJumpsFor(forWhich), forWhich);
+    }
 
-		EmitSignal(SignalName.CancelledJump, (int)JumpedFrom);
-	}
+    public int GetNumJumpsFor(Location forWhich)
+    {
+        return _numJumpsAll[(int)forWhich];
+    }
 
-	public void TransitionToGround() {
-		CoyoteJump.Stop();
-		CoyoteWallJump.Stop();
-		
-		CurrentLocation = Location.Ground;
-		AttemptBufferedGroundJump();
-	}
+    public void SetNumJumpsFor(int numJumps, Location forWhich)
+    {
+        int jumpCap = GetJumpCapFor(forWhich);
+        _numJumpsAll[(int)forWhich] = JumpingData.MinNumJumps(numJumps, jumpCap);
+    }
 
-	public void TransitionToAir(bool immediately = false) {
-		if (!immediately
-		    && CoyoteGroundJumpEnabled
-		    && Falling.Velocity.Y >= 0
-		    && CurrentLocation == Location.Ground) {
-			CoyoteJump.Start();
-		} else if (!immediately
-		           && CoyoteWallJumpEnabled
-		           && Falling.Velocity.Y >= 0
-		           && CurrentLocation == Location.WallNonGround) {
-			CoyoteWallJump.Start();
-		} else {
-			CurrentLocation = Location.Air;
-		}
-	}
+    public void ResetNumJumps()
+    {
+        foreach (Location l in Enum.GetValues<Location>()) ResetNumJumpsFor(l);
+    }
 
-	public void TransitionToWall(float wallDirection) {
-		CoyoteJump.Stop();
-		CoyoteWallJump.Stop();
-		
-		CurrentLocation = Location.WallNonGround;
-		JumpFacing = _lastWallDirection = wallDirection;
-		AttemptBufferedWallJump();
-	}
+    public void ResetNumJumpsFor(Location which)
+    {
+        if (which == Location.None) return;
+
+        SetNumJumpsFor(GetJumpingDataFor(which).NumJumps, which);
+    }
+
+    private void UpdateNumJumpsFor(Location which)
+    {
+        SetNumJumpsFor(
+            JumpingData.MinNumJumps(GetNumJumpsFor(which), GetJumpingDataFor(which).NumJumps),
+            which);
+    }
+
+    public JumpingData GetJumpingDataFor(Location forWhich)
+    {
+        return _jumpDataAll[(int)forWhich];
+    }
+
+    private void SetJumpingDataFor(JumpingData data, Location forWhich)
+    {
+        _jumpDataAll[(int)forWhich] = data;
+        UpdateNumJumpsFor(forWhich);
+    }
+
+    public bool IsJumpingEnabledFor(Location forWhich)
+    {
+        // can't use array here since array initialization to true doesn't show up as true in Godot editor
+        return Enabled && forWhich switch
+        {
+            Location.Ground => GroundJumpingEnabled,
+            Location.Air => AirJumpingEnabled,
+            Location.WallNonGround => WallJumpingEnabled,
+            _ => false
+        };
+    }
+
+    public void AttemptJump()
+    {
+        if (CanJump)
+        {
+            Jump();
+        }
+        else if (IsJumpingEnabledFor(CurrentLocation))
+        {
+            if (GroundJumpBufferEnabled) JumpBuffer.Start();
+            if (WallJumpBufferEnabled) WallJumpBuffer.Start();
+        }
+    }
+
+    private void AttemptBufferedGroundJump()
+    {
+        if (CanJump && JumpBuffer.TimeLeft > 0) Jump();
+    }
+
+    private void AttemptBufferedWallJump()
+    {
+        if (CanJump && WallJumpBuffer.TimeLeft > 0) Jump();
+    }
+
+    private void Jump()
+    {
+        PerformJump();
+
+        if (CurrentNumJumps != JumpingData.UnlimitedJumps) CurrentNumJumps--;
+
+        JumpedFrom = CurrentLocation;
+        EmitSignal(SignalName.Jumped, (int)JumpedFrom);
+        if (CoyoteJump.TimeLeft > 0 || CoyoteWallJump.TimeLeft > 0) CurrentLocation = Location.Air;
+
+        JumpBuffer.Stop();
+        WallJumpBuffer.Stop();
+        CoyoteJump.Stop();
+        CoyoteWallJump.Stop();
+    }
+
+    private void PerformJump()
+    {
+        if (CurrentJumpData.Velocity.Y != 0)
+        {
+            (_jumpTweenY, PropertyTweener t)
+                = Falling.SmoothlySetBaseVelocityY(CurrentJumpData.Velocity.Y,
+                    CurrentJumpData.AccelTimeY);
+            t.SetTrans(Tween.TransitionType.Expo);
+        }
+
+        if (CurrentJumpData.Velocity.X != 0)
+        {
+            (_jumpTweenX, PropertyTweener t)
+                = LeftRight.SetIntendedSpeed(CurrentJumpData.Velocity.X * JumpFacing,
+                    CurrentJumpData.AccelTimeX);
+            t.SetTrans(Tween.TransitionType.Expo);
+        }
+    }
+
+    public void JumpCancel()
+    {
+        JumpBuffer.Stop();
+        WallJumpBuffer.Stop();
+
+        if (JumpedFrom == Location.None) return;
+
+        bool inNormalJump = CurrentLocation == Location.Air &&
+                            Falling.Velocity.Y < JumpCancelVelocityThreshold;
+        if ((inNormalJump || InJumpTransitionY) && !Falling.StoppingDueToCeilingHit)
+        {
+            JumpingData lastJumpData = GetJumpingDataFor(JumpedFrom);
+            Falling.SmoothlySetBaseVelocityY(lastJumpData.CancelVelocity,
+                lastJumpData.CancelAccelTime);
+        }
+
+        EmitSignal(SignalName.CancelledJump, (int)JumpedFrom);
+    }
+
+    public void TransitionToGround()
+    {
+        CoyoteJump.Stop();
+        CoyoteWallJump.Stop();
+
+        CurrentLocation = Location.Ground;
+        AttemptBufferedGroundJump();
+    }
+
+    public void TransitionToAir(bool immediately = false)
+    {
+        if (!immediately
+            && CoyoteGroundJumpEnabled
+            && Falling.Velocity.Y >= 0
+            && CurrentLocation == Location.Ground)
+            CoyoteJump.Start();
+        else if (!immediately
+                 && CoyoteWallJumpEnabled
+                 && Falling.Velocity.Y >= 0
+                 && CurrentLocation == Location.WallNonGround)
+            CoyoteWallJump.Start();
+        else
+            CurrentLocation = Location.Air;
+    }
+
+    public void TransitionToWall(float wallDirection)
+    {
+        CoyoteJump.Stop();
+        CoyoteWallJump.Stop();
+
+        CurrentLocation = Location.WallNonGround;
+        JumpFacing = _lastWallDirection = wallDirection;
+        AttemptBufferedWallJump();
+    }
 }

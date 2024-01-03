@@ -1,12 +1,12 @@
 <Project Sdk="Godot.NET.Sdk/4.1.1">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="scripts\player\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="scripts\player\**" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Remove="scripts\player\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Remove="scripts\player\**"/>
+    </ItemGroup>
 </Project>

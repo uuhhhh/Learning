@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 
-namespace Learning.Scripts.Values.Modifiers; 
+namespace Learning.Scripts.Values.Modifiers;
 
-public interface IValueWithModifiers<TValue> {
+public interface IValueWithModifiers<TValue>
+{
     public delegate void ModifiersUpdatedEventHandler();
-    
-    public event ModifiersUpdatedEventHandler ModifiersUpdated;
-    
+
     public TValue ModifiedValue { get; }
-    
+
     public TValue BaseValue { get; }
+
+    public event ModifiersUpdatedEventHandler ModifiersUpdated;
 
     public bool AddModifier(IModifier<TValue> value);
 
@@ -17,9 +18,12 @@ public interface IValueWithModifiers<TValue> {
 
     public void InvalidateCachedValue();
 
-    public class PriorityComparer : IComparer<IModifier<TValue>> {
-        public int Compare(IModifier<TValue> x, IModifier<TValue> y) {
-            return (x, y) switch {
+    public class PriorityComparer : IComparer<IModifier<TValue>>
+    {
+        public int Compare(IModifier<TValue> x, IModifier<TValue> y)
+        {
+            return (x, y) switch
+            {
                 (null, null) => 0,
                 (null, _) => -1,
                 (_, null) => 1,

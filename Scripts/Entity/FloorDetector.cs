@@ -1,10 +1,11 @@
-﻿using Godot;
-using Learning.Scripts.Environment;
+﻿using Learning.Scripts.Environment;
 
-namespace Learning.Scripts.Entity; 
+namespace Learning.Scripts.Entity;
 
-public partial class FloorDetector : EnvObjectDetector {
-    protected override int GetPriorityOf(EnvObject envObject) {
+public partial class FloorDetector : EnvObjectDetector
+{
+    protected override int GetPriorityOf(EnvObject envObject)
+    {
         return envObject.Data.FloorPriority;
     }
 }

@@ -1,12 +1,14 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Effects; 
+namespace Learning.Scripts.Effects;
 
-public partial class FloorImpactParticles : ImpactParticles {
+public partial class FloorImpactParticles : ImpactParticles
+{
     [Export] public float MinFallDistance { get; set; }
     [Export] public float MaxFallDistance { get; set; }
 
-    public PropertyTweener FloorImpact(float fallDistance) {
+    public PropertyTweener FloorImpact(float fallDistance)
+    {
         if (fallDistance < MinFallDistance) return null;
 
         double intensity = (fallDistance - MinFallDistance) / (MaxFallDistance - MinFallDistance);

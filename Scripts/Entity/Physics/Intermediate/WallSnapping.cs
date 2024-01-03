@@ -1,26 +1,41 @@
 using Godot;
 using Learning.Scripts.Entity.Physics.VelocitySources;
 
-namespace Learning.Scripts.Entity.Physics.Intermediate; 
+namespace Learning.Scripts.Entity.Physics.Intermediate;
 
-public partial class WallSnapping : Node {
+public partial class WallSnapping : Node
+{
+    [Signal]
+    public delegate void WallSnapStartedEventHandler();
+
+    [Signal]
+    public delegate void WallSnapStoppedEventHandler();
+
+    private bool _inWallSnapStartWindow;
+    private bool _isWallSnapping;
+    private bool _wallSnapUsedUp;
     [Export] private bool Enabled { get; set; } = true;
     [Export] internal LeftRight Movement { get; private set; }
     [Export] public WallSnappingData SnapData { get; private set; }
 
-    public bool IsWallSnapping {
+    public bool IsWallSnapping
+    {
         get => Enabled && _isWallSnapping;
-        set {
+        set
+        {
             if (!Enabled || IsWallSnapping == value) return;
             _isWallSnapping = value;
-            
-            if (IsWallSnapping) {
+
+            if (IsWallSnapping)
+            {
                 _wallSnapUsedUp = true;
                 SnapData.AddModifiersTo(Movement.Air);
                 WallSnapExpiry.Start();
                 InWallSnapStartWindow = false;
                 EmitSignal(SignalName.WallSnapStarted);
-            } else {
+            }
+            else
+            {
                 _wallSnapUsedUp = false;
                 SnapData.RemoveModifiersFrom(Movement.Air);
                 WallSnapExpiry.Stop();
@@ -29,16 +44,21 @@ public partial class WallSnapping : Node {
         }
     }
 
-    public bool InWallSnapStartWindow {
+    public bool InWallSnapStartWindow
+    {
         get => Enabled && _inWallSnapStartWindow;
-        set {
+        set
+        {
             if (!Enabled || InWallSnapStartWindow == value) return;
             _inWallSnapStartWindow = value;
 
-            if (InWallSnapStartWindow) {
+            if (InWallSnapStartWindow)
+            {
                 WallSnapStartWindow.Start();
                 _wallSnapUsedUp = false;
-            } else {
+            }
+            else
+            {
                 WallSnapStartWindow.Stop();
                 _wallSnapUsedUp = false;
             }
@@ -47,16 +67,9 @@ public partial class WallSnapping : Node {
 
     private Timer WallSnapStartWindow { get; set; }
     private Timer WallSnapExpiry { get; set; }
-    private bool _isWallSnapping;
-    private bool _inWallSnapStartWindow;
-    private bool _wallSnapUsedUp;
-    
-    [Signal]
-    public delegate void WallSnapStartedEventHandler();
-    [Signal]
-    public delegate void WallSnapStoppedEventHandler();
-    
-    public override void _Ready() {
+
+    public override void _Ready()
+    {
         WallSnapStartWindow = GetNode<Timer>(nameof(WallSnapStartWindow));
         WallSnapExpiry = GetNode<Timer>(nameof(WallSnapExpiry));
 
@@ -64,18 +77,22 @@ public partial class WallSnapping : Node {
         WallSnapStartWindow.Timeout += () => InWallSnapStartWindow = false;
         WallSnapExpiry.Timeout += () => IsWallSnapping = false;
     }
-    
-    public override void _ExitTree() {
+
+    public override void _ExitTree()
+    {
         IsWallSnapping = false;
     }
 
-    private void WallSnapCheck() {
+    private void WallSnapCheck()
+    {
         bool wasWallSnapping = IsWallSnapping;
-        bool isWallSnapping = WallSnapStartWindow.TimeLeft > 0 
-                              && Movement.IntendedSpeedScale != 0 
-                              && Mathf.Sign(Movement.CurrentSpeedScale) == -Mathf.Sign(Movement.IntendedSpeedScale);
+        bool isWallSnapping = WallSnapStartWindow.TimeLeft > 0
+                              && Movement.IntendedSpeedScale != 0
+                              && Mathf.Sign(Movement.CurrentSpeedScale) ==
+                              -Mathf.Sign(Movement.IntendedSpeedScale);
 
-        IsWallSnapping = (wasWallSnapping, isWallSnapping, _wallSnapUsedUp) switch {
+        IsWallSnapping = (wasWallSnapping, isWallSnapping, _wallSnapUsedUp) switch
+        {
             (false, true, false) => true,
             (true, false, _) => false,
             _ => IsWallSnapping

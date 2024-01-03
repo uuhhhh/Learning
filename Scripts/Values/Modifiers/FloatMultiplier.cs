@@ -1,12 +1,14 @@
 ﻿using Godot;
 
-namespace Learning.Scripts.Values.Modifiers; 
+namespace Learning.Scripts.Values.Modifiers;
 
 [GlobalClass]
-public partial class FloatMultiplier : Modifier<float> {
+public partial class FloatMultiplier : Modifier<float>
+{
     [Export] public float Multiplier { get; private set; }
 
-    public override float ApplyModifier(float value) {
+    public override float ApplyModifier(float value)
+    {
         return value * Multiplier;
     }
 }

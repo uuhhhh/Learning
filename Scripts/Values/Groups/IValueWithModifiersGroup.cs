@@ -1,8 +1,9 @@
 ﻿using Learning.Scripts.Values.Modifiers;
 
-namespace Learning.Scripts.Values.Groups; 
+namespace Learning.Scripts.Values.Groups;
 
-public interface IValueWithModifiersGroup {
+public interface IValueWithModifiersGroup
+{
     public delegate void ModifiersUpdatedEventHandler();
 
     public event ModifiersUpdatedEventHandler ModifiersUpdated;
