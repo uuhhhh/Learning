@@ -5,7 +5,8 @@ public partial class FunctionalModifier<TValue> : Modifier<TValue> {
     
     public ToApplyModifierTo ToApplyModifierToFunc { get; }
 
-    public FunctionalModifier(ToApplyModifierTo func, int priority, bool cacheable) : base(priority, cacheable) {
+    public FunctionalModifier(ToApplyModifierTo func, ModifierPriority priority, bool cacheable)
+        : base(priority, cacheable) {
         ToApplyModifierToFunc = func;
     }
 

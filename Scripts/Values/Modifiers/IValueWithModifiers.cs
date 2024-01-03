@@ -23,7 +23,7 @@ public interface IValueWithModifiers<TValue> {
                 (null, null) => 0,
                 (null, _) => -1,
                 (_, null) => 1,
-                _ => x.Priority.CompareTo(y.Priority)
+                _ => x.Priority.PriorityNum().CompareTo(y.Priority.PriorityNum())
             };
         }
     }

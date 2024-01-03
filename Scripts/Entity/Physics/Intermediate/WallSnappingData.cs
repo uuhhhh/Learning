@@ -20,7 +20,7 @@ public partial class WallSnappingData : ResourceWithModifiers, IModifierGroup<Le
         private set => InitField(nameof(SpeedScaleDeltaPowerReplacement), value);
     }
     [Export] public Timer WallSnapStartWindow { get; private set; }
-    [Export] public int AccelTimeMultiplierReplacementPriority { get; private set; }
+    [Export] public ModifierPriority AccelTimeMultiplierReplacementPriority { get; private set; }
     
     public float AccelTimeMultiplier =>
         (float)Mathf.Lerp(AccelTimeMultiplierInitial,

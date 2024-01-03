@@ -5,7 +5,7 @@ namespace Learning.Scripts.Values.Modifiers;
 [GlobalClass]
 public abstract partial class ModifierWithModifiers<TValue> : Resource, IValueWithModifiers<TValue>, IModifier<TValue> {
     public event IValueWithModifiers<TValue>.ModifiersUpdatedEventHandler ModifiersUpdated;
-    [Export] public int Priority { get; private set; }
+    [Export] public ModifierPriority Priority { get; private set; }
     [Export] public bool Cacheable { get; private set; }
 
     public TValue ModifiedValue => _backing.ModifiedValue;

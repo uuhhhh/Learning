@@ -6,10 +6,10 @@ public abstract partial class Modifier<TValue> : Resource, IModifier<TValue> {
     public const int DefaultPriority = 0;
     public const bool DefaultCacheable = true;
 
-    [Export] public int Priority { get; private set; }
+    [Export] public ModifierPriority Priority { get; private set; }
     [Export] public bool Cacheable { get; private set; }
 
-    protected Modifier(int priority, bool cacheable) {
+    protected Modifier(ModifierPriority priority, bool cacheable) {
         Priority = priority;
         Cacheable = cacheable;
     }
