@@ -28,7 +28,7 @@ public partial class KinematicComp : CharacterBody2D {
     
     public override void _Ready() {
         base._Ready();
-        _mostExtremePosition = GlobalPosition;
+        _mostExtremePosition = Position;
 
         SignalInitialState();
     }
@@ -88,25 +88,25 @@ public partial class KinematicComp : CharacterBody2D {
 
     private void CheckDirectionChange() {
         _mostExtremePosition.X = _increasingX ?
-            Mathf.Max(GlobalPosition.X, _mostExtremePosition.X)
-            : Mathf.Min(GlobalPosition.X, _mostExtremePosition.X);
-        bool turnedAroundX = Mathf.Abs(GlobalPosition.X - _mostExtremePosition.X) > DirectionChangeEpsilon;
+            Mathf.Max(Position.X, _mostExtremePosition.X)
+            : Mathf.Min(Position.X, _mostExtremePosition.X);
+        bool turnedAroundX = Mathf.Abs(Position.X - _mostExtremePosition.X) > DirectionChangeEpsilon;
         
         if (turnedAroundX) {
-            EmitSignal(SignalName.DirectionChangeX, this, GlobalPosition.X - _mostExtremePosition.X);
+            EmitSignal(SignalName.DirectionChangeX, this, Position.X - _mostExtremePosition.X);
             _increasingX = !_increasingX;
-            _mostExtremePosition.X = GlobalPosition.X;
+            _mostExtremePosition.X = Position.X;
         }
         
         _mostExtremePosition.Y = _increasingY ?
-            Mathf.Max(GlobalPosition.Y, _mostExtremePosition.Y)
-            : Mathf.Min(GlobalPosition.Y, _mostExtremePosition.Y);
-        bool turnedAroundY = Mathf.Abs(GlobalPosition.Y - _mostExtremePosition.Y) > DirectionChangeEpsilon;
+            Mathf.Max(Position.Y, _mostExtremePosition.Y)
+            : Mathf.Min(Position.Y, _mostExtremePosition.Y);
+        bool turnedAroundY = Mathf.Abs(Position.Y - _mostExtremePosition.Y) > DirectionChangeEpsilon;
         
         if (turnedAroundY) {
-            EmitSignal(SignalName.DirectionChangeY, this, GlobalPosition.Y - _mostExtremePosition.Y);
+            EmitSignal(SignalName.DirectionChangeY, this, Position.Y - _mostExtremePosition.Y);
             _increasingY = !_increasingY;
-            _mostExtremePosition.Y = GlobalPosition.Y;
+            _mostExtremePosition.Y = Position.Y;
         }
     }
 
@@ -123,7 +123,7 @@ public partial class KinematicComp : CharacterBody2D {
     }
 
     internal void SetParentPositionToOwn(Node2D parent) {
-        parent.Position = GlobalPosition;
+        parent.Position = Position;
         Position = Vector2.Zero;
     }
 }
