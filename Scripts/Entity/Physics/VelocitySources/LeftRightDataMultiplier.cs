@@ -4,9 +4,15 @@ using Learning.Scripts.Values.Modifiers;
 
 namespace Learning.Scripts.Entity.Physics.VelocitySources;
 
+/// <summary>
+/// A group of modifiers that can be applied to a LeftRightData.
+/// </summary>
 [GlobalClass]
 public partial class LeftRightDataMultiplier : ModifierResource<LeftRightData>
 {
+    /// <summary>
+    /// A scale factor for LeftRightData's BaseSpeed.
+    /// </summary>
     [Export]
     public FloatMultiplier BaseSpeedMultiplier
     {
@@ -15,6 +21,9 @@ public partial class LeftRightDataMultiplier : ModifierResource<LeftRightData>
             nameof(LeftRightData.BaseSpeed), value);
     }
 
+    /// <summary>
+    /// A scale factor for LeftRightData's BaseAccelTime.
+    /// </summary>
     [Export]
     public FloatMultiplier AccelBaseTimeMultiplier
     {
@@ -23,6 +32,9 @@ public partial class LeftRightDataMultiplier : ModifierResource<LeftRightData>
             nameof(LeftRightData.AccelBaseTime), value);
     }
 
+    /// <summary>
+    /// A scale factor for LeftRightData's DecelBaseTime.
+    /// </summary>
     [Export]
     public FloatMultiplier DecelBaseTimeMultiplier
     {
@@ -31,6 +43,9 @@ public partial class LeftRightDataMultiplier : ModifierResource<LeftRightData>
             nameof(LeftRightData.DecelBaseTime), value);
     }
 
+    /// <summary>
+    /// A scale factor for LeftRightData's SpeedScaleHighDeltaPower.
+    /// </summary>
     [Export]
     public FloatMultiplier SpeedScaleHighDeltaPowerMultiplier
     {
