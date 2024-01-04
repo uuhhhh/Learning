@@ -71,7 +71,7 @@ public partial class Falling : VelocitySource
             }
             else
             {
-                BaseVelocity = Vector2.Zero;
+                BaseVelocity = new Vector2(BaseVelocity.X, 0);
                 EmitSignal(SignalName.StopFalling);
             }
         }

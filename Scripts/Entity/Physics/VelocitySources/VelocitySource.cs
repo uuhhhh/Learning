@@ -10,15 +10,22 @@ public abstract partial class VelocitySource : Node
 {
     private Tween _baseVelocityXTween;
     private bool _baseVelocityXTweenReady;
+    private float _tweeningBaseVelocityXTo;
+    
     private Tween _baseVelocityYTween;
     private bool _baseVelocityYTweenReady;
-    private float _multiplierBeforeDisable;
-
+    private float _tweeningBaseVelocityYTo;
+    
     private Tween _multiplierTween;
     private bool _multiplierTweenReady;
-    private float _tweeningBaseVelocityXTo;
-    private float _tweeningBaseVelocityYTo;
     private float _tweeningMultiplierTo;
+
+    private Tween _enabledTween;
+    private bool _enabledTweenReady;
+    private float _tweeningEnabledTo;
+
+    private bool _enabled = true;
+    private float _multiplierBeforeDisable;
     
     /// <summary>
     /// If true, a VelocityAggregate won't add this VelocitySource
@@ -36,24 +43,38 @@ public abstract partial class VelocitySource : Node
     /// The default time, in seconds, it takes for a VelocitySource's Velocity to go to zero
     /// upon smoothly disabling it.
     /// </summary>
-    [Export] internal float DefaultSmoothlyDisableTime { get; private set; } = .25f;
+    [Export] internal float DefaultSmoothlyDisableTime { get; private set; } = .5f;
     
     /// <summary>
     /// The default time, in seconds, it takes for a VelocitySource's Velocity to go from zero
     /// to its current actual velocity upon smoothly enabling it.
     /// </summary>
-    [Export] internal float DefaultSmoothlyEnableTime { get; private set; } = .25f;
+    [Export] internal float DefaultSmoothlyEnableTime { get; private set; } = .5f;
 
     /// <summary>
     /// When this is false, this VelocitySource is disabled, meaning the velocity will evaluate
     /// to zero.
     /// </summary>
-    public bool Enabled { get; set; } = true;
+    public bool Enabled
+    {
+        get => _enabled;
+        set {
+            _enabled = value;
+            EnabledMultiplier = Enabled ? 1 : 0;
+        }
+    }
 
     /// <summary>
-    /// A global multiplier for this VelocitySource's velocity. (Not a global variable)
+    /// A global multiplier for this VelocitySource's velocity (not a global variable).
     /// </summary>
     public float Multiplier { get; set; } = 1;
+
+    /// <summary>
+    /// A global multiplier for this VelocitySource's velocity (not a global variable).
+    /// This value will be 0 if this VelocitySource is disabled, 1 if enabled,
+    /// and a value between (0, 1) if smoothly transitioning between enabled and disabled.
+    /// </summary>
+    public float EnabledMultiplier { get; private set; } = 1;
 
     /// <summary>
     /// The velocity of this VelocitySource,
@@ -77,14 +98,14 @@ public abstract partial class VelocitySource : Node
     /// (after disabling and Multiplier are taken into account).
     /// This is the property that VelocityAggregate uses for this VelocitySource.
     /// </summary>
-    public Vector2 Velocity => Enabled ? BaseVelocity * Multiplier : Vector2.Zero;
+    public Vector2 Velocity => BaseVelocity * Multiplier * EnabledMultiplier;
 
     /// <summary>
     /// What the main velocity of this VelocitySource will be
     /// after the current active Tweens are finished. 
     /// </summary>
     public Vector2 VelocityAfterTransition =>
-        Enabled ? BaseVelocityAfterTransition * Multiplier : Vector2.Zero;
+        BaseVelocityAfterTransition * _tweeningMultiplierTo * _tweeningEnabledTo;
 
     /// <summary>
     /// Whether the x component of this VelocitySource's velocity
@@ -130,6 +151,12 @@ public abstract partial class VelocitySource : Node
         {
             if (_multiplierTween.IsValid()) _multiplierTween.Play();
             _multiplierTweenReady = false;
+        }
+
+        if (_enabledTweenReady)
+        {
+            if (_enabledTween.IsValid()) _enabledTween.Play();
+            _enabledTweenReady = false;
         }
     }
 
@@ -290,55 +317,61 @@ public abstract partial class VelocitySource : Node
 
     /// <summary>
     /// Smoothly transitions this VelocitySource from being enabled to being disabled.
-    /// Note that this affects the Multiplier and uses the Tween for the Multiplier,
-    /// in order to transition from enabled to disabled.
+    /// Does nothing and returns nulls if already disabled.
     /// </summary>
     /// <param name="timeToDisable">How long, in seconds,
     /// it will take for disabling to complete</param>
-    public void SmoothlyDisable(float timeToDisable)
+    public (Tween, PropertyTweener) SmoothlyDisable(float timeToDisable)
     {
-        if (!Enabled) return;
+        if (!Enabled) return (null, null);
 
-        _multiplierBeforeDisable = Multiplier;
-        (Tween t, _) = SmoothlySetMultiplier(0, timeToDisable);
+        _enabledTweenReady = true;
+        _tweeningEnabledTo = 0;
+        (Tween t, PropertyTweener p) = SmoothlySet(
+            ref _enabledTween, nameof(EnabledMultiplier), _tweeningEnabledTo, timeToDisable);
         t.Finished += () => Enabled = false;
+        return (t, p);
     }
 
     /// <summary>
     /// Smoothly transitions this VelocitySource from being enabled to being disabled,
     /// in the default amount of time.
-    /// Note that this affects the Multiplier and uses the Tween for the Multiplier,
-    /// in order to transition from enabled to disabled.
+    /// Does nothing and returns nulls if already disabled.
     /// </summary>
-    public void SmoothlyDisable()
+    public (Tween, PropertyTweener) SmoothlyDisable()
     {
-        SmoothlyDisable(DefaultSmoothlyDisableTime);
+        return SmoothlyDisable(DefaultSmoothlyDisableTime);
     }
 
     /// <summary>
-    /// Smoothly transitions this VelocitySource from being enabled to being disabled.
-    /// Note that this affects the Multiplier and uses the Tween for the Multiplier,
-    /// in order to transition from enabled to disabled.
+    /// Smoothly transitions this VelocitySource from being disabled to being enabled.
+    /// Does nothing and returns nulls if already enabled.
+    /// Enabled will be true throughout the transition.
     /// </summary>
     /// <param name="timeToEnable">How long, in seconds,
     /// it will take for enabling to complete</param>
-    public void SmoothlyEnable(float timeToEnable)
+    public (Tween, PropertyTweener) SmoothlyEnable(float timeToEnable)
     {
-        if (Enabled) return;
-
-        SmoothlySetMultiplier(0, _multiplierBeforeDisable, timeToEnable);
+        if (Enabled) return (null, null);
+        
+        _enabledTweenReady = true;
+        _tweeningEnabledTo = 1;
         Enabled = true;
+        EnabledMultiplier = 0;
+        (Tween t, PropertyTweener p) = SmoothlySet(
+            ref _enabledTween, nameof(EnabledMultiplier), _tweeningEnabledTo, timeToEnable);
+        return (t, p);
     }
 
     /// <summary>
-    /// Smoothly transitions this VelocitySource from being enabled to being disabled,
+    /// Smoothly transitions this VelocitySource from being disabled to being enabled,
     /// in the default amount of time.
-    /// Note that this affects the Multiplier and uses the Tween for the Multiplier,
-    /// in order to transition from enabled to disabled.
+    /// Does nothing and returns nulls if already enabled.
+    /// Enabled will be true throughout the transition.
     /// </summary>
-    public void SmoothlyEnable()
+    public (Tween, PropertyTweener) SmoothlyEnable()
     {
-        SmoothlyEnable(DefaultSmoothlyEnableTime);
+        return SmoothlyEnable(DefaultSmoothlyEnableTime);
     }
 
     /// <summary>
