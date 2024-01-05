@@ -1,5 +1,6 @@
 using Learning.Scripts.Effects;
 using Learning.Scripts.Entity.Physics;
+using Learning.Scripts.Environment;
 
 namespace Learning.Scripts.Entity;
 

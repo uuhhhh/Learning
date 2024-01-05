@@ -1,6 +1,4 @@
-﻿using Learning.Scripts.Environment;
-
-namespace Learning.Scripts.Entity;
+﻿namespace Learning.Scripts.Environment;
 
 public partial class FloorDetector : EnvObjectDetector
 {

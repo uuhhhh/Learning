@@ -1,7 +1,7 @@
 ﻿using Godot;
 using Learning.Scripts.Entity.Physics.Intermediate;
 
-namespace Learning.Scripts.Entity.Physics;
+namespace Learning.Scripts.Environment;
 
 public partial class WallData : Resource
 {

@@ -4,8 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://cmgag14d27cwx" path="res://icon.svg" id="2_q7yrb"]
 [ext_resource type="Script" path="res://Scripts/Entity/InputComp.cs" id="3_xfxpf"]
 [ext_resource type="PackedScene" uid="uid://icatr3nuob7n" path="res://scenes/entity/physics/player_velocity_aggregate.tscn" id="4_xn5i2"]
-[ext_resource type="Script" path="res://Scripts/Entity/FloorDetector.cs" id="5_ua6gy"]
-[ext_resource type="Script" path="res://Scripts/Entity/WallDetector.cs" id="6_bih8x"]
+[ext_resource type="Script" path="res://Scripts/Environment/FloorDetector.cs" id="5_p45wx"]
+[ext_resource type="Script" path="res://Scripts/Environment/WallDetector.cs" id="6_uvra8"]
 [ext_resource type="PackedScene" uid="uid://b3003wbdiffal" path="res://scenes/effects/player_particles.tscn" id="7_b1djq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_st71c"]
@@ -39,7 +39,7 @@ script = ExtResource("3_xfxpf")
 [node name="PlayerVelocityAggregate" parent="." instance=ExtResource("4_xn5i2")]
 
 [node name="FloorDetector" type="Area2D" parent="."]
-script = ExtResource("5_ua6gy")
+script = ExtResource("5_p45wx")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FloorDetector"]
 position = Vector2(2.38419e-07, 0.5)
@@ -47,7 +47,7 @@ shape = SubResource("RectangleShape2D_nhbww")
 debug_color = Color(0.796078, 0.329412, 0.305882, 0.419608)
 
 [node name="WallDetector" type="Area2D" parent="."]
-script = ExtResource("6_bih8x")
+script = ExtResource("6_uvra8")
 
 [node name="CollisionShapeLeft" type="CollisionShape2D" parent="WallDetector"]
 position = Vector2(-8.5, -4)

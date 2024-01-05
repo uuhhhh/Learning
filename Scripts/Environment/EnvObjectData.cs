@@ -1,5 +1,4 @@
 ﻿using Godot;
-using Learning.Scripts.Entity.Physics;
 
 namespace Learning.Scripts.Environment;
 

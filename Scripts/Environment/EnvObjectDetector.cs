@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using Learning.Scripts.Environment;
 
-namespace Learning.Scripts.Entity;
+namespace Learning.Scripts.Environment;
 
 public abstract partial class EnvObjectDetector : Area2D
 {

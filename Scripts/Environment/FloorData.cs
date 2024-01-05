@@ -2,7 +2,7 @@
 using Learning.Scripts.Entity.Physics.Intermediate;
 using Learning.Scripts.Entity.Physics.VelocitySources;
 
-namespace Learning.Scripts.Entity.Physics;
+namespace Learning.Scripts.Environment;
 
 public partial class FloorData : Resource
 {
