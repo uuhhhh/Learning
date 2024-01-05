@@ -30,12 +30,24 @@ public partial class WallSnapping : Node
     private bool _inWallSnapStartWindow;
     private bool _isWallSnapping;
     private bool _wallSnapUsedUp;
-    [Export] private bool Enabled { get; set; } = true;
 
     /// <summary>
     /// Whether this WallSnapping can currently perform wall snapping.
     /// Setting this to false will also stop wall snapping.
     /// </summary>
+    private bool Enabled
+    {
+        get => _enabled;
+        set
+        {
+            if (Enabled == value) return;
+
+            if (!value) IsWallSnapping = false;
+
+            _enabled = value;
+        }
+    }
+    
     /// <summary>
     /// The LeftRight whose velocity will be affected by the wall snapping.
     /// </summary>
@@ -77,6 +89,11 @@ public partial class WallSnapping : Node
         }
     }
 
+    /// <summary>
+    /// Whether this WallSnapping is in a time window to start wall snapping.
+    /// When set to true, this will be set to false after some amount of time
+    /// (i.e., exiting the time window).
+    /// </summary>
     public bool InWallSnapStartWindow
     {
         get => Enabled && _inWallSnapStartWindow;
@@ -119,12 +136,12 @@ public partial class WallSnapping : Node
     private void WallSnapCheck()
     {
         bool wasWallSnapping = IsWallSnapping;
-        bool isWallSnapping = WallSnapStartWindow.TimeLeft > 0
+        bool wallSnapEligible = InWallSnapStartWindow
                               && Movement.IntendedSpeedScale != 0
                               && Mathf.Sign(Movement.CurrentSpeedScale) ==
                               -Mathf.Sign(Movement.IntendedSpeedScale);
 
-        IsWallSnapping = (wasWallSnapping, isWallSnapping, _wallSnapUsedUp) switch
+        IsWallSnapping = (wasWallSnapping, wallSnapEligible, _wallSnapUsedUp) switch
         {
             (false, true, false) => true,
             (true, false, _) => false,

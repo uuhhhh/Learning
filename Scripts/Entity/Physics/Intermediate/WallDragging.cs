@@ -33,15 +33,33 @@ public partial class WallDragging : Node
     [Signal]
     public delegate void StoppedValidWallTouchingEventHandler();
 
+    /// <summary>
+    /// Whether wall dragging is currently enabled for this WallDragging.
+    /// </summary>
+    [Export]
+    private bool _enabled = true;
+    
     private bool _isDragging;
     private bool _isValidWallTouching;
     private WallDraggingData _wall;
-    [Export] private bool Enabled { get; set; } = true;
 
     /// <summary>
     /// Whether wall dragging is currently enabled for this WallDragging.
     /// Setting this to false will stop wall dragging.
     /// </summary>
+    private bool Enabled
+    {
+        get => _enabled;
+        set
+        {
+            if (Enabled == value) return;
+
+            if (!value) IsDragging = false;
+
+            _enabled = value;
+        }
+    }
+    
     /// <summary>
     /// The Falling that is affected by this WallDragging's wall dragging
     /// </summary>
@@ -66,10 +84,10 @@ public partial class WallDragging : Node
     /// </summary>
     public bool IsDragging
     {
-        get => Enabled && DraggingEnabled && _isDragging;
+        get => Enabled && _isDragging;
         private set
         {
-            if (!(Enabled && DraggingEnabled) || value == IsDragging) return;
+            if (!Enabled || value == IsDragging) return;
 
             _isDragging = value;
             if (IsDragging)
@@ -92,10 +110,10 @@ public partial class WallDragging : Node
     /// </summary>
     public bool ValidWallTouching
     {
-        get => Enabled && ValidWallTouchingEnabled && _isValidWallTouching;
+        get => Enabled && _isValidWallTouching;
         set
         {
-            if (!(Enabled && ValidWallTouchingEnabled) || value == _isValidWallTouching) return;
+            if (!Enabled || value == _isValidWallTouching) return;
 
             _isValidWallTouching = value;
 
