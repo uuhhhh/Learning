@@ -5,6 +5,10 @@ using Learning.Scripts.Values.Modifiers;
 
 namespace Learning.Scripts.Entity.Physics.Intermediate;
 
+/// <summary>
+/// Data used by a WallSnapping to determine the wall snapping movement. Modifies a LeftRightData
+/// to modify its values to make the movement resemble a wall snap.
+/// </summary>
 [GlobalClass]
 public partial class WallSnappingData : ResourceWithModifiers, IModifierGroup<LeftRightData>
 {
@@ -16,6 +20,10 @@ public partial class WallSnappingData : ResourceWithModifiers, IModifierGroup<Le
             value => AccelTimeMultiplier * value, AccelTimeMultiplierReplacementPriority, false);
     }
 
+    /// <summary>
+    /// A scale factor for the LeftRightData's acceleration time,
+    /// when wall snapping at the beginning of the wall snap start window.
+    /// </summary>
     [Export]
     public float AccelTimeMultiplierInitial
     {
@@ -23,6 +31,10 @@ public partial class WallSnappingData : ResourceWithModifiers, IModifierGroup<Le
         private set => InitValue(nameof(AccelTimeMultiplierInitial), value);
     }
 
+    /// <summary>
+    /// A scale factor for the LeftRightData's acceleration time,
+    /// when wall snapping at the end of the wall snap start window.
+    /// </summary>
     [Export]
     public float AccelTimeMultiplierFinal
     {
@@ -30,6 +42,9 @@ public partial class WallSnappingData : ResourceWithModifiers, IModifierGroup<Le
         private set => InitValue(nameof(AccelTimeMultiplierFinal), value);
     }
 
+    /// <summary>
+    /// What to replace the LeftRightData's speed scale high delta power with.
+    /// </summary>
     [Export]
     public ModifiedFloatReplacer SpeedScaleDeltaPowerReplacement
     {
@@ -37,9 +52,19 @@ public partial class WallSnappingData : ResourceWithModifiers, IModifierGroup<Le
         private set => InitField(nameof(SpeedScaleDeltaPowerReplacement), value);
     }
 
+    /// <summary>
+    /// The timer to use for determining the AccelTimeMultiplier.
+    /// </summary>
     [Export] public Timer WallSnapStartWindow { get; private set; }
+    
+    /// <summary>
+    /// The modifier priority for the acceleration time multiplier.
+    /// </summary>
     [Export] public ModifierPriority AccelTimeMultiplierReplacementPriority { get; private set; }
 
+    /// <summary>
+    /// A value between AccelTimeInitial and AccelTimeFinal, depending on WallSnapTimeWindow's time.
+    /// </summary>
     public float AccelTimeMultiplier =>
         (float)Mathf.Lerp(AccelTimeMultiplierInitial, AccelTimeMultiplierFinal,
             WallSnapTimeProportion);

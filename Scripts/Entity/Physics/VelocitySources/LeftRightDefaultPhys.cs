@@ -7,6 +7,9 @@ namespace Learning.Scripts.Entity.Physics.VelocitySources;
 /// </summary>
 public partial class LeftRightDefaultPhys : DefaultPhys
 {
+    /// <summary>
+    /// The LeftRight to be controlled by the callback KinematicComp
+    /// </summary>
     [Export] private LeftRight ToLink { get; set; }
 
     /// <summary>

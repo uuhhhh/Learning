@@ -7,6 +7,9 @@ namespace Learning.Scripts.Entity.Physics.VelocitySources;
 /// </summary>
 public partial class FallingDefaultPhys : DefaultPhys
 {
+    /// <summary>
+    /// The Falling to be controlled by the callback KinematicComp
+    /// </summary>
     [Export] private Falling ToLink { get; set; }
 
     /// <summary>

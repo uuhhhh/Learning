@@ -3,17 +3,33 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 
 namespace Learning.Scripts.Entity.Physics.Intermediate;
 
+/// <summary>
+/// This intermediate controls a Falling in order for an entity to move as if it's dragging down
+/// a wall instead of falling.
+/// </summary>
 public partial class WallDragging : Node
 {
+    /// <summary>
+    /// Signal for when this WallDragging starts wall dragging.
+    /// </summary>
     [Signal]
     public delegate void StartedDraggingEventHandler();
 
+    /// <summary>
+    /// Signal for when this WallDragging starts validly touching a wall.
+    /// </summary>
     [Signal]
     public delegate void StartedValidWallTouchingEventHandler();
 
+    /// <summary>
+    /// Signal for when this WallDragging stops wall dragging.
+    /// </summary>
     [Signal]
     public delegate void StoppedDraggingEventHandler();
 
+    /// <summary>
+    /// Signal for when this WallDragging stops validly touching a wall.
+    /// </summary>
     [Signal]
     public delegate void StoppedValidWallTouchingEventHandler();
 
@@ -21,8 +37,19 @@ public partial class WallDragging : Node
     private bool _isValidWallTouching;
     private WallDraggingData _wall;
     [Export] private bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// Whether wall dragging is currently enabled for this WallDragging.
+    /// Setting this to false will stop wall dragging.
+    /// </summary>
+    /// <summary>
+    /// The Falling that is affected by this WallDragging's wall dragging
+    /// </summary>
     [Export] internal Falling Falling { get; private set; }
 
+    /// <summary>
+    /// Data used for the wall dragging movement.
+    /// </summary>
     [Export]
     public WallDraggingData Wall
     {
@@ -34,9 +61,9 @@ public partial class WallDragging : Node
         }
     }
 
-    [Export] private bool DraggingEnabled { get; set; } = true;
-    [Export] private bool ValidWallTouchingEnabled { get; set; } = true;
-
+    /// <summary>
+    /// Whether this WallDragging is in a state of wall dragging.
+    /// </summary>
     public bool IsDragging
     {
         get => Enabled && DraggingEnabled && _isDragging;
@@ -58,6 +85,11 @@ public partial class WallDragging : Node
         }
     }
 
+    /// <summary>
+    /// Whether this WallDragging is in a state of validly touching a wall.
+    /// (when validly touching a wall, this WallDragging will begin wall dragging when the Falling's
+    /// y velocity passes the drag threshold).
+    /// </summary>
     public bool ValidWallTouching
     {
         get => Enabled && ValidWallTouchingEnabled && _isValidWallTouching;
@@ -89,6 +121,10 @@ public partial class WallDragging : Node
         DraggingCheck();
     }
 
+    /// <summary>
+    /// Start dragging if the necessary conditions are met: being in a state of valid wall touching,
+    /// and the Falling's y velocity is past the velocity drag threshold.
+    /// </summary>
     internal void DraggingCheck()
     {
         IsDragging = ValidWallTouching &&

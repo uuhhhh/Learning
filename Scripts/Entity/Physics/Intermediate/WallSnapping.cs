@@ -3,21 +3,54 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 
 namespace Learning.Scripts.Entity.Physics.Intermediate;
 
+/// <summary>
+/// This intermediate controls a LeftRight in order for it to be able to "snap" to a wall when
+/// falling off an edge. This wall snapping is meant to make it easier to wall drag on a wall
+/// after falling off an edge.
+/// </summary>
 public partial class WallSnapping : Node
 {
+    /// <summary>
+    /// A signal for when the motion for a wall snap starts.
+    /// </summary>
     [Signal]
     public delegate void WallSnapStartedEventHandler();
 
+    /// <summary>
+    /// A signal for when the motion for a wall snap stops.
+    /// </summary>
     [Signal]
     public delegate void WallSnapStoppedEventHandler();
 
+    /// <summary>
+    /// Whether this WallSnapping can currently perform wall snapping.
+    /// </summary>
+    [Export] private bool _enabled = true;
+    
     private bool _inWallSnapStartWindow;
     private bool _isWallSnapping;
     private bool _wallSnapUsedUp;
     [Export] private bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// Whether this WallSnapping can currently perform wall snapping.
+    /// Setting this to false will also stop wall snapping.
+    /// </summary>
+    /// <summary>
+    /// The LeftRight whose velocity will be affected by the wall snapping.
+    /// </summary>
     [Export] internal LeftRight Movement { get; private set; }
+    
+    /// <summary>
+    /// Data used to determine the movement of the wall snapping.
+    /// </summary>
     [Export] public WallSnappingData SnapData { get; private set; }
 
+    /// <summary>
+    /// Whether this WallSnapping is currently in a state of wall snapping.
+    /// When set to true, this will be set to false after some amount of time
+    /// (i.e., the wall snap period stopping).
+    /// </summary>
     public bool IsWallSnapping
     {
         get => Enabled && _isWallSnapping;

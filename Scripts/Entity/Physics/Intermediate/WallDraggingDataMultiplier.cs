@@ -4,9 +4,15 @@ using Learning.Scripts.Values.Modifiers;
 
 namespace Learning.Scripts.Entity.Physics.Intermediate;
 
+/// <summary>
+/// A group of modifiers that can be applied to a WallDraggingData.
+/// </summary>
 [GlobalClass]
 public partial class WallDraggingDataMultiplier : ModifierResource<WallDraggingData>
 {
+    /// <summary>
+    /// A scale factor for the WallDragging's upwards gravity scale replacement.
+    /// </summary>
     [Export]
     public FloatMultiplier UpwardsGravityScaleReplacementMultiplier
     {
@@ -15,6 +21,9 @@ public partial class WallDraggingDataMultiplier : ModifierResource<WallDraggingD
             nameof(WallDraggingData.UpwardsGravityScaleReplacement), value);
     }
 
+    /// <summary>
+    /// A scale factor for the WallDragging's downwards gravity scale replacement.
+    /// </summary>
     [Export]
     public FloatMultiplier DownwardsGravityScaleReplacementMultiplier
     {
@@ -23,6 +32,9 @@ public partial class WallDraggingDataMultiplier : ModifierResource<WallDraggingD
             nameof(WallDraggingData.DownwardsGravityScaleReplacement), value);
     }
 
+    /// <summary>
+    /// A scale factor for the WallDragging's max fall/drag velocity.
+    /// </summary>
     [Export]
     public FloatMultiplier MaxFallVelocityReplacementMultiplier
     {
@@ -31,6 +43,9 @@ public partial class WallDraggingDataMultiplier : ModifierResource<WallDraggingD
             nameof(WallDraggingData.MaxFallVelocityReplacement), value);
     }
 
+    /// <summary>
+    /// A scale factor for the WallDragging's ceiling hit-stop time scale replacement.
+    /// </summary>
     [Export]
     public FloatMultiplier CeilingHitStopTimeScaleReplacementMultiplier
     {
@@ -39,6 +54,10 @@ public partial class WallDraggingDataMultiplier : ModifierResource<WallDraggingD
             nameof(WallDraggingData.CeilingHitStopTimeScaleReplacement), value);
     }
 
+    /// <summary>
+    /// A scale factor for the WallDragging's replacement for the deceleration time to max velocity
+    /// per 100 velocity.
+    /// </summary>
     [Export]
     public FloatMultiplier DecelToMaxVelocityTimePer100VelocityReplacementMultiplier
     {
@@ -49,6 +68,9 @@ public partial class WallDraggingDataMultiplier : ModifierResource<WallDraggingD
             nameof(WallDraggingData.DecelToMaxVelocityTimePer100VelocityReplacement), value);
     }
 
+    /// <summary>
+    /// A scale factor for the WallDragging's threshold for starting wall dragging.
+    /// </summary>
     [Export]
     public FloatMultiplier VelocityDragThresholdMultiplier
     {
