@@ -2,36 +2,71 @@
 
 namespace Learning.Scripts.Entity.Physics;
 
+/// <summary>
+/// A CharacterBody2D with additional behaviors and signals.
+/// </summary>
 public partial class KinematicComp : CharacterBody2D
 {
+    // Whenever a new signal is added here, be sure the change is reflected in DefaultPhys also
+    
+    /// <summary>
+    /// A signal for when this body is no longer touching the ceiling.
+    /// </summary>
     [Signal]
     public delegate void BecomeOffCeilingEventHandler(KinematicComp state);
 
+    /// <summary>
+    /// A signal for when this body is no longer touching the floor.
+    /// </summary>
     [Signal]
     public delegate void BecomeOffFloorEventHandler(KinematicComp state);
-
+    
+    /// <summary>
+    /// A signal for when this body is no longer touching any walls.
+    /// </summary>
     [Signal]
     public delegate void BecomeOffWallEventHandler(KinematicComp state);
 
+    /// <summary>
+    /// A signal for when this body begins touching a ceiling.
+    /// </summary>
     [Signal]
     public delegate void BecomeOnCeilingEventHandler(KinematicComp state);
 
-    // Whenever a new signal is added here, be sure the change is reflected in DefaultPhys also
+    /// <summary>
+    /// A signal for when this body begins touching a floor.
+    /// </summary>
     [Signal]
     public delegate void BecomeOnFloorEventHandler(KinematicComp state);
 
+    /// <summary>
+    /// A signal for when this body begins touching a wall.
+    /// </summary>
     [Signal]
     public delegate void BecomeOnWallEventHandler(KinematicComp state);
 
+    /// <summary>
+    /// A signal for when this body starts moving (a non-negligible amount) in the other direction
+    /// in the x-axis.
+    /// </summary>
     [Signal]
     public delegate void DirectionChangeXEventHandler(KinematicComp state, float newDirection);
 
+    /// <summary>
+    /// A signal for when this body starts moving (a non-negligible amount) in the other direction
+    /// in the y-axis.
+    /// </summary>
     [Signal]
     public delegate void DirectionChangeYEventHandler(KinematicComp state, float newDirection);
 
     private bool _increasingX, _increasingY;
 
     private Vector2 _mostExtremePosition;
+    
+    /// <summary>
+    /// The distance threshold when moving in the opposite direction,
+    /// to register it as a direction change.
+    /// </summary>
     [Export] private float DirectionChangeEpsilon { get; set; } = .01f;
 
     public override void _Ready()
@@ -49,6 +84,11 @@ public partial class KinematicComp : CharacterBody2D
         EmitSignal(IsOnFloor() ? SignalName.BecomeOnFloor : SignalName.BecomeOffFloor, this);
     }
 
+    /// <summary>
+    /// CharacterBody2D's MoveAndSlide, but with additional behavior to make
+    /// KinematicComp's additional signals operate.
+    /// </summary>
+    /// <returns>Whether there was a collision with the MoveAndSlide<./returns>
     public virtual bool MoveAndSlideWithStatusChanges()
     {
         bool wasOnFloor = IsOnFloor(), wasOnCeiling = IsOnCeiling(), wasOnWall = IsOnWall();
@@ -132,12 +172,22 @@ public partial class KinematicComp : CharacterBody2D
         }
     }
 
-    public void LinkDefaultPhys(Node toLink)
+    /// <summary>
+    /// Register this KinematicComp's signals with the given DefaultPhys,
+    /// if it doesn't not want to be linked.
+    /// </summary>
+    /// <param name="phys">The DefaultPhys to try to link</param>
+    public void LinkDefaultPhys(DefaultPhys phys)
     {
         if (toLink is DefaultPhys {DoNotLink: false} l) l.Link(this);
     }
 
-    public void ExtraInitDefaultPhys(Node toExtraInit)
+    /// <summary>
+    /// Performs extra initialization the given DefaultPhys,
+    /// if it doesn't not want to be extra initialized.
+    /// </summary>
+    /// <param name="phys">The DefaultPhys to try to do extra initialization on</param>
+    public void ExtraInitDefaultPhys(DefaultPhys phys)
     {
         if (toExtraInit is DefaultPhys {DoNotCallExtraInit: false} l) l.ExtraInit(this);
     }

@@ -4,6 +4,10 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 
 namespace Learning.Scripts.Entity.Physics;
 
+/// <summary>
+/// Combines behavior of various VelocitySources and intermediates,
+/// in order to define the movement of the player.
+/// </summary>
 public partial class PlayerVelocityAggregate : VelocityAggregate
 {
     private bool _canDoWallBehavior;
@@ -11,11 +15,30 @@ public partial class PlayerVelocityAggregate : VelocityAggregate
     private int _playerLeftRightInput;
 
     private Vector2 _wallDragCheckerInitialPosition;
+    
+    /// <summary>
+    /// The player's falling behavior and velocity.
+    /// </summary>
     public Falling Falling { get; private set; }
+    
+    /// <summary>
+    /// The player's horizontal movement behavior and velocity.
+    /// </summary>
     public LeftRight LeftRight { get; private set; }
 
+    /// <summary>
+    /// The player's jump movement.
+    /// </summary>
     public Jumping Jumping { get; private set; }
+    
+    /// <summary>
+    /// The player's wall dragging movement.
+    /// </summary>
     public WallDragging WallDragging { get; private set; }
+    
+    /// <summary>
+    /// The player's wall snapping movement.
+    /// </summary>
     public WallSnapping WallSnapping { get; private set; }
 
     private JumpingDefaultPhys JumpingDefaultPhys { get; set; }
@@ -23,6 +46,10 @@ public partial class PlayerVelocityAggregate : VelocityAggregate
 
     private Timer WallJumpInputTakeover { get; set; }
 
+    /// <summary>
+    /// Whether or not the player currently can do wall behavior, i.e., wall drag or wall jump.
+    /// Setting this to fall will stop wall dragging.
+    /// </summary>
     public bool CanDoWallBehavior
     {
         get => _canDoWallBehavior;
@@ -139,12 +166,20 @@ public partial class PlayerVelocityAggregate : VelocityAggregate
         if (physics.IsOnWall() && CanDoWallBehavior) JumpingDefaultPhys.OnBecomeOnWall(physics);
     }
 
+    /// <summary>
+    /// Intends for the player's x velocity to decrease. Updates the x velocity to the intended
+    /// amount when able.
+    /// </summary>
     public void MoveLeft()
     {
         _playerLeftRightInput--;
         UpdateLeftRightSpeedIfAble();
     }
 
+    /// <summary>
+    /// Intends for the player's x velocity to increase. Updates the x velocity to the intended
+    /// amount when able.
+    /// </summary>
     public void MoveRight()
     {
         _playerLeftRightInput++;
@@ -182,11 +217,17 @@ public partial class PlayerVelocityAggregate : VelocityAggregate
         LeftRight.IntendedSpeedScale = _playerLeftRightInput;
     }
 
+    /// <summary>
+    /// Makes the player jump, if they currently can jump.
+    /// </summary>
     public void AttemptJump()
     {
         Jumping.AttemptJump();
     }
 
+    /// <summary>
+    /// Makes the player cancel their current jump, if applicable.
+    /// </summary>
     public void JumpCancel()
     {
         Jumping.JumpCancel();
