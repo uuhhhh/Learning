@@ -37,11 +37,11 @@ public partial class VelocityAggregate : Node
     /// </summary>
     protected KinematicComp PhysicsInteractions { get; private set; }
 
-    public Vector2 Velocity
     /// <summary>
     /// Aggregates this VelocityAggregate's VelocitySources into a single velocity vector.
     /// By default, this is done by taking the sum of the velocity vectors for each VelocitySource.
     /// </summary>
+    public virtual Vector2 Velocity
     {
         get
         {
@@ -50,6 +50,14 @@ public partial class VelocityAggregate : Node
 
             return velocity;
         }
+    }
+
+    public override void _Ready()
+    {
+        if (AggregateChildrenVelocitySources)
+            foreach (Node n in GetChildren())
+                if (n is VelocitySource s)
+                    AddVelocitySourceToAggregated(s);
     }
 
     /// <summary>
@@ -63,22 +71,23 @@ public partial class VelocityAggregate : Node
 
         if (LinkChildrenDefaultPhys)
             foreach (Node n in GetChildren())
-                PhysicsInteractions.LinkDefaultPhys(n);
+                if (n is DefaultPhys d)
+                    PhysicsInteractions.LinkDefaultPhys(d);
 
         if (ExtraInitChildrenDefaultPhys)
             foreach (Node n in GetChildren())
-                PhysicsInteractions.ExtraInitDefaultPhys(n);
+                if (n is DefaultPhys d)
+                    PhysicsInteractions.ExtraInitDefaultPhys(d);
     }
 
-    public void AddVelocitySourceToAggregated(Node toAggregate)
     /// <summary>
     /// Has this VelocityAggregate now also aggregate the given VelocitySource.
     /// Note that this method doesn't link or call ExtraInit on the DefaultPhys associated
     /// with the VelocitySource.
     /// </summary>
     /// <param name="toAggregate">The VelocitySource for this VelocityAggregate to </param>
+    public void AddVelocitySourceToAggregated(VelocitySource toAggregate)
     {
-        if (toAggregate is VelocitySource {ExcludeThisVelocity: false} src)
-            _velocitySources.Add(src);
+        if (!toAggregate.ExcludeThisVelocity) _velocitySources.Add(toAggregate);
     }
 }

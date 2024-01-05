@@ -179,7 +179,7 @@ public partial class KinematicComp : CharacterBody2D
     /// <param name="phys">The DefaultPhys to try to link</param>
     public void LinkDefaultPhys(DefaultPhys phys)
     {
-        if (toLink is DefaultPhys {DoNotLink: false} l) l.Link(this);
+        if (!phys.DoNotLink) phys.Link(this);
     }
 
     /// <summary>
@@ -189,12 +189,6 @@ public partial class KinematicComp : CharacterBody2D
     /// <param name="phys">The DefaultPhys to try to do extra initialization on</param>
     public void ExtraInitDefaultPhys(DefaultPhys phys)
     {
-        if (toExtraInit is DefaultPhys {DoNotCallExtraInit: false} l) l.ExtraInit(this);
-    }
-
-    internal void SetParentPositionToOwn(Node2D parent)
-    {
-        parent.Position = Position;
-        Position = Vector2.Zero;
+        if (!phys.DoNotCallExtraInit) phys.ExtraInit(this);
     }
 }
