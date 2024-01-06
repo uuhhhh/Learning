@@ -1,4 +1,5 @@
-﻿using Learning.Scripts.Values.Modifiers;
+﻿using System;
+using Learning.Scripts.Values.Modifiers;
 
 namespace Learning.Scripts.Values.Groups;
 
@@ -7,21 +8,29 @@ namespace Learning.Scripts.Values.Groups;
 /// </summary>
 public interface IValueWithModifiersGroup
 {
-    public delegate void ModifiersUpdatedEventHandler();
     /// <summary>
     /// An event that gets invoked when a modifier is added to an IValueWithModifiers
     /// of this IValueWithModifiersGroup.
     /// The event argument is the assigned name of the IValueWithModifiers that had a
     /// modifier added to it.
     /// </summary>
+    public event EventHandler<string> ModifierAdded;
 
-    public event ModifiersUpdatedEventHandler ModifiersUpdated;
     /// <summary>
     /// An event that gets invoked when a modifier is removed from an IValueWithModifiers
     /// of this IValueWithModifiersGroup.
     /// The event argument is the assigned name of the IValueWithModifiers that had a
     /// modifier removed from it.
     /// </summary>
+    public event EventHandler<string> ModifierRemoved;
+
+    /// <summary>
+    /// An event that gets invoked when a modifier is added to or removed from
+    /// an IValueWithModifiers of this IValueWithModifiersGroup.
+    /// The event argument is the assigned name of the IValueWithModifiers that had a
+    /// modifier added or removed from it.
+    /// </summary>
+    public event EventHandler<string> ModifierUpdated;
 
     /// <summary>
     /// Adds a modifier to one of the IValueWithModifiers of this IValueWithModifiersGroup.

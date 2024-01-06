@@ -21,6 +21,7 @@ public abstract partial class ModifierWithModifiers<TValue> : Resource, IValueWi
     
     public event EventHandler<IModifier<TValue>> ModifierAdded;
     public event EventHandler<IModifier<TValue>> ModifierRemoved;
+    public event EventHandler<IModifier<TValue>> ModifierUpdated;
 
     public TValue ModifiedValue => _backing.ModifiedValue;
 
@@ -28,6 +29,7 @@ public abstract partial class ModifierWithModifiers<TValue> : Resource, IValueWi
     {
         _backing.ModifierAdded += (sender, modifier) => ModifierAdded?.Invoke(sender, modifier);
         _backing.ModifierRemoved += (sender, modifier) => ModifierRemoved?.Invoke(sender, modifier);
+        _backing.ModifierUpdated += (sender, modifier) => ModifierUpdated?.Invoke(sender, modifier);
     }
 
     public TValue BaseValue

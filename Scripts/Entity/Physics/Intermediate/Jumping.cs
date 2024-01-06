@@ -272,9 +272,9 @@ public partial class Jumping : Node
         CoyoteJump.Timeout += () => CurrentLocation = Location.Air;
         CoyoteWallJump.Timeout += () => CurrentLocation = Location.Air;
 
-        Ground.ModifiersUpdated += () => UpdateNumJumpsFor(Location.Ground);
-        Air.ModifiersUpdated += () => UpdateNumJumpsFor(Location.Air);
-        Wall.ModifiersUpdated += () => UpdateNumJumpsFor(Location.WallNonGround);
+        Ground.ModifierUpdated += (_, _) => UpdateNumJumpsFor(Location.Ground);
+        Air.ModifierUpdated += (_, _) => UpdateNumJumpsFor(Location.Air);
+        Wall.ModifierUpdated += (_, _) => UpdateNumJumpsFor(Location.WallNonGround);
 
         ResetNumJumps();
     }

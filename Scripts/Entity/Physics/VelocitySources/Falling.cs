@@ -98,7 +98,7 @@ public partial class Falling : VelocitySource
 
     public override void _Ready()
     {
-        FallData.ModifiersUpdated += FallDataUpdated;
+        FallData.ModifierUpdated += (_, _) => FallDataUpdated();
     }
 
     private void FallDataUpdated()

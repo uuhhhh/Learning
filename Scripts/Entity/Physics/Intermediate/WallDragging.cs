@@ -126,7 +126,7 @@ public partial class WallDragging : Node
 
     public override void _Ready()
     {
-        Wall.ModifiersUpdated += WallDataUpdated;
+        Wall.ModifierUpdated += (_, _) => WallDataUpdated();
     }
 
     private void WallDataUpdated()

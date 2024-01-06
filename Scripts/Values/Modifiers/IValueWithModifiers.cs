@@ -33,6 +33,12 @@ public interface IValueWithModifiers<TValue>
     /// The event argument is the modifier that was removed.
     /// </summary>
     public event EventHandler<IModifier<TValue>> ModifierRemoved;
+    
+    /// <summary>
+    /// An event that gets invoked whenever a modifier is added or removed.
+    /// The event argument is the modifier that was added or removed.
+    /// </summary>
+    public event EventHandler<IModifier<TValue>> ModifierUpdated;
 
     /// <summary>
     /// Adds the given modifier, to the modifiers that this IValueWithModifiers applies to

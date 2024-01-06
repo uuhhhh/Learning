@@ -125,8 +125,8 @@ public partial class LeftRight : VelocitySource
 
     public override void _Ready()
     {
-        Ground.ModifiersUpdated += GroundUpdated;
-        Air.ModifiersUpdated += AirUpdated;
+        Ground.ModifierUpdated += (_, _) => GroundUpdated();
+        Air.ModifierUpdated += (_, _) => AirUpdated();
     }
 
     private void GroundUpdated()

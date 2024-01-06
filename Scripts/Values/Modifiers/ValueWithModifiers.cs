@@ -29,6 +29,9 @@ public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue>
         _cachedValue = BaseValue;
         _currentCachedValueValid = true;
         _numNonCacheableModifiers = 0;
+
+        ModifierAdded += (sender, modifier) => ModifierUpdated?.Invoke(sender, modifier);
+        ModifierRemoved += (sender, modifier) => ModifierUpdated?.Invoke(sender, modifier);
     }
 
     /// <summary>
@@ -40,6 +43,8 @@ public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue>
     public event EventHandler<IModifier<TValue>> ModifierAdded;
     
     public event EventHandler<IModifier<TValue>> ModifierRemoved;
+    
+    public event EventHandler<IModifier<TValue>> ModifierUpdated;
 
     public TValue ModifiedValue =>
         _currentCachedValueValid ? _cachedValue : ApplyModifiersTo(BaseValue);

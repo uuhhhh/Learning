@@ -13,7 +13,7 @@ namespace Learning.Scripts.Values.Groups;
 /// <typeparam name="TValues">The type of IValueWithModifiersGroup that IModifiers
 /// of this ModifierResource will affect</typeparam>
 public abstract partial class ModifierResource<TValues>
-    : Resource, IModifierGroup<TValues> where TValues : ResourceWithModifiers
+    : Resource, IModifierGroup<TValues> where TValues : IValueWithModifiersGroup
 {
     private readonly IDictionary<string, object> _modifiers = new Dictionary<string, object>();
 
@@ -27,8 +27,8 @@ public abstract partial class ModifierResource<TValues>
         RemovingModifiers?.Invoke(toRemoveModifiersFrom);
     }
 
-    private event ModifierEventHandler AddingModifiers;
-    private event ModifierEventHandler RemovingModifiers;
+    private event Action<IValueWithModifiersGroup> AddingModifiers;
+    private event Action<IValueWithModifiersGroup> RemovingModifiers;
 
     /// <summary>
     /// Adds an IModifier to this ModifierResource.
@@ -43,6 +43,10 @@ public abstract partial class ModifierResource<TValues>
     protected void AddModifierToBeAdded<TValue>(string modifierName, string fieldName,
         IModifier<TValue> modifier)
     {
+        if (_modifiers.ContainsKey(modifierName))
+            throw new ArgumentException(
+                $"{GetClass()} does not contain modifier for name {modifierName}");
+        
         AddingModifiers += values => values.AddModifierTo(fieldName, modifier);
         RemovingModifiers += values => values.RemoveModifierFrom(fieldName, modifier);
         _modifiers[modifierName] = modifier;
@@ -69,6 +73,4 @@ public abstract partial class ModifierResource<TValues>
 
         return modifier;
     }
-
-    private delegate void ModifierEventHandler(ResourceWithModifiers resources);
 }

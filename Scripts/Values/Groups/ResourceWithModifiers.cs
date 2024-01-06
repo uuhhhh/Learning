@@ -13,13 +13,22 @@ namespace Learning.Scripts.Values.Groups;
 public abstract partial class ResourceWithModifiers : Resource, IValueWithModifiersGroup
 {
     private readonly IDictionary<string, object> _fields = new Dictionary<string, object>();
-    public event IValueWithModifiersGroup.ModifiersUpdatedEventHandler ModifiersUpdated;
+
+    public event EventHandler<string> ModifierAdded;
+    public event EventHandler<string> ModifierRemoved;
+    public event EventHandler<string> ModifierUpdated;
+
+    protected ResourceWithModifiers()
+    {
+        ModifierAdded += (sender, s) => ModifierUpdated?.Invoke(sender, s);
+        ModifierRemoved += (sender, s) => ModifierUpdated?.Invoke(sender, s);
+    }
 
     public bool AddModifierTo<TValue>(string fieldName, IModifier<TValue> modifier)
     {
         bool modifierAdded = GetField<TValue, IValueWithModifiers<TValue>>(fieldName)
             .AddModifier(modifier);
-        if (modifierAdded) ModifiersUpdated?.Invoke();
+        if (modifierAdded) ModifierAdded?.Invoke(this, fieldName);
 
         return modifierAdded;
     }
@@ -28,7 +37,7 @@ public abstract partial class ResourceWithModifiers : Resource, IValueWithModifi
     {
         bool modifierRemoved = GetField<TValue, IValueWithModifiers<TValue>>(fieldName)
             .RemoveModifier(modifier);
-        if (modifierRemoved) ModifiersUpdated?.Invoke();
+        if (modifierRemoved) ModifierRemoved?.Invoke(this, fieldName);
 
         return modifierRemoved;
     }
@@ -57,6 +66,8 @@ public abstract partial class ResourceWithModifiers : Resource, IValueWithModifi
     /// to an IValueWithModifiers of this ResourceWithModifiers</exception>
     protected void InitValue<TValue>(string fieldName, TValue value)
     {
+        if (_fields.ContainsKey(fieldName))
+            throw new ArgumentException($"The name {fieldName} is already assigned to");
         _fields[fieldName] = new ValueWithModifiers<TValue>(value);
     }
 
@@ -95,6 +106,8 @@ public abstract partial class ResourceWithModifiers : Resource, IValueWithModifi
     /// to an IValueWithModifiers of this ResourceWithModifiers</exception>
     protected void InitField<TValue>(string fieldName, IValueWithModifiers<TValue> modifier)
     {
+        if (_fields.ContainsKey(fieldName))
+            throw new ArgumentException($"The name {fieldName} is already assigned to");
         _fields[fieldName] = modifier;
     }
 }
