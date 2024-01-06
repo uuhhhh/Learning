@@ -5,6 +5,11 @@ using Learning.Scripts.Values.Modifiers;
 
 namespace Learning.Scripts.Values.Groups;
 
+/// <summary>
+/// An abstract IValueWithModifiersGroup that's also a Godot Resource, so values for subclasses of
+/// ResourceWithModifiers can specify values (presumably for the IValueWithModifiers it will hold)
+/// in the Godot editor.
+/// </summary>
 public abstract partial class ResourceWithModifiers : Resource, IValueWithModifiersGroup
 {
     private readonly IDictionary<string, object> _fields = new Dictionary<string, object>();
@@ -28,16 +33,43 @@ public abstract partial class ResourceWithModifiers : Resource, IValueWithModifi
         return modifierRemoved;
     }
 
+    /// <summary>
+    /// Gets the modified value associated with the IValueWithModifiers of the given assigned name.
+    /// </summary>
+    /// <param name="fieldName">The assigned name of the IValueWithModifiers</param>
+    /// <typeparam name="TValue">The type of value the IValueWithModifiers holds</typeparam>
+    /// <returns>The modified value</returns>
+    /// <exception cref="ArgumentException">If TValue doesn't match
+    /// the type of value the IValueWithModifiers holds</exception>
     protected TValue GetValue<TValue>(string fieldName)
     {
         return GetField<TValue, ValueWithModifiers<TValue>>(fieldName).ModifiedValue;
     }
 
+    /// <summary>
+    /// Creates a ValueWithModifiers and adds it to the IValueWithModifiers of this
+    /// ResourceWithModifiers.
+    /// </summary>
+    /// <param name="fieldName">The name that will be assigned to the ValueWithModifiers</param>
+    /// <param name="value">The base value that the ValueWithModifiers will have</param>
+    /// <typeparam name="TValue">The type of value the ValueWithModifiers will hold</typeparam>
+    /// <exception cref="ArgumentException">If the fieldName is one already assigned
+    /// to an IValueWithModifiers of this ResourceWithModifiers</exception>
     protected void InitValue<TValue>(string fieldName, TValue value)
     {
         _fields[fieldName] = new ValueWithModifiers<TValue>(value);
     }
 
+    /// <summary>
+    /// Gets an IValueWithModifiers of this ResourceWithModifiers.
+    /// </summary>
+    /// <param name="fieldName">The name that was assigned to the IValueWithModifiers</param>
+    /// <typeparam name="TValue">The type of value that the IValueWithModifiers holds</typeparam>
+    /// <typeparam name="TValueWithModifiers">The type of the IValueWithModifiers itself</typeparam>
+    /// <returns>The IValueWithModifiers</returns>
+    /// <exception cref="ArgumentException">If the given fieldName wasn't assigned to an
+    /// IValueWithModifiers, or if the IValueModifiers assigned to fieldName
+    /// is not a TValueWithModifiers.</exception>
     protected TValueWithModifiers GetField<TValue, TValueWithModifiers>(string fieldName)
         where TValueWithModifiers : IValueWithModifiers<TValue>
     {
@@ -53,6 +85,14 @@ public abstract partial class ResourceWithModifiers : Resource, IValueWithModifi
         return value;
     }
 
+    /// <summary>
+    /// Adds the given IValueWithModifiers to this ResourceWithModifiers.
+    /// </summary>
+    /// <param name="fieldName">The name that will be assigned to the IValueWithModifiers</param>
+    /// <param name="modifier">The IValueWithModifiers to be added</param>
+    /// <typeparam name="TValue">The type of value the IValueWithModifiers holds</typeparam>
+    /// <exception cref="ArgumentException">If the fieldName is one already assigned
+    /// to an IValueWithModifiers of this ResourceWithModifiers</exception>
     protected void InitField<TValue>(string fieldName, IValueWithModifiers<TValue> modifier)
     {
         _fields[fieldName] = modifier;

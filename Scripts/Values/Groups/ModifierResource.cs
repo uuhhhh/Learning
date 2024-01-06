@@ -5,6 +5,13 @@ using Learning.Scripts.Values.Modifiers;
 
 namespace Learning.Scripts.Values.Groups;
 
+/// <summary>
+/// An abstract IModifierGroup that's also a Godot Resource, so values for subclasses of
+/// ModifierResource can specify values (presumably for the IModifiers it will hold)
+/// in the Godot editor.
+/// </summary>
+/// <typeparam name="TValues">The type of IValueWithModifiersGroup that IModifiers
+/// of this ModifierResource will affect</typeparam>
 public abstract partial class ModifierResource<TValues>
     : Resource, IModifierGroup<TValues> where TValues : ResourceWithModifiers
 {
@@ -23,6 +30,16 @@ public abstract partial class ModifierResource<TValues>
     private event ModifierEventHandler AddingModifiers;
     private event ModifierEventHandler RemovingModifiers;
 
+    /// <summary>
+    /// Adds an IModifier to this ModifierResource.
+    /// </summary>
+    /// <param name="modifierName">The name that will be assigned to this IModifier</param>
+    /// <param name="fieldName">The assigned name of the IValueWithModifiers in TValues
+    /// that this IModifier will modify</param>
+    /// <param name="modifier">The modifier to be added</param>
+    /// <typeparam name="TValue">The type of value that the modifier modifies</typeparam>
+    /// <exception cref="ArgumentException">If the modifierName is one already assigned
+    /// to an IModifier of this ModifierResource</exception>
     protected void AddModifierToBeAdded<TValue>(string modifierName, string fieldName,
         IModifier<TValue> modifier)
     {
@@ -31,6 +48,14 @@ public abstract partial class ModifierResource<TValues>
         _modifiers[modifierName] = modifier;
     }
 
+    /// <summary>
+    /// Gets an IModifier of this ModifierResource.
+    /// </summary>
+    /// <param name="modifierName">The assigned name of the IModifier</param>
+    /// <typeparam name="TModifier">The type of the modifier itself</typeparam>
+    /// <returns>The modifier</returns>
+    /// <exception cref="ArgumentException">If the given fieldName wasn't assigned to an
+    /// IModifier, or if the IModifier assigned to fieldName is not a TModifier.</exception>
     protected TModifier GetModifier<TModifier>(string modifierName)
     {
         if (!_modifiers.ContainsKey(modifierName))
