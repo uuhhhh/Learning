@@ -1,7 +1,14 @@
-﻿using Godot;
+﻿using System;
+using Godot;
 
 namespace Learning.Scripts.Values.Modifiers;
 
+/// <summary>
+/// This class holds a base value and modifiers to apply to that base value, and this class has
+/// a method to modify a given value (presumably using this class' ModifiedValue).
+/// </summary>
+/// <typeparam name="TValue">The type of the base/modified value held by this class,
+/// and the type of the value modified by this class' ApplyModifier</typeparam>
 [GlobalClass]
 public abstract partial class ModifierWithModifiers<TValue> : Resource, IValueWithModifiers<TValue>,
     IModifier<TValue>
@@ -11,9 +18,17 @@ public abstract partial class ModifierWithModifiers<TValue> : Resource, IValueWi
     [Export] public bool Cacheable { get; private set; }
 
     public abstract TValue ApplyModifier(TValue value);
-    public event IValueWithModifiers<TValue>.ModifiersUpdatedEventHandler ModifiersUpdated;
+    
+    public event EventHandler<IModifier<TValue>> ModifierAdded;
+    public event EventHandler<IModifier<TValue>> ModifierRemoved;
 
     public TValue ModifiedValue => _backing.ModifiedValue;
+
+    protected ModifierWithModifiers()
+    {
+        _backing.ModifierAdded += (sender, modifier) => ModifierAdded?.Invoke(sender, modifier);
+        _backing.ModifierRemoved += (sender, modifier) => ModifierRemoved?.Invoke(sender, modifier);
+    }
 
     public TValue BaseValue
     {

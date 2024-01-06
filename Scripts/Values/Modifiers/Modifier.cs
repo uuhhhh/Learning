@@ -2,6 +2,11 @@
 
 namespace Learning.Scripts.Values.Modifiers;
 
+/// <summary>
+/// An abstract IModifier that's also a Godot Resource, so values for subclasses of Modifier
+/// can specify values in the Godot editor.
+/// </summary>
+/// <typeparam name="TValue">The type of the value to apply modifications to.</typeparam>
 public abstract partial class Modifier<TValue> : Resource, IModifier<TValue>
 {
     public const int DefaultPriority = 0;

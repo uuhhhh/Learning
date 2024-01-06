@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
 namespace Learning.Scripts.Values.Modifiers;
 
+/// <summary>
+/// A basic concrete implementation of IValueWithModifiers.
+/// </summary>
+/// <typeparam name="TValue">The type of the value being modified</typeparam>
 public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue>
 {
     private readonly ISet<IModifier<TValue>> _currentModifiers
@@ -14,6 +19,10 @@ public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue>
     private bool _currentCachedValueValid;
     private int _numNonCacheableModifiers;
 
+    /// <summary>
+    /// Creates a ValueWithModifiers with currently no modifiers.
+    /// </summary>
+    /// <param name="baseValue">The base value for this ValueWithModifiers</param>
     public ValueWithModifiers(TValue baseValue)
     {
         BaseValue = baseValue;
@@ -22,10 +31,15 @@ public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue>
         _numNonCacheableModifiers = 0;
     }
 
+    /// <summary>
+    /// An immutable view of the current modifiers of this ValueWithModifiers.
+    /// </summary>
     public IImmutableSet<IModifier<TValue>> CurrentModifiers =>
         _currentModifiers.ToImmutableSortedSet();
 
-    public event IValueWithModifiers<TValue>.ModifiersUpdatedEventHandler ModifiersUpdated;
+    public event EventHandler<IModifier<TValue>> ModifierAdded;
+    
+    public event EventHandler<IModifier<TValue>> ModifierRemoved;
 
     public TValue ModifiedValue =>
         _currentCachedValueValid ? _cachedValue : ApplyModifiersTo(BaseValue);
@@ -48,7 +62,7 @@ public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue>
         {
             _numNonCacheableModifiers += modifier.Cacheable ? 0 : 1;
             InvalidateCachedValue();
-            ModifiersUpdated?.Invoke();
+            ModifierAdded?.Invoke(this, modifier);
         }
 
         return modifierAdded;
@@ -62,7 +76,7 @@ public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue>
         {
             _numNonCacheableModifiers -= modifier.Cacheable ? 0 : 1;
             InvalidateCachedValue();
-            ModifiersUpdated?.Invoke();
+            ModifierRemoved?.Invoke(this, modifier);
         }
 
         return modifierRemoved;
