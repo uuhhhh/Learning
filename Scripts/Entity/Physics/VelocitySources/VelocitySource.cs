@@ -162,6 +162,8 @@ public abstract partial class VelocitySource : Node
 
     /// <summary>
     /// Smoothly transitions the given property from its current value to the given value.
+    /// Note that this method stops and replaces whatever transition the given Tween was originally
+    /// doing.
     /// </summary>
     /// <param name="toSet">The tween to use to change the property</param>
     /// <param name="propertyName">The name of the property to change</param>
@@ -190,6 +192,8 @@ public abstract partial class VelocitySource : Node
 
     /// <summary>
     /// Smoothly transitions the given property from and to the given values.
+    /// Note that this method stops and replaces whatever transition the given Tween was originally
+    /// doing.
     /// </summary>
     /// <param name="toSet">The tween to use to change the property</param>
     /// <param name="propertyName">The name of the property to change</param>
@@ -214,11 +218,16 @@ public abstract partial class VelocitySource : Node
     /// <summary>
     /// Smoothly transitions the x component of the base velocity
     /// from its current value to the given value.
+    /// Note that this method stops and replaces the current Tween transition for BaseVelocity's
+    /// x component.
     /// </summary>
     /// <param name="to">The value to tween to</param>
     /// <param name="duration">How long, in seconds, it will take to transition the property
     /// between the values</param>
     /// <returns>The Tween and Tweener that is changing the property</returns>
+    /// <remarks>
+    /// Note that this method stops and replaces the current Tween transition for BaseVelocity's
+    /// x component.</remarks>
     public (Tween, PropertyTweener) SmoothlySetBaseVelocityX(float to, float duration)
     {
         _baseVelocityXTweenReady = true;
@@ -231,6 +240,8 @@ public abstract partial class VelocitySource : Node
 
     /// <summary>
     /// Smoothly transitions the x component of the base velocity between the given values.
+    /// Note that this method stops and replaces the current Tween transition for BaseVelocity's
+    /// x component.
     /// </summary>
     /// <param name="from">The value to start at</param>
     /// <param name="to">The value to tween to</param>
@@ -251,6 +262,8 @@ public abstract partial class VelocitySource : Node
     /// <summary>
     /// Smoothly transitions the y component of the base velocity
     /// from its current value to the given value.
+    /// Note that this method stops and replaces the current Tween transition for BaseVelocity's
+    /// y component.
     /// </summary>
     /// <param name="to">The value to tween to</param>
     /// <param name="duration">How long, in seconds, it will take to transition the property
@@ -268,6 +281,8 @@ public abstract partial class VelocitySource : Node
 
     /// <summary>
     /// Smoothly transitions the y component of the base velocity between the given values.
+    /// Note that this method stops and replaces the current Tween transition for BaseVelocity's
+    /// y component.
     /// </summary>
     /// <param name="from">The value to start at</param>
     /// <param name="to">The value to tween to</param>
@@ -288,6 +303,7 @@ public abstract partial class VelocitySource : Node
     /// <summary>
     /// Smoothly transitions the Multiplier of this VelocitySource
     /// from its current value to the given value.
+    /// Note that this method stops and replaces the current Tween transition for Multiplier.
     /// </summary>
     /// <param name="to">The value to tween to</param>
     /// <param name="duration">How long, in seconds, it will take to transition the property
@@ -302,6 +318,7 @@ public abstract partial class VelocitySource : Node
 
     /// <summary>
     /// Smoothly transitions the Multiplier of this VelocitySource between the given values.
+    /// Note that this method stops and replaces the current Tween transition for Multiplier.
     /// </summary>
     /// <param name="from">The value to start at</param>
     /// <param name="to">The value to tween to</param>
@@ -317,6 +334,7 @@ public abstract partial class VelocitySource : Node
 
     /// <summary>
     /// Smoothly transitions this VelocitySource from being enabled to being disabled.
+    /// Note that this method stops and replaces the current Tween transition for EnabledMultiplier.
     /// Does nothing and returns nulls if already disabled.
     /// </summary>
     /// <param name="timeToDisable">How long, in seconds,
@@ -336,6 +354,7 @@ public abstract partial class VelocitySource : Node
     /// <summary>
     /// Smoothly transitions this VelocitySource from being enabled to being disabled,
     /// in the default amount of time.
+    /// Note that this method stops and replaces the current Tween transition for EnabledMultiplier.
     /// Does nothing and returns nulls if already disabled.
     /// </summary>
     public (Tween, PropertyTweener) SmoothlyDisable()
@@ -345,8 +364,9 @@ public abstract partial class VelocitySource : Node
 
     /// <summary>
     /// Smoothly transitions this VelocitySource from being disabled to being enabled.
-    /// Does nothing and returns nulls if already enabled.
     /// Enabled will be true throughout the transition.
+    /// Note that this method stops and replaces the current Tween transition for EnabledMultiplier.
+    /// Does nothing and returns nulls if already enabled.
     /// </summary>
     /// <param name="timeToEnable">How long, in seconds,
     /// it will take for enabling to complete</param>
@@ -366,6 +386,7 @@ public abstract partial class VelocitySource : Node
     /// <summary>
     /// Smoothly transitions this VelocitySource from being disabled to being enabled,
     /// in the default amount of time.
+    /// Note that this method stops and replaces the current Tween transition for EnabledMultiplier.
     /// Does nothing and returns nulls if already enabled.
     /// Enabled will be true throughout the transition.
     /// </summary>
@@ -375,7 +396,7 @@ public abstract partial class VelocitySource : Node
     }
 
     /// <summary>
-    /// Cancels all currently-running Tweens.
+    /// Stops and cancels all currently-running Tweens.
     /// </summary>
     public void AbortAllTransitions()
     {

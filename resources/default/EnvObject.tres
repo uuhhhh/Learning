@@ -1,12 +1,24 @@
-[gd_resource type="Resource" script_class="EnvObjectData" load_steps=2 format=3 uid="uid://h33u8dheeko5"]
+[gd_resource type="Resource" script_class="EnvObjectData" load_steps=8 format=3 uid="uid://h33u8dheeko5"]
 
 [ext_resource type="Script" path="res://Scripts/Environment/EnvObjectData.cs" id="1_4xo5r"]
+[ext_resource type="Script" path="res://Scripts/Environment/AirData.cs" id="1_dhkk4"]
+[ext_resource type="Script" path="res://Scripts/Environment/FloorData.cs" id="2_vgwrv"]
+[ext_resource type="Script" path="res://Scripts/Environment/WallData.cs" id="3_ir5or"]
+
+[sub_resource type="Resource" id="Resource_xspga"]
+script = ExtResource("1_dhkk4")
+Priority = 0
+
+[sub_resource type="Resource" id="Resource_a5pll"]
+script = ExtResource("2_vgwrv")
+Priority = 0
+
+[sub_resource type="Resource" id="Resource_vkg8p"]
+script = ExtResource("3_ir5or")
+Priority = 0
 
 [resource]
 script = ExtResource("1_4xo5r")
-FloorPriority = -100
-UseFloorDefaultPriority = false
-AirPriority = -100
-UseAirDefaultPriority = false
-WallPriority = -100
-UseWallDefaultPriority = false
+Floor = SubResource("Resource_a5pll")
+Air = SubResource("Resource_xspga")
+Wall = SubResource("Resource_vkg8p")
