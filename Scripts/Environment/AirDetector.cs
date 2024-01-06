@@ -1,7 +1,7 @@
 ﻿namespace Learning.Scripts.Environment;
 
 /// <summary>
-/// An EnvObjectDetector mainly for detecting the Air part of EnvObjects.
+///     An EnvObjectDetector mainly for detecting the Air part of EnvObjects.
 /// </summary>
 public partial class AirDetector : EnvObjectDetector
 {

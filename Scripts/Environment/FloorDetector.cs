@@ -1,7 +1,7 @@
 ﻿namespace Learning.Scripts.Environment;
 
 /// <summary>
-/// An EnvObjectDetector mainly for detecting the Floor part of EnvObjects.
+///     An EnvObjectDetector mainly for detecting the Floor part of EnvObjects.
 /// </summary>
 public partial class FloorDetector : EnvObjectDetector
 {

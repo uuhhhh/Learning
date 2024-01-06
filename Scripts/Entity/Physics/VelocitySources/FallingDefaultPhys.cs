@@ -3,17 +3,18 @@
 namespace Learning.Scripts.Entity.Physics.VelocitySources;
 
 /// <summary>
-/// Default behavior for what a Falling will do, based on the actions of a KinematicComp.
+///     Default behavior for what a Falling will do, based on the actions of a KinematicComp.
 /// </summary>
 public partial class FallingDefaultPhys : DefaultPhys
 {
     /// <summary>
-    /// The Falling to be controlled by the callback KinematicComp
+    ///     The Falling to be controlled by the callback KinematicComp
     /// </summary>
-    [Export] private Falling ToLink { get; set; }
+    [Export]
+    private Falling ToLink { get; set; }
 
     /// <summary>
-    /// When the given KinematicComp becomes on a floor, the Falling will stop falling.
+    ///     When the given KinematicComp becomes on a floor, the Falling will stop falling.
     /// </summary>
     internal override void OnBecomeOnFloor(KinematicComp physics)
     {
@@ -21,7 +22,7 @@ public partial class FallingDefaultPhys : DefaultPhys
     }
 
     /// <summary>
-    /// When the given KinematicComp becomes not on a floor, the Falling will start falling.
+    ///     When the given KinematicComp becomes not on a floor, the Falling will start falling.
     /// </summary>
     internal override void OnBecomeOffFloor(KinematicComp physics)
     {
@@ -29,8 +30,8 @@ public partial class FallingDefaultPhys : DefaultPhys
     }
 
     /// <summary>
-    /// When the given KinematicComp becomes on a ceiling,
-    /// the Falling will act as if it hit a ceiling.
+    ///     When the given KinematicComp becomes on a ceiling,
+    ///     the Falling will act as if it hit a ceiling.
     /// </summary>
     internal override void OnBecomeOnCeiling(KinematicComp physics)
     {

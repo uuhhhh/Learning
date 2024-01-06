@@ -3,18 +3,19 @@
 namespace Learning.Scripts.Entity.Physics.Intermediate;
 
 /// <summary>
-/// Default behavior for what a WallSnapping will do, based on the actions of a KinematicComp
+///     Default behavior for what a WallSnapping will do, based on the actions of a KinematicComp
 /// </summary>
 public partial class WallSnappingDefaultPhys : DefaultPhys
 {
     /// <summary>
-    /// The WallSnapping to be controlled by the callback KinematicComp.
+    ///     The WallSnapping to be controlled by the callback KinematicComp.
     /// </summary>
-    [Export] private WallSnapping ToLink { get; set; }
+    [Export]
+    private WallSnapping ToLink { get; set; }
 
     /// <summary>
-    /// If the given KinematicComp falls off a floor, put the WallSnapping in the wall snap start
-    /// window state.
+    ///     If the given KinematicComp falls off a floor, put the WallSnapping in the wall snap start
+    ///     window state.
     /// </summary>
     internal override void OnBecomeOffFloor(KinematicComp physics)
     {

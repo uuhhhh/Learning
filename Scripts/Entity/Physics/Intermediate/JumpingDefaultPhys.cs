@@ -3,22 +3,23 @@
 namespace Learning.Scripts.Entity.Physics.Intermediate;
 
 /// <summary>
-/// Default behavior for what a Jumping will do, based on the actions of a KinematicComp
+///     Default behavior for what a Jumping will do, based on the actions of a KinematicComp
 /// </summary>
 public partial class JumpingDefaultPhys : DefaultPhys
 {
     private float _directionGoing;
 
     private float _wallDirection;
-    
-    /// <summary>
-    /// The Jumping to be controlled by the callback KinematicComp.
-    /// </summary>
-    [Export] private Jumping ToLink { get; set; }
 
     /// <summary>
-    /// The x component of the normal vector for the wall that the callback KinematicComp
-    /// is touching. A value of 0 means that a wall isn't being touched.
+    ///     The Jumping to be controlled by the callback KinematicComp.
+    /// </summary>
+    [Export]
+    private Jumping ToLink { get; set; }
+
+    /// <summary>
+    ///     The x component of the normal vector for the wall that the callback KinematicComp
+    ///     is touching. A value of 0 means that a wall isn't being touched.
     /// </summary>
     public float WallDirection
     {
@@ -31,8 +32,8 @@ public partial class JumpingDefaultPhys : DefaultPhys
     }
 
     /// <summary>
-    /// What direction the Jumping's LeftRight intends to move. A value of 0 means that the
-    /// LeftRight intends to not move.
+    ///     What direction the Jumping's LeftRight intends to move. A value of 0 means that the
+    ///     LeftRight intends to not move.
     /// </summary>
     public float DirectionGoing
     {
@@ -45,7 +46,7 @@ public partial class JumpingDefaultPhys : DefaultPhys
     }
 
     /// <summary>
-    /// Update DirectionGoing whenever the Jumping's LeftRight intends to change x velocity.
+    ///     Update DirectionGoing whenever the Jumping's LeftRight intends to change x velocity.
     /// </summary>
     internal override void ExtraInit(KinematicComp physics)
     {
@@ -53,8 +54,8 @@ public partial class JumpingDefaultPhys : DefaultPhys
     }
 
     /// <summary>
-    /// When the given KinematicComp becomes on a floor, transition the Jumping's location to the
-    /// ground if necessary.
+    ///     When the given KinematicComp becomes on a floor, transition the Jumping's location to the
+    ///     ground if necessary.
     /// </summary>
     internal override void OnBecomeOnFloor(KinematicComp physics)
     {
@@ -64,8 +65,8 @@ public partial class JumpingDefaultPhys : DefaultPhys
     }
 
     /// <summary>
-    /// When the given KinematicComp becomes on a floor, transition the Jumping's location to the
-    /// wall or air as appropriate.
+    ///     When the given KinematicComp becomes on a floor, transition the Jumping's location to the
+    ///     wall or air as appropriate.
     /// </summary>
     internal override void OnBecomeOffFloor(KinematicComp physics)
     {
@@ -75,8 +76,8 @@ public partial class JumpingDefaultPhys : DefaultPhys
     }
 
     /// <summary>
-    /// When the given KinematicComp becomes on a wall, transition the Jumping's location to the
-    /// ground if necessary.
+    ///     When the given KinematicComp becomes on a wall, transition the Jumping's location to the
+    ///     ground if necessary.
     /// </summary>
     internal override void OnBecomeOnWall(KinematicComp physics)
     {
@@ -86,8 +87,8 @@ public partial class JumpingDefaultPhys : DefaultPhys
     }
 
     /// <summary>
-    /// When the given KinematicComp becomes off a wall, transition the Jumping's location to the
-    /// air if appropriate.
+    ///     When the given KinematicComp becomes off a wall, transition the Jumping's location to the
+    ///     air if appropriate.
     /// </summary>
     internal override void OnBecomeOffWall(KinematicComp physics)
     {
@@ -97,8 +98,8 @@ public partial class JumpingDefaultPhys : DefaultPhys
     }
 
     /// <summary>
-    /// If the Jumping's LeftRight is intending to move in the same direction as the wall being
-    /// touched, transition the Jumping's location to the wall.
+    ///     If the Jumping's LeftRight is intending to move in the same direction as the wall being
+    ///     touched, transition the Jumping's location to the wall.
     /// </summary>
     internal void WallPressCheck()
     {

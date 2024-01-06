@@ -4,31 +4,31 @@ using Godot;
 namespace Learning.Scripts.Entity.Physics.VelocitySources;
 
 /// <summary>
-/// A source of velocity representing general horizontal movement.
-/// Meant for walking, horizontal jump movement, etc.
+///     A source of velocity representing general horizontal movement.
+///     Meant for walking, horizontal jump movement, etc.
 /// </summary>
 public partial class LeftRight : VelocitySource
 {
     /// <summary>
-    /// A signal for when this LeftRight's velocity goes from not -x to -x.
+    ///     A signal for when this LeftRight's velocity goes from not -x to -x.
     /// </summary>
     [Signal]
     public delegate void GoingLeftEventHandler();
 
     /// <summary>
-    /// A signal for when this LeftRight's velocity goes from not +x to +x.
+    ///     A signal for when this LeftRight's velocity goes from not +x to +x.
     /// </summary>
     [Signal]
     public delegate void GoingRightEventHandler();
 
     /// <summary>
-    /// A signal for when this LeftRight intends to change its velocity.
+    ///     A signal for when this LeftRight intends to change its velocity.
     /// </summary>
     [Signal]
     public delegate void IntendedSpeedChangeEventHandler(float newSpeed);
 
     /// <summary>
-    /// A signal for when this LeftRight goes from nonzero to zero.
+    ///     A signal for when this LeftRight goes from nonzero to zero.
     /// </summary>
     [Signal]
     public delegate void StopMovingEventHandler();
@@ -46,7 +46,7 @@ public partial class LeftRight : VelocitySource
     private Vector2 _oldBaseVelocity;
 
     /// <summary>
-    /// The data used to determine this LeftRight's movement speed, etc. when on the ground.
+    ///     The data used to determine this LeftRight's movement speed, etc. when on the ground.
     /// </summary>
     [Export]
     public LeftRightData Ground
@@ -60,7 +60,7 @@ public partial class LeftRight : VelocitySource
     }
 
     /// <summary>
-    /// The data used to determine this LeftRight's movement speed, etc. when in the air.
+    ///     The data used to determine this LeftRight's movement speed, etc. when in the air.
     /// </summary>
     [Export]
     public LeftRightData Air
@@ -74,7 +74,7 @@ public partial class LeftRight : VelocitySource
     }
 
     /// <summary>
-    /// Whether this LeftRight should act as if it's on the ground (true) or in the air (false).
+    ///     Whether this LeftRight should act as if it's on the ground (true) or in the air (false).
     /// </summary>
     public bool IsOnGround
     {
@@ -89,20 +89,20 @@ public partial class LeftRight : VelocitySource
     }
 
     /// <summary>
-    /// The current scale factor of this LeftRight's horizontal velocity,
-    /// when scaling the current base speed.
+    ///     The current scale factor of this LeftRight's horizontal velocity,
+    ///     when scaling the current base speed.
     /// </summary>
     public float CurrentSpeedScale => CurrentSpeed / CurrentParams.BaseSpeed;
 
     /// <summary>
-    /// The current horizontal velocity of this LeftRight.
+    ///     The current horizontal velocity of this LeftRight.
     /// </summary>
     public float CurrentSpeed => BaseVelocity.X;
 
     /// <summary>
-    /// The horizontal velocity scale that this LeftRight intends to accelerate towards.
-    /// Setting this accelerates this LeftRight to the given horizontal velocity scale over
-    /// <code>GetAccelTime(value)</code> seconds.
+    ///     The horizontal velocity scale that this LeftRight intends to accelerate towards.
+    ///     Setting this accelerates this LeftRight to the given horizontal velocity scale over
+    ///     <code>GetAccelTime(value)</code> seconds.
     /// </summary>
     public float IntendedSpeedScale
     {
@@ -111,9 +111,9 @@ public partial class LeftRight : VelocitySource
     }
 
     /// <summary>
-    /// The horizontal velocity that this LeftRight intends to accelerate towards.
-    /// Setting this accelerates this LeftRight to the given horizontal velocity over
-    /// <code>GetAccelTime(value)</code> seconds.
+    ///     The horizontal velocity that this LeftRight intends to accelerate towards.
+    ///     Setting this accelerates this LeftRight to the given horizontal velocity over
+    ///     <code>GetAccelTime(value)</code> seconds.
     /// </summary>
     public float IntendedSpeed
     {
@@ -161,7 +161,7 @@ public partial class LeftRight : VelocitySource
     }
 
     /// <summary>
-    /// Accelerates this LeftRight to a velocity.
+    ///     Accelerates this LeftRight to a velocity.
     /// </summary>
     /// <param name="speed">The horizontal velocity to accelerate towards</param>
     /// <param name="time">The amount of time to take to accelerate to that velocity</param>
@@ -172,7 +172,7 @@ public partial class LeftRight : VelocitySource
     }
 
     /// <summary>
-    /// Accelerates this LeftRight to a velocity, based on a scale of the current base speed.
+    ///     Accelerates this LeftRight to a velocity, based on a scale of the current base speed.
     /// </summary>
     /// <param name="speedScale">The horizontal velocity scale to accelerate towards</param>
     /// <param name="time">The amount of time to take to accelerate to that velocity</param>
@@ -197,11 +197,13 @@ public partial class LeftRight : VelocitySource
     }
 
     /// <summary>
-    /// Calculates the default amount of time it'd take for this LeftRight to accelerate to
-    /// the given horizontal velocity scale.
+    ///     Calculates the default amount of time it'd take for this LeftRight to accelerate to
+    ///     the given horizontal velocity scale.
     /// </summary>
-    /// <param name="toSpeedScale">The scale of the horizontal velocity
-    /// that would've been accelerated to</param>
+    /// <param name="toSpeedScale">
+    ///     The scale of the horizontal velocity
+    ///     that would've been accelerated to
+    /// </param>
     /// <returns>The calculated time, in seconds</returns>
     public float GetAccelTime(float toSpeedScale)
     {

@@ -5,33 +5,33 @@ using Learning.Scripts.Environment;
 namespace Learning.Scripts.Entity;
 
 /// <summary>
-/// The "brain" of the player,
-/// governing the behaviors and interactions between its different components.
+///     The "brain" of the player,
+///     governing the behaviors and interactions between its different components.
 /// </summary>
 public partial class Player : KinematicComp
 {
     /// <summary>
-    /// The inputs that control the player.
+    ///     The inputs that control the player.
     /// </summary>
     public InputComp Input { get; private set; }
-    
+
     /// <summary>
-    /// The component that determines the player's movement.
+    ///     The component that determines the player's movement.
     /// </summary>
     public PlayerVelocityAggregate PlayerController { get; private set; }
-    
+
     /// <summary>
-    /// The component that detects floors by the player.
+    ///     The component that detects floors by the player.
     /// </summary>
     public FloorDetector FloorDetector { get; private set; }
-    
+
     /// <summary>
-    /// The component that detects walls by the player.
+    ///     The component that detects walls by the player.
     /// </summary>
     public WallDetector WallDetector { get; private set; }
-    
+
     /// <summary>
-    /// Particle effects emitted by the player.
+    ///     Particle effects emitted by the player.
     /// </summary>
     public PlayerParticles Particles { get; private set; }
 

@@ -3,7 +3,7 @@
 namespace Learning.Scripts.Values.Modifiers;
 
 /// <summary>
-/// A modifier that applies an arbitrary function to given values.
+///     A modifier that applies an arbitrary function to given values.
 /// </summary>
 /// <typeparam name="TValue">The type of the value to apply modifications to.</typeparam>
 public partial class FunctionalModifier<TValue> : Modifier<TValue>
@@ -15,7 +15,7 @@ public partial class FunctionalModifier<TValue> : Modifier<TValue>
     }
 
     /// <summary>
-    /// The function that gets applied to passed-in values.
+    ///     The function that gets applied to passed-in values.
     /// </summary>
     public Func<TValue, TValue> ToApplyModifierToFunc { get; }
 

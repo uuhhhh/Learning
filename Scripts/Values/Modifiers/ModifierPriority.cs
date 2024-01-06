@@ -1,8 +1,8 @@
 ﻿namespace Learning.Scripts.Values.Modifiers;
 
 /// <summary>
-/// Values that indicate some value of priority for IModifiers.
-/// The enum indexes are not the priority values these ModifierPriorities get mapped to.
+///     Values that indicate some value of priority for IModifiers.
+///     The enum indexes are not the priority values these ModifierPriorities get mapped to.
 /// </summary>
 /// <see cref="ModifierPriorityExtensions.PriorityNum" />
 public enum ModifierPriority
@@ -10,7 +10,7 @@ public enum ModifierPriority
     DefaultPriority,
     WallDragging,
     WallSnapping
-    
+
     // It is best to not change the enum indexes of currently-added ModifierPriorities,
     // since the Godot editor uses these indexes to indicate which ModifierPriority something is.
 }
@@ -18,7 +18,7 @@ public enum ModifierPriority
 public static class ModifierPriorityExtensions
 {
     /// <summary>
-    /// Maps the given ModifierPriority to a priority value.
+    ///     Maps the given ModifierPriority to a priority value.
     /// </summary>
     /// <param name="priority">The ModifierPriority to get the priority value of</param>
     /// <returns>The priority value</returns>

@@ -4,26 +4,18 @@ using Godot;
 namespace Learning.Scripts.Values.Modifiers;
 
 /// <summary>
-/// This class holds a base value and modifiers to apply to that base value, and this class has
-/// a method to modify a given value (presumably using this class' ModifiedValue).
+///     This class holds a base value and modifiers to apply to that base value, and this class has
+///     a method to modify a given value (presumably using this class' ModifiedValue).
 /// </summary>
-/// <typeparam name="TValue">The type of the base/modified value held by this class,
-/// and the type of the value modified by this class' ApplyModifier</typeparam>
+/// <typeparam name="TValue">
+///     The type of the base/modified value held by this class,
+///     and the type of the value modified by this class' ApplyModifier
+/// </typeparam>
 [GlobalClass]
 public abstract partial class ModifierWithModifiers<TValue> : Resource, IValueWithModifiers<TValue>,
     IModifier<TValue>
 {
     private readonly ValueWithModifiers<TValue> _backing = new(default);
-    [Export] public ModifierPriority Priority { get; private set; }
-    [Export] public bool Cacheable { get; private set; }
-
-    public abstract TValue ApplyModifier(TValue value);
-    
-    public event EventHandler<IModifier<TValue>> ModifierAdded;
-    public event EventHandler<IModifier<TValue>> ModifierRemoved;
-    public event EventHandler<IModifier<TValue>> ModifierUpdated;
-
-    public TValue ModifiedValue => _backing.ModifiedValue;
 
     protected ModifierWithModifiers()
     {
@@ -31,6 +23,17 @@ public abstract partial class ModifierWithModifiers<TValue> : Resource, IValueWi
         _backing.ModifierRemoved += (sender, modifier) => ModifierRemoved?.Invoke(sender, modifier);
         _backing.ModifierUpdated += (sender, modifier) => ModifierUpdated?.Invoke(sender, modifier);
     }
+
+    [Export] public ModifierPriority Priority { get; private set; }
+    [Export] public bool Cacheable { get; private set; }
+
+    public abstract TValue ApplyModifier(TValue value);
+
+    public event EventHandler<IModifier<TValue>> ModifierAdded;
+    public event EventHandler<IModifier<TValue>> ModifierRemoved;
+    public event EventHandler<IModifier<TValue>> ModifierUpdated;
+
+    public TValue ModifiedValue => _backing.ModifiedValue;
 
     public TValue BaseValue
     {

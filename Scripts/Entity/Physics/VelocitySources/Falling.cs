@@ -3,25 +3,25 @@
 namespace Learning.Scripts.Entity.Physics.VelocitySources;
 
 /// <summary>
-/// A source of velocity representing the falling due to gravity. A Falling's y velocity is not
-/// necessarily always zero or downwards (e.g. a Jumping could set its velocity to upwards)
+///     A source of velocity representing the falling due to gravity. A Falling's y velocity is not
+///     necessarily always zero or downwards (e.g. a Jumping could set its velocity to upwards)
 /// </summary>
 public partial class Falling : VelocitySource
 {
     /// <summary>
-    /// A signal for when this Falling goes from not falling to falling.
+    ///     A signal for when this Falling goes from not falling to falling.
     /// </summary>
     [Signal]
     public delegate void StartFallingEventHandler();
 
     /// <summary>
-    /// A signal for when this Falling goes from falling to not falling.
+    ///     A signal for when this Falling goes from falling to not falling.
     /// </summary>
     [Signal]
     public delegate void StopFallingEventHandler();
 
     /// <summary>
-    /// The base acceleration due to gravity.
+    ///     The base acceleration due to gravity.
     /// </summary>
     public readonly float Gravity =
         ProjectSettings.GetSetting("physics/2d/default_gravity").AsSingle();
@@ -38,7 +38,7 @@ public partial class Falling : VelocitySource
     private float _originalDecelerateVelocityDelta;
 
     /// <summary>
-    /// Data used by this Falling to determine acceleration, max fall velocity, etc.
+    ///     Data used by this Falling to determine acceleration, max fall velocity, etc.
     /// </summary>
     [Export]
     public FallingData FallData
@@ -52,10 +52,10 @@ public partial class Falling : VelocitySource
     }
 
     /// <summary>
-    /// Whether or not this Falling is in a state of falling
-    /// (i.e., currently accelerating downwards).
-    /// Setting this to true (from false) causes this Falling to accelerate downwards.
-    /// Setting this to false (from true) causes the acceleration to stop and y velocity to go to 0.
+    ///     Whether or not this Falling is in a state of falling
+    ///     (i.e., currently accelerating downwards).
+    ///     Setting this to true (from false) causes this Falling to accelerate downwards.
+    ///     Setting this to false (from true) causes the acceleration to stop and y velocity to go to 0.
     /// </summary>
     public bool IsFalling
     {
@@ -78,20 +78,20 @@ public partial class Falling : VelocitySource
     }
 
     /// <summary>
-    /// The currently-used scale applied to the base gravity.
+    ///     The currently-used scale applied to the base gravity.
     /// </summary>
     public float GravityScale =>
         Velocity.Y < 0 ? FallData.UpwardsGravityScale : FallData.DownwardsGravityScale;
 
     /// <summary>
-    /// Whether this Falling's y velocity is currently going to zero due to hitting a ceiling.
+    ///     Whether this Falling's y velocity is currently going to zero due to hitting a ceiling.
     /// </summary>
     public bool StoppingDueToCeilingHit =>
         _ceilingHitStopTween is not null && _ceilingHitStopTween.IsValid();
 
     /// <summary>
-    /// Whether this Falling's y velocity is currently decreasing to the max fall velocity
-    /// (from a y velocity greater than the max fall velocity).
+    ///     Whether this Falling's y velocity is currently decreasing to the max fall velocity
+    ///     (from a y velocity greater than the max fall velocity).
     /// </summary>
     public bool DeceleratingToMaxFallVelocity =>
         _decelerateToMaxVelocityTween is not null && _decelerateToMaxVelocityTween.IsValid();
@@ -171,8 +171,8 @@ public partial class Falling : VelocitySource
     }
 
     /// <summary>
-    /// Makes this Falling's y velocity go to 0 (over time),
-    /// as if it were moving upwards and then hit a ceiling.
+    ///     Makes this Falling's y velocity go to 0 (over time),
+    ///     as if it were moving upwards and then hit a ceiling.
     /// </summary>
     public void CeilingHitStop()
     {

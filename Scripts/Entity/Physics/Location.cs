@@ -4,7 +4,7 @@ using System.Linq;
 namespace Learning.Scripts.Entity.Physics;
 
 /// <summary>
-/// The different locations that a Jumping recognizes as places that can be jumped from.
+///     The different locations that a Jumping recognizes as places that can be jumped from.
 /// </summary>
 public enum Location
 {

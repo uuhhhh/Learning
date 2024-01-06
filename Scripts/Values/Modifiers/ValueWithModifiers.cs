@@ -6,7 +6,7 @@ using System.Linq;
 namespace Learning.Scripts.Values.Modifiers;
 
 /// <summary>
-/// A basic concrete implementation of IValueWithModifiers.
+///     A basic concrete implementation of IValueWithModifiers.
 /// </summary>
 /// <typeparam name="TValue">The type of the value being modified</typeparam>
 public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue>
@@ -20,7 +20,7 @@ public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue>
     private int _numNonCacheableModifiers;
 
     /// <summary>
-    /// Creates a ValueWithModifiers with currently no modifiers.
+    ///     Creates a ValueWithModifiers with currently no modifiers.
     /// </summary>
     /// <param name="baseValue">The base value for this ValueWithModifiers</param>
     public ValueWithModifiers(TValue baseValue)
@@ -35,15 +35,15 @@ public class ValueWithModifiers<TValue> : IValueWithModifiers<TValue>
     }
 
     /// <summary>
-    /// An immutable view of the current modifiers of this ValueWithModifiers.
+    ///     An immutable view of the current modifiers of this ValueWithModifiers.
     /// </summary>
     public IImmutableSet<IModifier<TValue>> CurrentModifiers =>
         _currentModifiers.ToImmutableSortedSet();
 
     public event EventHandler<IModifier<TValue>> ModifierAdded;
-    
+
     public event EventHandler<IModifier<TValue>> ModifierRemoved;
-    
+
     public event EventHandler<IModifier<TValue>> ModifierUpdated;
 
     public TValue ModifiedValue =>

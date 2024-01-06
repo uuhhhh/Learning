@@ -5,13 +5,13 @@ using Learning.Scripts.Values.Modifiers;
 namespace Learning.Scripts.Entity.Physics.Intermediate;
 
 /// <summary>
-/// A group of modifiers that can be applied to a JumpingData.
+///     A group of modifiers that can be applied to a JumpingData.
 /// </summary>
 [GlobalClass]
 public partial class JumpingDataModifier : ModifierResource<JumpingData>
 {
     /// <summary>
-    /// A cap for the base number of jumps.
+    ///     A cap for the base number of jumps.
     /// </summary>
     [Export]
     public IntCapper NumJumpsCap
@@ -22,7 +22,7 @@ public partial class JumpingDataModifier : ModifierResource<JumpingData>
     }
 
     /// <summary>
-    /// A scale factor for the jump velocity.
+    ///     A scale factor for the jump velocity.
     /// </summary>
     [Export]
     public VectorScaler VelocityMultiplier
@@ -33,7 +33,7 @@ public partial class JumpingDataModifier : ModifierResource<JumpingData>
     }
 
     /// <summary>
-    /// A scale factor for the jump x acceleration time.
+    ///     A scale factor for the jump x acceleration time.
     /// </summary>
     [Export]
     public FloatMultiplier AccelTimeXMultiplier
@@ -44,7 +44,7 @@ public partial class JumpingDataModifier : ModifierResource<JumpingData>
     }
 
     /// <summary>
-    /// A scale factor for the jump y acceleration time.
+    ///     A scale factor for the jump y acceleration time.
     /// </summary>
     [Export]
     public FloatMultiplier AccelTimeYMultiplier
@@ -55,7 +55,7 @@ public partial class JumpingDataModifier : ModifierResource<JumpingData>
     }
 
     /// <summary>
-    /// A scale factor for the jump cancel velocity.
+    ///     A scale factor for the jump cancel velocity.
     /// </summary>
     [Export]
     public FloatMultiplier CancelVelocityMultiplier
@@ -66,7 +66,7 @@ public partial class JumpingDataModifier : ModifierResource<JumpingData>
     }
 
     /// <summary>
-    /// A scale factor for the jump cancel acceleration time.
+    ///     A scale factor for the jump cancel acceleration time.
     /// </summary>
     [Export]
     public FloatMultiplier CancelAccelTimeMultiplier

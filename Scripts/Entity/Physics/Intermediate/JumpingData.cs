@@ -5,7 +5,7 @@ using Learning.Scripts.Values.Groups;
 namespace Learning.Scripts.Entity.Physics.Intermediate;
 
 /// <summary>
-/// Data used by a Jumping to determine jump velocity, jump acceleration, etc.
+///     Data used by a Jumping to determine jump velocity, jump acceleration, etc.
 /// </summary>
 [GlobalClass]
 public partial class JumpingData : ResourceWithModifiers
@@ -13,7 +13,7 @@ public partial class JumpingData : ResourceWithModifiers
     public const int UnlimitedJumps = -1;
 
     /// <summary>
-    /// The base number of jumps. 0 means the entity currently cannot jump anymore.
+    ///     The base number of jumps. 0 means the entity currently cannot jump anymore.
     /// </summary>
     [Export]
     public int NumJumps
@@ -23,7 +23,7 @@ public partial class JumpingData : ResourceWithModifiers
     }
 
     /// <summary>
-    /// The velocity the Jumping goes to when performing a jump.
+    ///     The velocity the Jumping goes to when performing a jump.
     /// </summary>
     [Export]
     public Vector2 Velocity
@@ -33,8 +33,8 @@ public partial class JumpingData : ResourceWithModifiers
     }
 
     /// <summary>
-    /// The time, in seconds, for the Jumping's x velocity to transition to the jump velocity
-    /// when performing a jump.
+    ///     The time, in seconds, for the Jumping's x velocity to transition to the jump velocity
+    ///     when performing a jump.
     /// </summary>
     [Export]
     public float AccelTimeX
@@ -44,8 +44,8 @@ public partial class JumpingData : ResourceWithModifiers
     }
 
     /// <summary>
-    /// The time, in seconds, for the Jumping's y velocity to transition to the jump velocity
-    /// when performing a jump.
+    ///     The time, in seconds, for the Jumping's y velocity to transition to the jump velocity
+    ///     when performing a jump.
     /// </summary>
     [Export]
     public float AccelTimeY
@@ -55,7 +55,7 @@ public partial class JumpingData : ResourceWithModifiers
     }
 
     /// <summary>
-    /// The velocity the Jumping goes to when cancelling a jump.
+    ///     The velocity the Jumping goes to when cancelling a jump.
     /// </summary>
     [Export]
     public float CancelVelocity
@@ -65,8 +65,8 @@ public partial class JumpingData : ResourceWithModifiers
     }
 
     /// <summary>
-    /// The time, in seconds, for the Jumping's velocity to transition to the cancel velocity
-    /// when cancelling a jump.
+    ///     The time, in seconds, for the Jumping's velocity to transition to the cancel velocity
+    ///     when cancelling a jump.
     /// </summary>
     [Export]
     public float CancelAccelTime
@@ -75,8 +75,10 @@ public partial class JumpingData : ResourceWithModifiers
         private set => InitValue(nameof(CancelAccelTime), value);
     }
 
-    /// <returns>The minimum number of jumps between the two;
-    /// UnlimitedJumps is always higher.</returns>
+    /// <returns>
+    ///     The minimum number of jumps between the two;
+    ///     UnlimitedJumps is always higher.
+    /// </returns>
     public static int MinNumJumps(int numJumps1, int numJumps2)
     {
         return (numJumps1, numJumps2) switch

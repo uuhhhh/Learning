@@ -5,41 +5,41 @@ using Godot;
 namespace Learning.Scripts.Environment;
 
 /// <summary>
-/// An Area2D that focuses mainly on detecting EnvObjects that enter its vicinity,
-/// and determining which, of multiple EnvObjects in its vicinity, to make its "current" one.
+///     An Area2D that focuses mainly on detecting EnvObjects that enter its vicinity,
+///     and determining which, of multiple EnvObjects in its vicinity, to make its "current" one.
 /// </summary>
 public abstract partial class EnvObjectDetector : Area2D
 {
     /// <summary>
-    /// A signal for when an EnvObject enters the vicinity of this EnvObjectDetector.
+    ///     A signal for when an EnvObject enters the vicinity of this EnvObjectDetector.
     /// </summary>
     [Signal]
     public delegate void EnvObjectEnteredAreaEventHandler(EnvObject entered);
 
     /// <summary>
-    /// A signal for when an EnvObject exits the vicinity of this EnvObjectDetector.
+    ///     A signal for when an EnvObject exits the vicinity of this EnvObjectDetector.
     /// </summary>
     [Signal]
     public delegate void EnvObjectExitedAreaEventHandler(EnvObject exited);
 
     /// <summary>
-    /// A signal for when a different EnvObject takes the place for
-    /// the highest-priority EnvObject in the vicinity of this EnvObjectDetector.
+    ///     A signal for when a different EnvObject takes the place for
+    ///     the highest-priority EnvObject in the vicinity of this EnvObjectDetector.
     /// </summary>
     [Signal]
     public delegate void NewHighestPriorityEnvObjectEventHandler(
         EnvObject oldHighestPriority, EnvObject highestPriority);
 
     /// <summary>
-    /// A signal for when the number of EnvObjects in the vicinity of this EnvObjectDetector
-    /// goes from nonzero to zero.
+    ///     A signal for when the number of EnvObjects in the vicinity of this EnvObjectDetector
+    ///     goes from nonzero to zero.
     /// </summary>
     [Signal]
     public delegate void ZeroEnvObjectsEventHandler();
 
     /// <summary>
-    /// A signal for when the number of EnvObjects in the vicinity of this EnvObjectDetector
-    /// goes from zero to nonzero.
+    ///     A signal for when the number of EnvObjects in the vicinity of this EnvObjectDetector
+    ///     goes from zero to nonzero.
     /// </summary>
     [Signal]
     public delegate void ZeroToOneEnvObjectsEventHandler();
@@ -104,31 +104,35 @@ public abstract partial class EnvObjectDetector : Area2D
                 newHighestPriority);
     }
 
-    /// <returns>The highest-priority EnvObject in the vicinity of this EnvObjectDetector,
-    /// or null if there aren't any EnvObjects</returns>
+    /// <returns>
+    ///     The highest-priority EnvObject in the vicinity of this EnvObjectDetector,
+    ///     or null if there aren't any EnvObjects
+    /// </returns>
     public EnvObject GetCurrentEnvObject()
     {
         return HasEnvObject() ? _currentInArea.Last() : null;
     }
 
-    /// <returns>Whether there are any EnvObjects
-    /// in the vicinity of this EnvObjectDetector</returns>
+    /// <returns>
+    ///     Whether there are any EnvObjects
+    ///     in the vicinity of this EnvObjectDetector
+    /// </returns>
     public bool HasEnvObject()
     {
         return _currentInArea.Count != 0;
     }
 
     /// <summary>
-    /// Finds a priority value for the given EnvObject. Used for comparing with other
-    /// priority values to determine which EnvObject in the vicinity should be the "current" one.
-    /// Higher priority values take greater precedence.
+    ///     Finds a priority value for the given EnvObject. Used for comparing with other
+    ///     priority values to determine which EnvObject in the vicinity should be the "current" one.
+    ///     Higher priority values take greater precedence.
     /// </summary>
     /// <param name="envObject">The EnvObject to get the priority of</param>
     /// <returns>The priority value</returns>
     protected abstract int GetPriorityOf(EnvObject envObject);
 
     /// <summary>
-    /// A class for comparing the priority values of EnvObjects.
+    ///     A class for comparing the priority values of EnvObjects.
     /// </summary>
     public class PriorityComparer : IComparer<EnvObject>
     {
