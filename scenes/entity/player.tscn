@@ -20,9 +20,10 @@ size = Vector2(1, 8)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_66ae7"]
 size = Vector2(1, 8)
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("VelocityReplacer")]
 floor_snap_length = 3.0
 script = ExtResource("1_uyfcp")
+VelocityReplacer = NodePath("PlayerVelocityAggregate")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(0, -8)

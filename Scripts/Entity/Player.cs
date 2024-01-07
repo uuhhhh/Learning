@@ -8,7 +8,7 @@ namespace Learning.Scripts.Entity;
 ///     The "brain" of the player,
 ///     governing the behaviors and interactions between its different components.
 /// </summary>
-public partial class Player : KinematicComp
+public partial class Player : VelocityAggregatingKinematicComp
 {
     /// <summary>
     ///     The inputs that control the player.
@@ -37,9 +37,8 @@ public partial class Player : KinematicComp
 
     public override void _Ready()
     {
-        SetChildren();
-        PlayerController.InitializeInteractions(this);
         base._Ready();
+        SetChildren();
 
         ConfigureInput();
 
@@ -66,13 +65,5 @@ public partial class Player : KinematicComp
         Input.RightInputOff += PlayerController.MoveLeft;
         Input.JumpInputOn += PlayerController.AttemptJump;
         Input.JumpInputOff += PlayerController.JumpCancel;
-    }
-
-    public override void _PhysicsProcess(double delta)
-    {
-        base._PhysicsProcess(delta);
-        Velocity = PlayerController.Velocity;
-
-        MoveAndSlideWithStatusChanges();
     }
 }
