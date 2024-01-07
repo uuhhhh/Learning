@@ -11,7 +11,6 @@ namespace Learning.Scripts.Values.Modifiers;
 ///     The type of the base/modified value held by this class,
 ///     and the type of the value modified by this class' ApplyModifier
 /// </typeparam>
-[GlobalClass]
 public abstract partial class ModifierWithModifiers<TValue> : Resource, IValueWithModifiers<TValue>,
     IModifier<TValue>
 {

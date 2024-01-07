@@ -53,16 +53,15 @@ public partial class WallSnappingData : ResourceWithModifiers, IModifierGroup<Le
     }
 
     /// <summary>
-    ///     The timer to use for determining the AccelTimeMultiplier.
-    /// </summary>
-    [Export]
-    public Timer WallSnapStartWindow { get; private set; }
-
-    /// <summary>
     ///     The modifier priority for the acceleration time multiplier.
     /// </summary>
     [Export]
     public ModifierPriority AccelTimeMultiplierReplacementPriority { get; private set; }
+
+    /// <summary>
+    ///     The timer to use for determining the AccelTimeMultiplier.
+    /// </summary>
+    public Timer WallSnapStartWindow { get; set; }
 
     /// <summary>
     ///     A value between AccelTimeInitial and AccelTimeFinal, depending on WallSnapTimeWindow's time.

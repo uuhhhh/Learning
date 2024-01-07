@@ -125,6 +125,8 @@ public partial class WallSnapping : Node
         WallSnapStartWindow = GetNode<Timer>(nameof(WallSnapStartWindow));
         WallSnapExpiry = GetNode<Timer>(nameof(WallSnapExpiry));
 
+        SnapData.WallSnapStartWindow = WallSnapStartWindow;
+
         Movement.IntendedSpeedChange += _ => WallSnapCheck();
         WallSnapStartWindow.Timeout += () => InWallSnapStartWindow = false;
         WallSnapExpiry.Timeout += () => IsWallSnapping = false;
