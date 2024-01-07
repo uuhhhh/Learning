@@ -89,8 +89,7 @@ public partial class KinematicComp : CharacterBody2D
     ///     CharacterBody2D's MoveAndSlide, but with additional behavior to make
     ///     KinematicComp's additional signals operate.
     /// </summary>
-    /// <returns>Whether there was a collision with the MoveAndSlide
-    ///     <./returns>
+    /// <returns>Whether there was a collision with the MoveAndSlide</returns>
     public virtual bool MoveAndSlideWithStatusChanges()
     {
         bool wasOnFloor = IsOnFloor(), wasOnCeiling = IsOnCeiling(), wasOnWall = IsOnWall();

@@ -5,7 +5,7 @@ using Learning.Scripts.Entity.Physics.VelocitySources;
 namespace Learning.Scripts.Entity.Physics;
 
 /// <summary>
-///     A VelocityAggregate contains and aggregates one or more VelocitySources.
+///     A VelocityAggregate contains and aggregates zero or more VelocitySources.
 ///     Subclasses can also add more rules and interactions for their VelocitySources
 ///     and intermediates, for more precise behavior.
 /// </summary>
