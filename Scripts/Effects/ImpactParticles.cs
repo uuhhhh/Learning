@@ -24,6 +24,8 @@ public partial class ImpactParticles : CpuParticles2D
     public PropertyTweener EmitParticles(double intensity = DefaultIntensity)
     {
         SetEmissionIntensity(intensity);
+        if (Amount == 0) return null;
+        
         Emitting = true;
         Restart();
 
