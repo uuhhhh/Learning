@@ -70,6 +70,10 @@ Second, the more different movement features are added to this player movement c
 
 With more and more rules, it can become harder to make changes to this player movement class without breaking something, especially when trying to utilize the power of Godot's Tweens while doing so. So, the separation of movement behaviors into components accomplishes another thing: it separates the concerns of different rules into different classes. For instance, `Falling` can concern rules of when exactly to accelerate and decelerate; `Jumping` can concern rules of which type of jump (ground/air/wall jump) to use and when, as well as rules of coyote jumping and jump buffering; velocity sources and intermediates, internally, don't have to worry about Tweens from other velocity sources; etc. `PlayerVelocityAggregate` no longer has to worry about lower-level rules such as exact Tween creation processes, and the internal rules of its velocity sources and intermediates.
 
+#### UML Diagram
+
+The `uml` directory of this repository contains two UML diagrams that outline this design. `uml/velocity-sources/velocity-sources.drawio.html` has a class diagram that summarizes some of the classes that this design concerns, as well as the dependencies between these classes. `uml/velocity-simplified/velocity-simplified.drawio.html` has a much-simplified diagram that visually outlines the dependencies between different parts of this design. These diagrams were made using [draw.io](https://app.diagrams.net/).
+
 ### "Data Modifiers" Design
 
 In order to modify a data value (for example, how fast the player should move horizontally when on the ground), when there may be other actors that want to modify this same data value, we would like to maintain independence (as much of it as possible) from these other actors, in terms of how we add our modification to this data value.

@@ -11,5 +11,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
+    <Content Include="uml\velocity-simplified\velocity-simplified.drawio.svg" />
+    <Content Include="uml\velocity-sources\velocity-sources.drawio.svg" />
+    <Content Include="uml\velocity-sources\velocity-sources.drawio" />
+    <Content Include="uml\velocity-sources\velocity-sources.drawio.html" />
+    <Content Include="uml\velocity-simplified\velocity-simplified.drawio" />
+    <Content Include="uml\velocity-simplified\velocity-simplified.drawio.html" />
   </ItemGroup>
 </Project>
