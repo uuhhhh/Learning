@@ -7,8 +7,8 @@ namespace Learning.Scripts.Values.Groups;
 
 /// <summary>
 ///     An abstract IValueWithModifiersGroup that's also a Godot Resource, so values for subclasses of
-///     ResourceWithModifiers can specify values (presumably for the IValueWithModifiers it will hold)
-///     in the Godot editor.
+///     ResourceWithModifiers can specify values (presumably for the base values of the
+///     IValueWithModifiers it will hold) in the Godot editor.
 /// </summary>
 public abstract partial class ResourceWithModifiers : Resource, IValueWithModifiersGroup
 {
@@ -54,7 +54,7 @@ public abstract partial class ResourceWithModifiers : Resource, IValueWithModifi
     /// </exception>
     protected TValue GetValue<TValue>(string fieldName)
     {
-        return GetField<TValue, ValueWithModifiers<TValue>>(fieldName).ModifiedValue;
+        return GetField<TValue, IValueWithModifiers<TValue>>(fieldName).ModifiedValue;
     }
 
     /// <summary>
