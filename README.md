@@ -18,15 +18,14 @@ Here is how to create complex movement for an entity in Godot using this reposit
 2. Create a child Node for that `CharacterBody2D`, and create and attach a script that extends `VelocityAggregate` (located in `Scripts/Entity/Physics/`). For this example, we'll call the class `PlayerVelocity` (you can also see `Scripts/Entity/Physics/PlayerVelocityAggregate.cs` to see an example of how this would be coded).
 3. In the `CharacterBody2D` node, select the `PlayerVelocity` node as the value for the field "Velocity Replacer".
 4. Come up with the velocity sources (and possibly any "intermediates") for your `PlayerVelocity`. For this, you'll need to think about how you want your player to be able to move, and break that movement down into different, independent components.
-   - For example, the velocity of my player in this repository breaks down into two components: `Falling` (velocity affected by gravity) and `LeftRight` (velocity due to the player wanting to move left or right) (located in `Scripts/Entity/Physics/VelocitySources/`.
-   - Note that some desired behaviors are not independent of these components. For example, my player can also jump and drag on walls, but these are things that are affected by gravity. So, instead of creating a velocity source for these behaviors, you would want to create an "intermediate" (they don't have a common superclass/interface) that calls the methods of the relevant velocity source(s) to affect velocity. For example, the intermediates `Jumping` and `WallDragging` (located in `Scripts/Entity/Physics/Intermediate/`) call upon `Falling`'s methods to affect falling velocity.
+   - See ["Velocity Sources/Aggregate" Design](#velocity-sourcesaggregate-design) for more information on the design of velocity sources and intermediates.
 5. Create your velocity sources and intermediates. For each of the ones you came up with:
    1. Create a child Node for your `PlayerVelocity` node, and create and attach a script that extends `VelocitySource` (if it's an independent component) or `Node` (if it's an intermediate).
    2. Program the necessary behavior for the velocity source/intermediate. For velocity sources, be sure to read the documentation comments in `VelocitySource` to see what it provides. Note that the velocity sources shouldn't know about or call any of the intermediates.
       - When programming your intermediates to modify your velocity sources, you might want to have your intermediates give modifiers to values in the velocity source. See [Data Modifiers](#data-modifiers) for how to give and accept modifiers.
    3. Create a child Node for your `PlayerVelocity` node, and create and extend a script that extends `DefaultPhys` (located in `Scripts/Entity/Physics/`). When programming this script, you take `KinematicComp` physics interactions and call methods in your velocity source/intermediate as appropriate, by overriding the appropriate "On..." methods in `DefaultPhys`.
       - Do this instead of having your velocity source/intermediate store and use a reference to the `KinematicComp`/`Player`/etc. This is so that you're able to specify different physics behavior if needed (e.g., by subclassing your script, or by unsubscribing from the events that call specific "On..." methods), instead of being stuck with one set of physics behaviors. This can be useful when reusing your velocity sources/intermediates for a different entity, and want to specify (slightly) different physics behaviors for it.
-6. Program your `PlayerVelocity` to define methods for your `Player` to call, to affect the velocity sources and intermediates (for example, my `PlayerVelocityAggregate` has public methods `MoveLeft`, `AttemptJump`, etc.). Your `PlayerVelocity` also needs to define any interactions and rules among intermediates and any (non-default) physics interactions, so that your `PlayerVelocity` behaves the way you want it to.
+6. Program your `PlayerVelocity` to define methods for your `Player` to call, to affect the velocity sources and intermediates (for example, my `PlayerVelocityAggregate` has public methods `MoveLeft`, `AttemptJump`, etc.). Your `PlayerVelocity` also needs to define any other interactions and rules among your velocity sources, intermediates, and any (non-default) physics interactions, so that your `PlayerVelocity` behaves the way you want it to.
 7. When making other entities, you can now reuse the velocity sources, intermediates, and default physics you made for your `Player`!
 
 ### Data Modifiers
@@ -43,7 +42,37 @@ Second, you need to make the modifier(s) for the data. You can create your own m
 But, you will probably want to use/extend `ModifierResource` (located in `Scripts/Values/Groups`), which holds a group of `IModifier`s (see also `IModifierGroup`, located in `Scripts/Values/Groups/`) that modify specific `IValueWithModifier`s in an `IValueWithModifiersGroup`. `FallingDataMultiplier` is an example of how a `ModifierResource` would be implemented. (however, `WallDragging` uses `WallDraggingData` to modify a `Falling`, and `WallDraggingData` is both a `ResourceWithModifiers` and an `IModifierGroup` (since the wall dragging data itself can be modified)).
 
 ## Software Design Notes
-to do
+
+### "Velocity Sources/Aggregate" Design
+
+In order to perform complex movement while maintaining modularity and reusability, the different causes of movement are split into different, independent components called "velocity sources". A "velocity aggregate" is composed of these velocity sources, and can produce a single velocity vector by taking an aggregate of the velocity vectors for all the velocity sources (by default, this is just the sum of all the velocity vectors). This single velocity vector would represent the velocity of the player or some other entity.
+
+For example, the velocity of my player in this repository breaks down into two components: `Falling` (velocity affected by gravity) and `LeftRight` (velocity due to the player wanting to move left or right) (located in `Scripts/Entity/Physics/VelocitySources/`.
+
+Note that when creating the velocity sources for an entity's movement, some desired behaviors are not independent of these components. For example, my player can also jump and drag on walls, but these are both things that are affected by gravity, something already covered by `Falling`. So, instead of creating a velocity source for these behaviors, you would want to create an "intermediate" (they currently don't have a common superclass/interface) that calls the methods of the relevant velocity source(s) to affect velocity. For example, the intermediates `Jumping` and `WallDragging` (located in `Scripts/Entity/Physics/Intermediate/`) call upon `Falling`'s methods to affect falling velocity.
+
+The velocity sources themselves are independent of each other and don't know about each other, but the velocity aggregate may produce rules and behaviors for interactions (one-way or two-way) between velocity sources/intermediates, unbeknownst to the velocity sources and intermediates. The velocity aggregate is where all of these velocity sources and intermediates come together. So, when subclassing a velocity source, the job of the subclass is to make sure that the specific velocity sources and intermediates concerned by the subclass act nicely with each other, to produce the desired behavior. This is done here so that it doesn't have to be done in the code for the velocity sources and intermediates (which would've introduced unwanted dependencies between certain velocity sources/intermediates).
+
+This design uses the Component pattern, where the velocity sources and intermediates are the components, and the velocity aggregates compose these components.
+
+#### Motivation
+
+In [a much earlier commit](https://github.com/uuhhhh/Learning/tree/43573f5a37a382273acd1792acb342684beda854) in this repository, the code for the player movement was in one class, including left/right movement, ground/air/wall jumping, coyote jumping, jump buffering, jump cancelling, wall dragging, and smooth movement using Tweens. It did work properly, and for some project scopes, it'd be sufficient to keep player movement code in one class. However, there were key drawbacks to that approach, which this current repository aims to solve.
+
+First, movement behaviors weren't reusable between different entities. While currently the only entity is the player, if one wanted to make another entity with some of the player's movement behaviors and some of its own movement behaviors, nontrivial amounts of code would have to be duplicated. This is unsustainable, especially if there were to be even more different entities. The separation of movement behaviors into independent, reusable components aims to solve this issue, where the entities can be composed of the components of the movement features they need, without duplicating code.
+
+Second, the more different movement features are added to this player movement class, the less maintainable the class becomes. This is because with more movement features, there are more and more rules for these features and their interactions. Even with just the 2D platformer MVP, there are a lot of rules in play, even if it may not look like it. Some examples are:
+- What happens when the player transitions from the air to the ground while stopping, and there's different horizontal movement acceleration for the ground and air
+- How much control the player should have over their horizontal movement speed moments after a wall jump
+- The exact conditions for when the player should start wall dragging instead of falling normally
+- What should happen if the player touches the ground or a wall while a coyote jump timer is still active
+- And much more
+
+With more and more rules, it can become harder to make changes to this player movement class without breaking something, especially when trying to utilize the power of Godot's Tweens while doing so. So, the separation of movement behaviors into components accomplishes another thing: it separates the concerns of different rules into different classes. For instance, `Falling` can concern rules of when exactly to accelerate and decelerate; `Jumping` can concern rules of which type of jump (ground/air/wall jump) to use and when, as well as rules of coyote jumping and jump buffering; velocity sources and intermediates, internally, don't have to worry about Tweens from other velocity sources; etc. `PlayerVelocityAggregate` no longer has to worry about lower-level rules such as exact Tween creation processes, and the internal rules of its velocity sources and intermediates.
+
+### "Data Modifiers" Design
+
+### Design outside of the movement
 
 ## Acknowledgement
 This project started off as a learning project for me to learn Godot (hence the repository name "Learning") that followed [this tutorial](https://www.youtube.com/playlist?list=PL9FzW-m48fn0i9GYBoTY-SI3yOBZjH1kJ), but has since then deviated greatly in terms of code, content, and goals (and the tutorial used GDScript and not C#).
