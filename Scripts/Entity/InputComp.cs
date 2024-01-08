@@ -43,18 +43,49 @@ public partial class InputComp : Node
     [Signal]
     public delegate void RightInputOnEventHandler();
 
+    private int _leftInputs;
+    private int _rightInputs;
+
     public override void _Input(InputEvent input)
     {
         if (input.IsActionPressed("moveLeft"))
-            EmitSignal(SignalName.LeftInputOn);
+            InputLeft();
         else if (input.IsActionReleased("moveLeft"))
-            EmitSignal(SignalName.LeftInputOff);
+            StopInputLeft();
         else if (input.IsActionPressed("moveRight"))
-            EmitSignal(SignalName.RightInputOn);
+            InputRight();
         else if (input.IsActionReleased("moveRight"))
-            EmitSignal(SignalName.RightInputOff);
+            StopInputRight();
         else if (input.IsActionPressed("jump"))
             EmitSignal(SignalName.JumpInputOn);
         else if (input.IsActionReleased("jump")) EmitSignal(SignalName.JumpInputOff);
+    }
+
+    private void InputLeft()
+    {
+        _leftInputs++;
+
+        if (_leftInputs == 1) EmitSignal(SignalName.LeftInputOn);
+    }
+
+    private void StopInputLeft()
+    {
+        _leftInputs--;
+
+        if (_leftInputs == 0) EmitSignal(SignalName.LeftInputOff);
+    }
+    
+    private void InputRight()
+    {
+        _rightInputs++;
+
+        if (_rightInputs == 1) EmitSignal(SignalName.RightInputOn);
+    }
+
+    private void StopInputRight()
+    {
+        _rightInputs--;
+
+        if (_rightInputs == 0) EmitSignal(SignalName.RightInputOff);
     }
 }
