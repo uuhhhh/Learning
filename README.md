@@ -31,7 +31,7 @@ Here is how to create complex movement for an entity in Godot using this reposit
 ### Data Modifiers
 When designing an "intermediate" (see above for more info on intermediates) to affect a velocity source, you might want to modify the data that the velocity source uses for its movement. For example, my `Falling` velocity source uses a `FallingData` (located in `Scripts/Entity/Physics/VelocitySources/`) resource to determine falling velocity, acceleration, etc. Then, my `WallDragging` affects my `Falling` to simulate the vertical movement of dragging on a wall. It does this by adding modifiers to the `FallingData`'s values to make the `Falling`'s movement feel more like wall dragging than actual falling.
 
-Let's first walk through modifiers. Two core interfaces are at play with modifiers: `IModifier` and `IValueWithModifiers`. `IModifier` calculates an (arbitrary) value based on a given value, and `IValueWithModifiers` can aggregate zero to many `IModifiers` by calling them one-by-one on base/modified values to get a single final modified value. More information is in the documentation comments of these interfaces, located in `Scripts/Values/Modifiers`.
+Let's first walk through modifiers. Two core interfaces are at play with modifiers: `IModifier` and `IValueWithModifiers`. `IModifier` calculates an (arbitrary) value based on a given value, and `IValueWithModifiers` can aggregate any number of `IModifiers` by calling them one-by-one on base/modified values to get a single final modified value. More information is in the documentation comments of these interfaces, located in `Scripts/Values/Modifiers`.
 
 To utilize data modifiers for your velocity sources and intermediates, you first need to have your data values be able to accept modifiers. You can implement your own classes implementing `IValueWithModifiers`, or use `ValueWithModifiers` (a basic implementation).
 
@@ -72,7 +72,17 @@ With more and more rules, it can become harder to make changes to this player mo
 
 ### "Data Modifiers" Design
 
-### Design outside of the movement
+In order to modify a data value (for example, how fast the player should move horizontally when on the ground), when there may be other actors that want to modify this same data value, we would like to maintain independence (as much of it as possible) from these other actors, in terms of how we add our modification to this data value.
+
+The way that this project does this is by having the data value (`IValueWithModifiers`) hold any number of modifiers (`IModifier`). Each `IModifier` can take in a value and output a modified value based on that value. For the `IValueWithModifiers` to calculate the modified value, the first modifier gets applied to the unmodified value, then the second modifier gets applied to the first modifier's calculated value, and so on. The order the `IModifier`s are applied are based on the priority property for each of them. The only spot where these `IModifier`s have dependence on each other is with the priority property, and that is mitigated by having this property be an enum (see `Scripts/Values/Modifiers/ModifierPriority.cs`). They are independent everywhere else.
+
+These `IModifier`s act in a way like components of an `IValueWithModifiers`. Unlike with the velocity sources, though, the `IValueWithModifiers` and its implementers don't work with specific `IModifiers`: they just apply the `IModifier`s they're given, without knowing their implementation or how they modify given values. This has the added benefit of ensuring independence of `IValueWithModifiers` from specific `IModifier`s.
+
+#### Motivation
+
+When I was first implementing the intermediate `WallDragging`, I needed it to modify `Falling` so that the falling movement was instead more like the movement of dragging down a wall. Originally, I did this by having the `WallDragging` swap out the `FallingData` that the `Falling` used for determining fall movement, for a different `FallingData`. However, this solution had a problem: if I were to make another intermediate that modified a `Falling` in the same way, there would be a conflict between the two. What happens when `WallDragging` does its swap, the other one does its swap, and `WallDragging` swaps it back? What if I wanted the effects of the two to somehow stack?
+
+This is the problem that the data modifiers design aims to solve. By having the values in `FallingData` accept any amount of modifiers, `WallDragging` and any other intermediates can add and remove their modifiers to and from `FallingData` independently of each other, and the effects of the different modifiers can stack without the different intermediates having to know about it.
 
 ## Acknowledgement
-This project started off as a learning project for me to learn Godot (hence the repository name "Learning") that followed [this tutorial](https://www.youtube.com/playlist?list=PL9FzW-m48fn0i9GYBoTY-SI3yOBZjH1kJ), but has since then deviated greatly in terms of code, content, and goals (and the tutorial used GDScript and not C#).
+This project started off as a learning project for me to learn Godot (hence the repository name "Learning") that followed [this tutorial](https://www.youtube.com/playlist?list=PL9FzW-m48fn0i9GYBoTY-SI3yOBZjH1kJ), but has since then deviated greatly in terms of code, content, and goals (also the tutorial used GDScript and not C#).
