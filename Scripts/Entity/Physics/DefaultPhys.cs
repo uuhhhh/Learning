@@ -45,34 +45,78 @@ public abstract partial class DefaultPhys : Node
     {
     }
 
+    /// <summary>
+    ///     Called whenever the given (linked) physics goes from
+    ///     not being on floor to being on a floor.
+    /// </summary>
     internal virtual void OnBecomeOnFloor(KinematicComp physics)
     {
     }
 
+    /// <summary>
+    ///     Called whenever the given (linked) physics goes from
+    ///     being on floor to not being on a floor.
+    /// </summary>
     internal virtual void OnBecomeOffFloor(KinematicComp physics)
     {
     }
 
+    /// <summary>
+    ///     Called whenever the given (linked) physics goes from
+    ///     not being on ceiling to being on a ceiling.
+    /// </summary>
     internal virtual void OnBecomeOnCeiling(KinematicComp physics)
     {
     }
 
+    /// <summary>
+    ///     Called whenever the given (linked) physics goes from
+    ///     being on ceiling to not being on a ceiling.
+    /// </summary>
     internal virtual void OnBecomeOffCeiling(KinematicComp physics)
     {
     }
 
+    /// <summary>
+    ///     Called whenever the given (linked) physics goes from
+    ///     not being on wall to being on a wall.
+    /// </summary>
     internal virtual void OnBecomeOnWall(KinematicComp physics)
     {
     }
 
+    /// <summary>
+    ///     Called whenever the given (linked) physics goes from
+    ///     being on wall to not being on a wall.
+    /// </summary>
     internal virtual void OnBecomeOffWall(KinematicComp physics)
     {
     }
 
+    /// <summary>
+    ///     Called whenever the given (linked) physics goes from moving in one x direction to the
+    ///     other (or moving from one x direction to stopping to moving the other direction).
+    ///     Note that the movement in the other direction has to be larger than some very small
+    ///     value for this method to be called.
+    /// </summary>
+    /// <param name="physics">The (linked) physics that started moving
+    /// in the other direction</param>
+    /// <param name="newDirection">The sign of this float indicates the sign of the x direction
+    /// that the KinematicComp is now moving</param>
     internal virtual void OnDirectionChangeX(KinematicComp physics, float newDirection)
     {
     }
 
+    /// <summary>
+    ///     Called whenever the given (linked) physics goes from moving in one y direction to the
+    ///     other (or moving from one y direction to stopping to moving the other direction).
+    ///     Note that the movement in the other direction has to be larger than some very small
+    ///     value for this method to be called.
+    /// </summary>
+    /// <param name="physics">The (linked) physics that started moving
+    /// in the other direction</param>
+    /// <param name="newDirection">The sign of this float indicates the sign of the y direction
+    /// that the KinematicComp is now moving</param>
     internal virtual void OnDirectionChangeY(KinematicComp physics, float newDirection)
     {
     }
