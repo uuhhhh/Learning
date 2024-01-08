@@ -6,7 +6,7 @@
 public partial class AirDetector : EnvObjectDetector
 {
     /// <returns>The priority value for the given EnvObject's Air.</returns>
-    protected override int GetPriorityOf(EnvObject envObject)
+    protected override EnvironmentPriority GetPriorityOf(EnvObject envObject)
     {
         return envObject.Data.Air.Priority;
     }

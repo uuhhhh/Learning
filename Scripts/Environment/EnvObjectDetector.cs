@@ -129,7 +129,7 @@ public abstract partial class EnvObjectDetector : Area2D
     /// </summary>
     /// <param name="envObject">The EnvObject to get the priority of</param>
     /// <returns>The priority value</returns>
-    protected abstract int GetPriorityOf(EnvObject envObject);
+    protected abstract EnvironmentPriority GetPriorityOf(EnvObject envObject);
 
     /// <summary>
     ///     A class for comparing the priority values of EnvObjects.
@@ -150,8 +150,8 @@ public abstract partial class EnvObjectDetector : Area2D
                 (null, null) => 0,
                 (null, _) => -1,
                 (_, null) => 1,
-                _ => _priorityDeterminer.GetPriorityOf(x)
-                    .CompareTo(_priorityDeterminer.GetPriorityOf(y))
+                _ => _priorityDeterminer.GetPriorityOf(x).PriorityNum()
+                    .CompareTo(_priorityDeterminer.GetPriorityOf(y).PriorityNum())
             };
         }
     }

@@ -26,5 +26,5 @@ public partial class WallData : Resource
     ///     for selection by an EnvObjectDetector.
     /// </summary>
     [Export]
-    public int Priority { get; private set; }
+    public EnvironmentPriority Priority { get; private set; }
 }
