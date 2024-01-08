@@ -1,21 +1,21 @@
 <Project Sdk="Godot.NET.Sdk/4.2.1">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="scripts\player\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="scripts\player\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="README.md" />
-    <Content Include="uml\velocity-simplified\velocity-simplified.drawio.svg" />
-    <Content Include="uml\velocity-sources\velocity-sources.drawio.svg" />
-    <Content Include="uml\velocity-sources\velocity-sources.drawio" />
-    <Content Include="uml\velocity-sources\velocity-sources.drawio.html" />
-    <Content Include="uml\velocity-simplified\velocity-simplified.drawio" />
-    <Content Include="uml\velocity-simplified\velocity-simplified.drawio.html" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Remove="scripts\player\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Remove="scripts\player\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="README.md"/>
+        <Content Include="uml\velocity-simplified\velocity-simplified.drawio.svg"/>
+        <Content Include="uml\velocity-sources\velocity-sources.drawio.svg"/>
+        <Content Include="uml\velocity-sources\velocity-sources.drawio"/>
+        <Content Include="uml\velocity-sources\velocity-sources.drawio.html"/>
+        <Content Include="uml\velocity-simplified\velocity-simplified.drawio"/>
+        <Content Include="uml\velocity-simplified\velocity-simplified.drawio.html"/>
+    </ItemGroup>
 </Project>

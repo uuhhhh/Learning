@@ -25,7 +25,7 @@ public partial class ImpactParticles : CpuParticles2D
     {
         SetEmissionIntensity(intensity);
         if (Amount == 0) return null;
-        
+
         Emitting = true;
         Restart();
 

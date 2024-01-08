@@ -74,7 +74,7 @@ public partial class InputComp : Node
 
         if (_leftInputs == 0) EmitSignal(SignalName.LeftInputOff);
     }
-    
+
     private void InputRight()
     {
         _rightInputs++;

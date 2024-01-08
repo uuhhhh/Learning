@@ -99,10 +99,14 @@ public abstract partial class DefaultPhys : Node
     ///     Note that the movement in the other direction has to be larger than some very small
     ///     value for this method to be called.
     /// </summary>
-    /// <param name="physics">The (linked) physics that started moving
-    /// in the other direction</param>
-    /// <param name="newDirection">The sign of this float indicates the sign of the x direction
-    /// that the KinematicComp is now moving</param>
+    /// <param name="physics">
+    ///     The (linked) physics that started moving
+    ///     in the other direction
+    /// </param>
+    /// <param name="newDirection">
+    ///     The sign of this float indicates the sign of the x direction
+    ///     that the KinematicComp is now moving
+    /// </param>
     internal virtual void OnDirectionChangeX(KinematicComp physics, float newDirection)
     {
     }
@@ -113,10 +117,14 @@ public abstract partial class DefaultPhys : Node
     ///     Note that the movement in the other direction has to be larger than some very small
     ///     value for this method to be called.
     /// </summary>
-    /// <param name="physics">The (linked) physics that started moving
-    /// in the other direction</param>
-    /// <param name="newDirection">The sign of this float indicates the sign of the y direction
-    /// that the KinematicComp is now moving</param>
+    /// <param name="physics">
+    ///     The (linked) physics that started moving
+    ///     in the other direction
+    /// </param>
+    /// <param name="newDirection">
+    ///     The sign of this float indicates the sign of the y direction
+    ///     that the KinematicComp is now moving
+    /// </param>
     internal virtual void OnDirectionChangeY(KinematicComp physics, float newDirection)
     {
     }
