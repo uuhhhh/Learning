@@ -17,6 +17,42 @@ The player in the example game MVP can be controlled with the following keyboard
 - D or Right, to move right
 - W, Up, or Space, to jump
 
+Other features of this 2D platformer MVP:
+
+- Wall jumping and double jumping (the double jump resets when touching the ground or a wall)
+- Wall dragging, which happens when the bottom half of the player is touching a wall, and the
+  left/right input is being inputted towards the wall (but once the player is wall dragging, the
+  left/right input can be let go and the player will still wall drag; this behavior can be changed
+  in Velocity Aggregate code)
+- "Wall snapping", where if the player inputs toward the wall a short time after falling from a
+  ledge, they will snap towards the wall; this is to make wall dragging off a ledge easier
+- Particles that emit when walking, jumping, and landing from a large enough height
+- Fine-grained configurability of the player's movement using Godot's Resources
+
+## Repository Layout
+
+- `resources/`: Godot Resource data used by the platformer MVP
+- `scenes/`: Godot Scenes for the platformer MVP
+- `Scripts/`: All of the code for this game base
+    - `Effects/`: Code concerning the particle effects emitted
+    - `Entity/`: Code for the main components that entities (currently the only entity is the
+      player) are composed of
+        - `Physics/`: Code for the movement of entities; also
+          contains [Velocity Aggregate](#velocity-sourcesaggregate-design) objects
+            - `Intermediate/`: Code for "Intermediates", components that perform common operations
+              for Velocity Sources
+            - `VelocitySources/`: Code for [Velocity Source](#velocity-sourcesaggregate-design)
+              objects, the individual components that make up an entity's movement
+    - `Environment/`: Code concerning with associating data and modifiers with objects in an
+      entity's environment (most code here is currently unused)
+    - `Values/`: Code concerning [Data Modifiers](#data-modifiers)
+        - `Groups/`: Code for objects that group modifiers together or group values with modifiers
+          together
+        - `Modifiers/`: Code for objects that apply modifiers to a value, or hold a value and its
+          modifiers
+- `textures/`: Image assets used by the platformer MVP
+- `uml/`: UML diagrams for the software designs for this project
+
 ## Environment
 
 This project uses Godot
@@ -24,6 +60,15 @@ This project uses Godot
 is needed since this project uses C# instead of GDScript). .NET 6.0 was used for this project.
 
 ## How to use (developer)
+
+To use this project as a developer:
+
+1. Download the version of Godot and install the version of .NET listed
+   in [Environment](#environment).
+2. Clone this repository to your local machine.
+3. Open Godot, and import the root directory of the cloned repository. From here, you can start
+   editing the project. (NOTE: when performing these steps, you might get an error running the
+   project for the first time, but not for subsequent runs)
 
 ### Complex Movement
 
@@ -129,8 +174,8 @@ wanting to move left or right) (located in `Scripts/Entity/Physics/VelocitySourc
 Note that when creating the velocity sources for an entity's movement, some desired behaviors are
 not independent of these components. For example, my player can also jump and drag on walls, but
 these are both things that are affected by gravity, something already covered by `Falling`. So,
-instead of creating a velocity source for these behaviors, you would want to create an "
-intermediate" (they currently don't have a common superclass/interface) that calls the methods of
+instead of creating a velocity source for these behaviors, you would want to create an
+"intermediate" (they currently don't have a common superclass/interface) that calls the methods of
 the relevant velocity source(s) to affect velocity. For example, the intermediates `Jumping`
 and `WallDragging` (located in `Scripts/Entity/Physics/Intermediate/`) call upon `Falling`'s methods
 to affect falling velocity.
@@ -153,9 +198,10 @@ components, and the velocity aggregates compose these components.
 In [a much earlier commit](https://github.com/uuhhhh/Learning/tree/43573f5a37a382273acd1792acb342684beda854)
 in this repository, the code for the player movement was in one class, including left/right
 movement, ground/air/wall jumping, coyote jumping, jump buffering, jump cancelling, wall dragging,
-and smooth movement using Tweens. It did work properly, and for some project scopes, it'd be
-sufficient to keep player movement code in one class. However, there were key drawbacks to that
-approach, which this current repository aims to solve.
+and smooth movement using Tweens. It did work properly, and it took significantly less time to code.
+And for some project scopes where movement isn't complex, it'd be sufficient to keep player movement
+code in one class. However, there were key drawbacks to that approach, which this project aims to
+solve.
 
 First, movement behaviors weren't reusable between different entities. While currently the only
 entity is the player, if one wanted to make another entity with some of the player's movement
@@ -174,7 +220,8 @@ lot of rules in play, even if it may not look like it. Some examples are:
   different horizontal movement acceleration for the ground and air
 - How much control the player should have over their horizontal movement speed moments after a wall
   jump
-- The exact conditions for when the player should start wall dragging instead of falling normally
+- The exact conditions for when the player should start wall dragging instead of falling normally,
+  and when they should stop wall dragging
 - What should happen if the player touches the ground or a wall while a coyote jump timer is still
   active
 - And much more
@@ -187,7 +234,9 @@ when exactly to accelerate and decelerate; `Jumping` can concern rules of which 
 ground/air/wall jump) to use and when, as well as rules of coyote jumping and jump buffering;
 velocity sources and intermediates, internally, don't have to worry about Tweens from other velocity
 sources; etc. `PlayerVelocityAggregate` no longer has to worry about lower-level rules such as exact
-Tween creation processes, and the internal rules of its velocity sources and intermediates.
+Tween creation processes and the internal rules of its velocity sources and intermediates. The
+velocity sources and intermediates form an API that abstracts those details away, so
+`PlayerVelocityAggregate` can just worry about higher-level rules.
 
 #### UML Diagram
 
