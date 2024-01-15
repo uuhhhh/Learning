@@ -81,8 +81,8 @@ Here is how to create complex movement for an entity in Godot using this reposit
    extends `VelocityAggregate` (located in `Scripts/Entity/Physics/`). For this example, we'll call
    the class `PlayerVelocity` (you can also see `Scripts/Entity/Physics/PlayerVelocityAggregate.cs`
    to see an example of how this would be coded).
-3. In the `CharacterBody2D` node, select the `PlayerVelocity` node as the value for the field "
-   Velocity Replacer".
+3. In the `CharacterBody2D` node, select the `PlayerVelocity` node as the value for the field
+   "Velocity Replacer".
 4. Come up with the velocity sources (and possibly any "intermediates") for your `PlayerVelocity`.
    For this, you'll need to think about how you want your player to be able to move, and break that
    movement down into different, independent components.
@@ -161,8 +161,8 @@ modified)).
 ### "Velocity Sources/Aggregate" Design
 
 In order to perform complex movement while maintaining modularity and reusability, the different
-causes of movement are split into different, independent components called "velocity sources". A "
-velocity aggregate" is composed of these velocity sources, and can produce a single velocity vector
+causes of movement are split into different, independent components called "velocity sources". A
+"velocity aggregate" is composed of these velocity sources, and can produce a single velocity vector
 by taking an aggregate of the velocity vectors for all the velocity sources (by default, this is
 just the sum of all the velocity vectors). This single velocity vector would represent the velocity
 of the player or some other entity.
@@ -230,8 +230,8 @@ With more and more rules, it can become harder to make changes to this player mo
 breaking something, especially when trying to utilize the power of Godot's Tweens while doing so.
 So, the separation of movement behaviors into components accomplishes another thing: it separates
 the concerns of different rules into different classes. For instance, `Falling` can concern rules of
-when exactly to accelerate and decelerate; `Jumping` can concern rules of which type of jump (
-ground/air/wall jump) to use and when, as well as rules of coyote jumping and jump buffering;
+when exactly to accelerate and decelerate; `Jumping` can concern rules of which type of jump
+(ground/air/wall jump) to use and when, as well as rules of coyote jumping and jump buffering;
 velocity sources and intermediates, internally, don't have to worry about Tweens from other velocity
 sources; etc. `PlayerVelocityAggregate` no longer has to worry about lower-level rules such as exact
 Tween creation processes and the internal rules of its velocity sources and intermediates. The
@@ -260,8 +260,8 @@ based on that value. For the `IValueWithModifiers` to calculate the modified val
 modifier gets applied to the unmodified value, then the second modifier gets applied to the first
 modifier's calculated value, and so on. The order the `IModifier`s are applied are based on the
 priority property for each of them. The only spot where these `IModifier`s have dependence on each
-other is with the priority property, and that is mitigated by having this property be an enum (
-see `Scripts/Values/Modifiers/ModifierPriority.cs`). They are independent everywhere else.
+other is with the priority property, and that is mitigated by having this property be an enum
+(see `Scripts/Values/Modifiers/ModifierPriority.cs`). They are independent everywhere else.
 
 These `IModifier`s act in a way like components of an `IValueWithModifiers`. Unlike with the
 velocity sources, though, the `IValueWithModifiers` and its implementers don't work with
@@ -286,8 +286,8 @@ the different modifiers can stack without the different intermediates having to 
 
 ## Acknowledgement
 
-This project started off as a learning project for me to learn Godot (hence the repository name "
-Learning") that
+This project started off as a learning project for me to learn Godot (hence the repository name
+"Learning") that
 followed [this tutorial](https://www.youtube.com/playlist?list=PL9FzW-m48fn0i9GYBoTY-SI3yOBZjH1kJ),
 but has since then deviated greatly in terms of code, content, and goals (also the tutorial used
 GDScript and not C#).
