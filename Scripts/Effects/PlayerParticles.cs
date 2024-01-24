@@ -4,6 +4,9 @@ using Learning.Scripts.Entity.Physics;
 
 namespace Learning.Scripts.Effects;
 
+/// <summary>
+/// This controls the particles that a player emits.
+/// </summary>
 public partial class PlayerParticles : Node2D
 {
     private bool _canMakeFloorImpact;
@@ -32,6 +35,10 @@ public partial class PlayerParticles : Node2D
         FloorLandingParticles = GetNode<FloorImpactParticles>(nameof(FloorLandingParticles));
     }
 
+    /// <summary>
+    /// Initializes behavior to emit particles based on the given player's interactions.
+    /// </summary>
+    /// <param name="player">The player to emit particles</param>
     public void InitParticlesBehavior(Player player)
     {
         InitJumpParticleBehavior(player);
