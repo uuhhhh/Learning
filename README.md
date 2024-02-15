@@ -184,7 +184,7 @@ The velocity sources themselves are independent of each other and don't know abo
 the velocity aggregate may produce rules and behaviors for interactions (one-way or two-way) between
 velocity sources/intermediates, unbeknownst to the velocity sources and intermediates. The velocity
 aggregate is where all of these velocity sources and intermediates come together. So, when
-subclassing a velocity source, the job of the subclass is to make sure that the specific velocity
+subclassing a velocity aggregate, the job of the subclass is to make sure that the specific velocity
 sources and intermediates concerned by the subclass act nicely with each other, to produce the
 desired behavior. This is done here so that it doesn't have to be done in the code for the velocity
 sources and intermediates (which would've introduced unwanted dependencies between certain velocity
